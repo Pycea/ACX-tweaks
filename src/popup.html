@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ACX Tweaks</title>
+    <style type="text/css">
+        #wrapper {
+            width: 200px;
+        }
+
+        #resume, #save {
+            margin-top: 5px;
+        }
+
+        label {
+            user-select: none;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        input {
+            vertical-align: middle;
+        }
+
+        #hideNew {
+            margin-left: 22px;
+        }
+    </style>
+
+    <script type="text/javascript" src="jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="options.js"></script>
+    <script type="text/javascript" src="popup.js"></script>
+</head>
+
+<body>
+    <div id="wrapper">
+        <div><input type="checkbox" id="fixHeader"><label for="fixHeader">Fix header</label></div>
+        <div><input type="checkbox" id="hideHearts"><label for="hideHearts">Hide hearts</label></div>
+        <div><input type="checkbox" id="loadAll"><label for="loadAll">Load all comments</label></div>
+        <div><input type="checkbox" id="hideNew"><label for="hideNew">Hide new comments</label></div>
+    </div>
+</body>
+</html>
