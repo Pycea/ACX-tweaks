@@ -172,7 +172,12 @@ function addStyles() {
 
 // load the initial values of the options and do any necessary config for them
 async function loadInitialOptionValues() {
-    for (let key in OPTIONS) {
+    // process options in order of priority (highest first)
+    let keys = Object.keys(OPTIONS);
+    keys.sort((a, b) => OPTIONS[b].priority - OPTIONS[a].priority);
+
+    for (let i = 0; i < keys.length; i++) {
+        let key = keys[i];
         let storageValue = await getLocalState(key);
         let value = storageValue[key];
         if (value === undefined) {
