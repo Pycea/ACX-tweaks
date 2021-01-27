@@ -11,7 +11,13 @@ const STYLES = {
 
         .topbar-replacement {
             display: none;
-        }`,
+        }
+
+        .comment .comment-anchor {
+            top: 0 !important;
+        }
+
+        `,
     "hideHearts": `
         .post-meta {
             display: none !important;
@@ -122,6 +128,10 @@ const STYLES = {
             border: 1px solid #d5d5d5 !important;
             border-radius: 10px !important;
             padding: 25px !important;
+        }
+
+        .comments-page .container .comments-heading {
+            margin-top: 0 !important;
         }
 
         @media screen and (min-width: 768px) {
