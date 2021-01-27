@@ -225,7 +225,7 @@ function addDomObserver() {
 }
 
 async function setup() {
-    // addDomObserver();
+    addDomObserver();
     processNewPageType();
 
     $("#entry").on("click", ".comment-actions > span:nth-child(2)", function() {
