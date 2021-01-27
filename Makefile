@@ -1,8 +1,10 @@
 SRC_DIR=src
 GEN_DIR=gen
 
-zip: 
-	cd src; zip -r -FS ../$(GEN_DIR)/extension.zip * -x '*/.*'
+zip:
+	if ! [[ -d "$(GEN_DIR)" ]]; then mkdir $(GEN_DIR); fi
+	cd src; zip -r -FS ../$(GEN_DIR)/ff_extension.zip * -x '*/.*'
+	zip -r -FS $(GEN_DIR)/chrome_src.zip src -x '*/.*'
 
 .PHONY: clean
 
