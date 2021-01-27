@@ -1,0 +1,228 @@
+const STYLES = {
+    "fixHeader": `
+        .main-menu-content {
+            position: relative !important;
+            top: 0 !important;
+        }
+
+        .main-menu .backdrop {
+            position: fixed !important;
+        }
+
+        .topbar-replacement {
+            display: none;
+        }`,
+    "hideHearts": `
+        .post-meta {
+            display: none !important;
+        }
+
+        .comment-actions span:first-child {
+            display: none;
+        }
+
+        .comment-actions span:nth-child(2) {
+            margin-left: 0 !important;
+        }`,
+    "useOldStyling": `
+        /* I'm am so sorry */
+
+        article div p {
+            color: #333 !important;
+            font: 12px/20px Verdana, sans-serif !important;
+        }
+
+        h1.post-title.short.unpublished {
+            font-size: 16px !important;
+            line-height: 1.3em !important;
+            margin-bottom: 10px !important;
+            text-transform: uppercase !important;
+            letter-spacing: 1px !important;
+            font-family: Georgia, "Bitstream Charter", serif !important;
+        }
+
+        td.post-meta-item.post-date {
+            color: #888 !important;
+            font-size: 10px !important;
+            font-family: Verdana, sans-serif !important;
+            letter-spacing: 1px !important;
+            background: #f9f9f9 !important;
+            border: 1px solid #eee !important;
+            padding: 5px 7px !important;
+            display: inline !important;
+            text-transform: uppercase !important;
+            text-shadow: 1px 1px 1px #fff !important;
+        }
+
+        td.post-meta-item.post-date:before {
+            content: "Posted " !important;
+        }
+
+        td.post-meta-item.post-date:after {
+            content: " by Scott Alexander" !important;
+        }
+
+        .single-post {
+            border: 1px solid #D5D5D5 !important;
+            border-radius: 10px !important;
+            background: #fff !important;
+            padding: 20px 28px !important;
+            margin-bottom: 10px !important;
+        }
+
+        .single-post-container {
+            background: #f0f0f0 !important;
+            padding: 10px 0px !important;
+        }
+
+        .single-post a {
+            color: #0066cc !important;
+            text-decoration: underline !important;
+        }
+
+        .post {
+            padding: 0 !important;
+        }
+
+        .subtitle {
+            font-size: 12px !important;
+            padding-bottom: 8px !important;
+        }
+
+        .main-menu .topbar .container .headline {
+            text-decoration: none !important;
+        }
+
+        .main-menu .topbar .container .headline .name {
+            font-size: 43px !important;
+            max-height: 100px !important;
+            color: white !important;
+            font-family: 'Raleway', Open Sans, Arial, sans-serif !important;
+            text-align: center !important;
+            letter-spacing: 2px !important;
+            text-decoration: none !important;
+        }
+
+        .topbar {
+            background: linear-gradient(to bottom, rgba(139,171,232,1) 0%, rgba(79,115,193,1) 100%) !important;
+            text-decoration: none !important;
+        }
+
+        button.button.primary.subscribe-cta.subscribe-btn {
+            display: none !important;
+        }
+
+        .full-container-border {
+            display: none !important;
+        }
+
+        .comments-page > .container {
+            background-color: white !important;
+            justify-content: center !important;
+            border: 1px solid #d5d5d5 !important;
+            border-radius: 10px !important;
+            padding: 25px !important;
+        }
+
+        @media screen and (min-width: 768px) {
+            .comments-page > .container {
+                width: 675px !important;
+            }
+        }
+
+        div.buttons.notification-container {
+            filter: brightness(3) !important;
+            transform: scale(.7)
+        }
+
+        img.logo {
+            margin-right: 30px !important;
+        }
+
+        button.comments-page-sort-menu-button {
+            background: transparent !important;
+        }
+
+        table.comment-content tr td {
+            border: 1px solid #ddd !important;
+            padding: 10px !important;
+            border-radius: 10px !important;
+            flex-grow: 1 !important;
+            background: #fafafa !important;
+        }
+
+        table.comment-content.new-comment tr td {
+             border: 2px solid #5a5 !important;
+        }
+
+        table.comment-content tr td.comment-head {
+            border: none !important;
+            flex-grow: 0 !important;
+            background: white !important;
+        }
+
+        table tr {
+            display: flex !important;
+        }
+
+        td.post-meta-item.icon {
+            margin-left: 10px !important;
+        }
+
+        .comments-page {
+            background: #f0f0f0 !important;
+            padding-top: 10px !important;
+        }
+
+        .comment-meta span:first-child a {
+            font-weight: bold !important;
+            color: black !important;
+            text-decoration: none !important;
+        }
+
+        .comment-meta span:first-child  a:after {
+            content: " says" !important;
+        }
+
+        .comment-meta span:nth-child(2) a {
+            color: #888 !important;
+            text-decoration: none !important;
+            display: block !important;
+            padding-top: 8px !important;
+            padding-bottom: 6px !important;
+        }
+
+        .comment-body p {
+            color: #333 !important;
+            font: 12px/20px Verdana, sans-serif !important;
+            -webkit-font-smoothing: auto !important;
+        }
+
+        .comment-actions span a {
+            color: #888 !important;
+        }
+
+        .comment.selected > .comment-content > tr > td:nth-child(2) {
+            background: #de912d2c !important;
+        }
+
+        .comment.selected > .comment-content::before {
+            background: inherit !important;
+        }
+
+        .profile-img-wrap img {
+            border-radius: 0px !important;
+            height: 40px !important;
+            width: 40px !important;
+            position: relative !important;
+            right: 8px !important;
+        }`,
+    "hideNew": `
+        button.collapsed-reply {
+            display: none;
+        }
+
+        .comments-page .container .comment-list.has-new-comments {
+            padding-top: 12px !important;
+        }`,
+}

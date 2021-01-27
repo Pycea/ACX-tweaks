@@ -8,14 +8,15 @@
             font-size: .75em;
         }
 
-        #wrapper {
-            width: 150px;
+        #wrapper div {
+            white-space: nowrap;
         }
 
         label {
             user-select: none;
             display: inline-block;
             vertical-align: middle;
+            margin-right: 4px;
         }
 
         input {
@@ -36,6 +37,7 @@
     <div id="wrapper">
         <div><input type="checkbox" id="fixHeader"><label for="fixHeader">Fix header</label></div>
         <div><input type="checkbox" id="hideHearts"><label for="hideHearts">Hide hearts</label></div>
+        <div><input type="checkbox" id="useOldStyling"><label for="useOldStyling">Use old styling</label></div>
         <div><input type="checkbox" id="loadAll"><label for="loadAll">Load all comments</label></div>
         <div><input type="checkbox" id="hideNew"><label for="hideNew">Hide new comments</label></div>
     </div>

@@ -15,9 +15,9 @@
             "matches": [
                 "https://astralcodexten.substack.com/*"
             ],
-            "js": ["jquery-3.5.1.min.js", "options.js", "content.js"],
+            "js": ["jquery-3.5.1.min.js", "options.js", "styles.js", "content.js"],
             "css": ["style.css"],
-            "run_at": "document_end"
+            "run_at": "document_start"
         }
     ],
     "browser_action": {

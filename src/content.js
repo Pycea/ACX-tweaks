@@ -11,9 +11,11 @@ if (typeof browser !== "undefined") {
 }
 
 // OPTIONS loaded from options.js
+// STYLES loaded from styles.js
 
 OPTIONS.fixHeader.toggleFunc = fixHeaderOption;
 OPTIONS.hideHearts.toggleFunc = hideHeartsOption;
+OPTIONS.useOldStyling.toggleFunc = useOldStylingOption;
 OPTIONS.loadAll.toggleFunc = loadAllOption;
 OPTIONS.hideNew.toggleFunc = hideNewOption;
 
@@ -28,6 +30,8 @@ let optionShadow = {};
 
 
 
+// Utilities
+
 // the URL of the page without any hashes or params
 function baseUrl() {
     return window.location.origin + window.location.pathname;
@@ -41,24 +45,30 @@ function getPageType() {
     }
 }
 
+function getLocalState(storageId) {
+    let storagePromise = new Promise(function(resolve, reject) {
+        webExtension.storage.local.get(storageId, function(items) {
+            resolve(items);
+        });
+    });
+
+    return storagePromise;
+}
+
 
 
 // Dealing with option changes
 
 function fixHeaderOption(value) {
-    if (value) {
-        $("body").addClass("fix-header");
-    } else {
-        $("body").removeClass("fix-header");
-    }
+    $("#fixHeader-css").prop("disabled", !value);
 }
 
 function hideHeartsOption(value) {
-    if (value) {
-        $("body").addClass("no-heart");
-    } else {
-        $("body").removeClass("no-heart");
-    }
+    $("#hideHearts-css").prop("disabled", !value);
+}
+
+function useOldStylingOption(value) {
+    $("#useOldStyling-css").prop("disabled", !value);
 }
 
 function loadAllOption(value) {
@@ -79,11 +89,7 @@ function loadAllOption(value) {
 }
 
 function hideNewOption(value) {
-    if (value) {
-        $("body").addClass("hide-new");
-    } else {
-        $("body").removeClass("hide-new");
-    }
+    $("#hideNew-css").prop("disabled", !value);
 }
 
 // calls the appropriate option handling function for a given option value
@@ -108,37 +114,6 @@ function processStorageChange(changes, namespace) {
 
 
 
-// Individual comment processing
-
-// adds a permalink button to the given comment
-function addPermalink(comment) {
-    let url = baseUrl();
-    let commentId = $(comment).children(":first").attr("id");
-    let permalinkId = "perm-" + commentId;
-    let permalinkPath = url + "#" + commentId;
-    let permalinkNode = $(`<span id=${permalinkId}><a href="${permalinkPath}">Permalink</a></span>`);
-    let commentActions = $(comment).find("> .comment-content > tr > td > .comment-actions")
-
-    // don't add permalink twice
-    if (commentActions.find(`#${permalinkId}`).length == 0) {
-        commentActions.append(permalinkNode);
-    
-        $("#" + permalinkId).click(function() {
-            $(".anchored-comment").removeClass("anchored-comment");
-            $("#" + commentId).parent().children("table").addClass("anchored-comment");
-        });
-    }
-}
-
-// processes to apply to all comments and children in a given dom element
-function processAllComments(node) {
-    $(node).find("div.comment").addBack("div.comment").each(function() {
-        addPermalink(this);
-    });
-}
-
-
-
 // First processing of different page types
 
 function processMainPage() {
@@ -146,9 +121,6 @@ function processMainPage() {
 }
 
 async function processPostPage() {
-    let container = $("#main");
-    processAllComments(container);
-
     // oh god oh god
     setTimeout(function() {
         loadAllOption(optionShadow.loadAll);
@@ -177,28 +149,28 @@ function processMutation(mutation) {
         mutation.addedNodes[0].tagName.toLowerCase() === "article") {
         // we switched directly to a different post with pushState
         processNewPageType();
-    } else {
-        // check for comments just in case
-        for (let node of mutation.addedNodes) {
-            processAllComments(node);
-        }
     }
 }
 
 
 
-// Initial setup on first page load
+// Setup before page load
 
-function getLocalState(storageId) {
-    let storagePromise = new Promise(function(resolve, reject) {
-        webExtension.storage.local.get(storageId, function(items) {
-            resolve(items);
+// adds styles for all the features, which can be disabled later
+function addStyles() {
+    for (let key in STYLES) {
+        let css = STYLES[key];
+
+        let style = $("<style>", {
+            id: `${key}-css`,
+            html: css,
         });
-    });
 
-    return storagePromise;
+        $(document.documentElement).append(style);
+    }
 }
 
+// load the initial values of the options and do any necessary config for them
 async function loadInitialOptionValues() {
     for (let key in OPTIONS) {
         let storageValue = await getLocalState(key);
@@ -208,18 +180,33 @@ async function loadInitialOptionValues() {
             value = OPTIONS[key].default;
             webExtension.storage.local.set({[key]: value});
         }
-        doOptionChange(key, value);
+
+        if (OPTIONS[key].runTime === "start") {
+            doOptionChange(key, value);
+        } else if (OPTIONS[key].runTime === "end") {
+            $(document).ready(function() {
+                doOptionChange(key, value);
+            });
+        } else {
+            console.error("Bad run time found: " + OPTIONS[key].runTime);
+        }
 
         // update the option shadow
         optionShadow[key] = value;
     }
 }
 
-async function setup() {
+async function preloadSetup() {
+    addStyles();
     await loadInitialOptionValues();
-
     webExtension.storage.onChanged.addListener(processStorageChange);
+}
 
+
+
+// Initial setup on first page load
+
+function addDomObserver() {
     let observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
             for (let i = 0; i < mutation.addedNodes.length; i++) {
@@ -230,10 +217,22 @@ async function setup() {
 
     let container = $("#entry")[0];
     observer.observe(container, {childList: true, subtree: true});
+}
 
+async function setup() {
+    // addDomObserver();
     processNewPageType();
+
+    $("#entry").on("click", ".comment-actions > span:nth-child(2)", function() {
+        let comment = $(this).closest(".comment");
+        let id = comment.children().first().attr("id")
+        window.location.hash = id;
+    })
 }
 
 
 
-window.onload = setup;
+// actually do the things
+
+preloadSetup();
+$(document).ready(setup);

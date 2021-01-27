@@ -1,40 +1,10 @@
-/* allow resizing of comment input */
+/* Adds permalink text */
 
-form.comment-input > textarea {
-    resize: both !important;
+.comment-actions > span:nth-child(2) > a {
+    margin-right: 8px;
 }
 
-/* fix header position */
-
-body.fix-header .main-menu-content {
-    position: relative !important;
-    top: 0 !important;
-}
-
-body.fix-header .main-menu .backdrop {
-    position: fixed !important;
-}
-
-body.fix-header .topbar-replacement {
-    display: none;
-}
-
-/* hide like button */
-
-body.no-heart .comment-actions span:first-child {
-    display: none;
-}
-
-body.no-heart .comment-actions span:nth-child(2) {
-    margin-left: 0 !important;
-}
-
-/* hide new comment popup */
-
-body.hide-new button.collapsed-reply {
-    display: none;
-}
-
-body.hide-new .comments-page .container .comment-list.has-new-comments {
-    padding-top: 12px !important;
+.comment-actions > span:nth-child(2):after {
+    content: "Permalink";
+    cursor: pointer;
 }
