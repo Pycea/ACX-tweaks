@@ -21,7 +21,7 @@ function addHovertext(id) {
 
     // yes I know hardcoding is evil. sue me
     let windowHeight = $(window).height();
-    let tooltipHeight = tooltip.height() + 8; // 8 to account for margin
+    let tooltipHeight = tooltip.height() + 12; // 8 to account for margin, plus some space
     let iconPosition = icon.position().top + 7; // element height is 14, 7 is the middle
     let topSpace = iconPosition - tooltipHeight;
     let bottomSpace = (windowHeight - tooltipHeight) - iconPosition;
