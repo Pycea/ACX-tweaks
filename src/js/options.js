@@ -41,4 +41,10 @@ const OPTIONS = {
         "runTime": "start",
         "hovertext": "Prevent new comments from showing up dynamically (for technical reasons only works properly when loading all comments)",
     },
+    "dynamicLoad": {
+        "priority": 10,
+        "default": false,
+        "runTime": "end",
+        "hovertext": "Dynamically load content when switching between posts (default Substack behavior). Enabling can decrease load times, but may break some functionality.",
+    },
 };

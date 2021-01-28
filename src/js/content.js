@@ -20,6 +20,7 @@ OPTIONS.useOldStyling.toggleFunc = useOldStylingOption;
 OPTIONS.highlightNew.toggleFunc = highlightNewOption;
 OPTIONS.loadAll.toggleFunc = loadAllOption;
 OPTIONS.hideNew.toggleFunc = hideNewOption;
+OPTIONS.dynamicLoad.toggleFunc = dynamicLoadOption;
 
 const PageTypeEnum = Object.freeze({
     "main": "main",
@@ -108,6 +109,10 @@ function hideNewOption(value) {
     $("#hideNew-css").prop("disabled", !value);
 }
 
+function dynamicLoadOption(value) {
+    // nothing to do, value is read from options shadow where needed
+}
+
 // calls the appropriate option handling function for a given option value
 function doOptionChange(key, value) {
     if (key in OPTIONS && OPTIONS[key].toggleFunc) {
@@ -179,7 +184,10 @@ function addDateString(comment) {
         let date = new Date(utcTime);
         newDateDisplay.html(getLocalDateString(date));
     } else {
-        console.error(`Could not find comment id ${id}`);
+        // comments will fail during dynamic load, no need to spam the console
+        if (!optionShadow.dynamicLoad) {
+            console.error(`Could not find comment id ${id}`);
+        }
     }
 }
 
@@ -220,13 +228,14 @@ function processNewPageType() {
 
 function processMutation(mutation) {
     // is this a hack? even the wisest cannot tell
-    if (mutation.target.id === "main") {
-        // we switched page types with pushState
-        processNewPageType();
-    } else if (mutation.target.classList.contains("single-post") &&
-        mutation.addedNodes[0].tagName.toLowerCase() === "article") {
-        // we switched directly to a different post with pushState
-        processNewPageType();
+    if (mutation.target.id === "main" || (mutation.target.classList.contains("single-post") && mutation.addedNodes[0].tagName.toLowerCase() === "article")) {
+        // we switched to a different page with pushState
+        if (optionShadow.dynamicLoad) {
+            processNewPageType();
+        } else {
+            // force refresh
+            window.location.href = window.location.href;
+        }
     } else {
         // check for comments
         if (commentIdToDate) {
