@@ -182,11 +182,6 @@ function addDateString(comment) {
         let utcTime = commentIdToDate[id];
         let date = new Date(utcTime);
         newDateDisplay.html(getLocalDateString(date));
-    } else {
-        // comments will fail during dynamic load, no need to spam the console
-        if (!optionShadow.dynamicLoad) {
-            console.error(`Could not find comment id ${id}`);
-        }
     }
 }
 

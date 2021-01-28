@@ -18,14 +18,6 @@ const STYLES = {
         }
         `,
     "hideHearts": `
-        .post-header .post-meta > tr > td.post-meta-item.icon:nth-child(3) {
-            display: none !important;
-        }
-
-        .post > .post-meta > tr > td.post-meta-item.icon:first-child {
-            display: none !important;
-        }
-
         .comment-actions span:first-child {
             display: none;
         }
