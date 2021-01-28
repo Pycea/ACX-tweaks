@@ -17,7 +17,6 @@ OPTIONS.fixHeader.toggleFunc = fixHeaderOption;
 OPTIONS.hideHearts.toggleFunc = hideHeartsOption;
 OPTIONS.showFullDate.toggleFunc = showFullDateOption;
 OPTIONS.useOldStyling.toggleFunc = useOldStylingOption;
-OPTIONS.highlightNew.toggleFunc = highlightNewOption;
 OPTIONS.loadAll.toggleFunc = loadAllOption;
 OPTIONS.hideNew.toggleFunc = hideNewOption;
 OPTIONS.dynamicLoad.toggleFunc = dynamicLoadOption;
@@ -82,10 +81,6 @@ function showFullDateOption(value) {
 
 function useOldStylingOption(value) {
     $("#useOldStyling-css").prop("disabled", !value);
-}
-
-function highlightNewOption(value) {
-    // TODO
 }
 
 function loadAllOption(value) {
