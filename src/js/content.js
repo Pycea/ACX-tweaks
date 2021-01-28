@@ -63,6 +63,10 @@ function getLocalState(storageId) {
     return storagePromise;
 }
 
+function getCommentId(comment) {
+    return $(comment).children().first().attr("id");
+}
+
 
 
 // Dealing with option changes
@@ -161,7 +165,7 @@ function getLocalDateString(date) {
 }
 
 function addDateString(comment) {
-    let idString = $(comment).children(":first").attr("id");
+    let idString = getCommentId(comment);
     let idRegexMatch = idString.match(/comment-(\d+)/);
 
     if (!idRegexMatch) {
@@ -185,10 +189,44 @@ function addDateString(comment) {
     }
 }
 
+function addCustomCollapser(collapser) {
+    collapser = $(collapser);
+    if (collapser.hasClass("custom-collapser")) {
+        return;
+    }
+
+    collapser.css("display", "none");
+    let commentList = collapser.parent();
+
+    let newCollapser = $(`
+        <div class="comment-list-collapser custom-collapser">
+            <div class="comment-list-collapser-line"></div>
+        </div>`);
+    $(commentList).prepend(newCollapser);
+
+    newCollapser.click(function() {
+        let parentComment = $(this).closest(".comment");
+        let rect = parentComment.find("> .comment-content")[0].getBoundingClientRect();
+
+        // if you can't see the bottom of the parent comment, scroll up
+        if (rect.bottom <= 0 || rect.bottom >= window.innerHeight) {
+            let anchor = parentComment.children().first();
+            anchor[0].scrollIntoView({ "behavior": "smooth" });
+        }
+
+        collapser.click();
+        newCollapser.remove();
+    });
+}
+
 // processes to apply to all comments and children in a given dom element
 function processAllComments(node) {
     $(node).find("div.comment").addBack("div.comment").each(function() {
         addDateString(this);
+    });
+
+    $(node).find(".comment-list-collapser").addBack(".comment-list-collapser").each(function() {
+        addCustomCollapser(this);
     });
 }
 
@@ -373,7 +411,7 @@ async function setup() {
     // clicking on fake css permalink link
     $("#entry").on("click", ".comment-actions > span:nth-child(2)", function() {
         let comment = $(this).closest(".comment");
-        let id = comment.children().first().attr("id")
+        let id = getCommentId(comment);
         window.location.hash = id;
     });
 }
