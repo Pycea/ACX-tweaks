@@ -36,5 +36,5 @@ If you have dynamic page loading enabled, then navigating to another post will b
 This is an issue with Substack. Enabling the load all comments option can fix it, at the cost of loading all the comments.
 
 ## Permissions explanation
-### [Access you data for astralcodexten.substack.com](https://support.mozilla.org/en-US/kb/permission-request-messages-firefox-extensions#w_access-your-data-for-named-site)
-This is needed to change the look of the site, which is what pretty much all of the options are. This includes adding permalinks, imitating the old theme, and removing the hearts.
+### [Access your data for astralcodexten.substack.com](https://support.mozilla.org/en-US/kb/permission-request-messages-firefox-extensions#w_access-your-data-for-named-site)
+This is needed to change the look of the site, which is what pretty much all of the options do. This includes adding permalinks, imitating the old theme, and removing the hearts.
