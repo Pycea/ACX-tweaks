@@ -177,7 +177,11 @@ function addDateString(comment) {
     let id = idRegexMatch[1];
     let dateSpan = $(comment).find("> .comment-content .comment-meta > span:nth-child(2)");
     let newDateDisplay = dateSpan.children(":first").clone();
-    dateSpan.append(newDateDisplay);
+    newDateDisplay.addClass("better-date");
+
+    if (dateSpan.find(".better-date").length === 0) {
+        dateSpan.append(newDateDisplay);
+    }
 
     if (id in commentIdToDate) {
         let utcTime = commentIdToDate[id];

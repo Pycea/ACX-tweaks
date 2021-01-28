@@ -23,12 +23,6 @@ const OPTIONS = {
         "runTime": "start",
         "hovertext": "Use styling similar to the old blog",
     },
-    "highlightNew": {
-        "priority": 30,
-        "default": false,
-        "runTime": "start",
-        "hovertext": "Highlight comments that you haven't seen yet",
-    },
     "loadAll": {
         "priority": 10,
         "default": false,

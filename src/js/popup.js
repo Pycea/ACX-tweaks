@@ -11,6 +11,34 @@ if (typeof browser !== "undefined") {
     console.error("What kind of browser do you have anyway? (can't get WebExtension handle)")
 }
 
+function addHovertext(id) {
+    let iconSvg = webExtension.extension.getURL("icons/question-circle-regular.svg");
+    let icon = $(`<img src="${iconSvg}" class="help-icon">`);
+    let tooltip = $(`<span class="tooltip" id=${id + "-tooltip"}>${OPTIONS[id].hovertext}<span>`);
+    tooltip.css("display", "none");
+    $(`#${id}`).parent().append(icon);
+    $(`#wrapper`).append(tooltip);
+
+    // yes I know hardcoding is evil. sue me
+    let windowHeight = $(window).height();
+    let tooltipHeight = tooltip.height() + 8; // 8 to account for margin
+    let iconPosition = icon.position().top + 7; // element height is 14, 7 is the middle
+    let topSpace = iconPosition - tooltipHeight;
+    let bottomSpace = (windowHeight - tooltipHeight) - iconPosition;
+
+    if (topSpace > 0 || topSpace >= bottomSpace) {
+        tooltip.addClass("top");
+    } else {
+        tooltip.addClass("bottom");
+    }
+
+    $(icon).hover(function() {
+        $(tooltip).css("display", "inline");
+    }, function() {
+        $(tooltip).css("display", "none");
+    });
+}
+
 function getLocalState(storageId) {
     let storagePromise = new Promise(function(resolve, reject) {
         webExtension.storage.local.get(storageId, function(items) {
@@ -49,7 +77,7 @@ function addDependencies() {
 
 window.onload = async function() {
     for (let id in OPTIONS) {
-        $(`#${id}`).parent().attr("title", OPTIONS[id].hovertext);
+        addHovertext(id);
         createChangeHandler(id);
         await setInitialState(id);
     };

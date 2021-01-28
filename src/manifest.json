@@ -20,6 +20,7 @@
             "run_at": "document_start"
         }
     ],
+    "web_accessible_resources": ["icons/question-circle-regular.svg"],
     "browser_action": {
         "default_popup": "skin/popup.html",
         "default_title": "ACX Tweaks"
