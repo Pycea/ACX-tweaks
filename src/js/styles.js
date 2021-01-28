@@ -16,7 +16,6 @@ const STYLES = {
         .comment .comment-anchor {
             top: 0 !important;
         }
-
         `,
     "hideHearts": `
         .post-meta {
@@ -29,9 +28,18 @@ const STYLES = {
 
         .comment-actions span:nth-child(2) {
             margin-left: 0 !important;
-        }`,
+        }
+        `,
+    "showFullDate": `
+        .comment-meta span:nth-child(2) a:first-child {
+            display: none !important;
+        }
+        .comment-meta span:nth-child(2) a:nth-child(2) {
+            display: inline !important;
+        }
+        `,
     "useOldStyling": `
-        /* I'm am so sorry */
+        /* I am so sorry */
 
         article div p {
             color: #333 !important;
@@ -69,7 +77,7 @@ const STYLES = {
         }
 
         .single-post {
-            border: 1px solid #D5D5D5 !important;
+            border: 1px solid #d5d5d5 !important;
             border-radius: 10px !important;
             background: #fff !important;
             padding: 20px 28px !important;
@@ -185,27 +193,44 @@ const STYLES = {
         }
 
         .comment-meta span:first-child a {
+            font-family: Verdana, sans-serif !important;
             font-weight: bold !important;
             color: black !important;
             text-decoration: none !important;
         }
 
         .comment-meta span:first-child  a:after {
-            content: " says" !important;
+            content: " says:" !important;
+            font-weight: normal;
+            font-style: italic;
+        }
+
+        .comment-meta span:nth-child(2) {
+            display: block !important;
+            padding-bottom: 10px !important;
+            margin-left: 0 !important;
         }
 
         .comment-meta span:nth-child(2) a {
+            font-family: Georgia, "Bitstream Charter", serif !important;
+            -webkit-font-smoothing: auto !important;
             color: #888 !important;
             text-decoration: none !important;
-            display: block !important;
-            padding-top: 8px !important;
-            padding-bottom: 6px !important;
+        }
+
+        .comment-meta span:nth-child(2) a:before {
+            content: "\\a" !important;
+            white-space: pre !important;
+        }
+
+        .comment-meta .highlight {
+            margin-left: 0 !important;
         }
 
         .comment-body p {
-            color: #333 !important;
             font: 12px/20px Verdana, sans-serif !important;
             -webkit-font-smoothing: auto !important;
+            color: #333 !important;
         }
 
         .comment-actions span a {
@@ -226,7 +251,8 @@ const STYLES = {
             width: 40px !important;
             position: relative !important;
             right: 8px !important;
-        }`,
+        }
+        `,
     "hideNew": `
         button.collapsed-reply {
             display: none;
@@ -234,5 +260,6 @@ const STYLES = {
 
         .comments-page .container .comment-list.has-new-comments {
             padding-top: 12px !important;
-        }`,
+        }
+        `,
 }

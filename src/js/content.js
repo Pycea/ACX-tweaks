@@ -15,7 +15,9 @@ if (typeof browser !== "undefined") {
 
 OPTIONS.fixHeader.toggleFunc = fixHeaderOption;
 OPTIONS.hideHearts.toggleFunc = hideHeartsOption;
+OPTIONS.showFullDate.toggleFunc = showFullDateOption;
 OPTIONS.useOldStyling.toggleFunc = useOldStylingOption;
+OPTIONS.highlightNew.toggleFunc = highlightNewOption;
 OPTIONS.loadAll.toggleFunc = loadAllOption;
 OPTIONS.hideNew.toggleFunc = hideNewOption;
 
@@ -27,6 +29,12 @@ const PageTypeEnum = Object.freeze({
 
 // cache of the current options
 let optionShadow = {};
+
+// bunch of metadata
+let preloads;
+
+// cache of comment ids to exact comment time
+let commentIdToDate;
 
 
 
@@ -67,8 +75,16 @@ function hideHeartsOption(value) {
     $("#hideHearts-css").prop("disabled", !value);
 }
 
+function showFullDateOption(value) {
+    $("#showFullDate-css").prop("disabled", !value);
+}
+
 function useOldStylingOption(value) {
     $("#useOldStyling-css").prop("disabled", !value);
+}
+
+function highlightNewOption(value) {
+    // TODO
 }
 
 function loadAllOption(value) {
@@ -114,6 +130,68 @@ function processStorageChange(changes, namespace) {
 
 
 
+// Individual comment processing
+
+function getLocalDateString(date) {
+    let months = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ];
+
+    let year = date.getFullYear();
+    let month = months[date.getMonth()];
+    let day = date.getDate();
+    let hour = date.getHours();
+    let minute = date.getMinutes().toString().padStart(2, "0");
+
+    let amPm = hour <= 11 ? "am" : "pm";
+    hour = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
+
+    return `${month} ${day}, ${year} at ${hour}:${minute} ${amPm}`;
+}
+
+function addDateString(comment) {
+    let idString = $(comment).children(":first").attr("id");
+    let idRegexMatch = idString.match(/comment-(\d+)/);
+
+    if (!idRegexMatch) {
+        console.error(`Bad comment id found: ${idString}`);
+        return;
+    }
+
+    let id = idRegexMatch[1];
+    let dateSpan = $(comment).find("> .comment-content .comment-meta > span:nth-child(2)");
+    let newDateDisplay = dateSpan.children(":first").clone();
+    dateSpan.append(newDateDisplay);
+
+    if (id in commentIdToDate) {
+        let utcTime = commentIdToDate[id];
+        let date = new Date(utcTime);
+        newDateDisplay.html(getLocalDateString(date));
+    } else {
+        console.error(`Could not find comment id ${id}`);
+    }
+}
+
+// processes to apply to all comments and children in a given dom element
+function processAllComments(node) {
+    $(node).find("div.comment").addBack("div.comment").each(function() {
+        addDateString(this);
+    });
+}
+
+
+
 // First processing of different page types
 
 function processMainPage() {
@@ -149,6 +227,13 @@ function processMutation(mutation) {
         mutation.addedNodes[0].tagName.toLowerCase() === "article") {
         // we switched directly to a different post with pushState
         processNewPageType();
+    } else {
+        // check for comments
+        if (commentIdToDate) {
+            for (let i = 0; i < mutation.addedNodes.length; i++) {
+                processAllComments(mutation.addedNodes[i]);
+            }
+        }
     }
 }
 
@@ -211,6 +296,59 @@ async function preloadSetup() {
 
 // Initial setup on first page load
 
+// get data stored in window._preloads
+function getPreloads() {
+    // hacky self-message-sending as content scripts can't access the same window variable as the
+    // embedding page
+
+    // unique handshake to ensure we only talk to ourselves
+    let handshake = Math.random().toString();
+    let inject = $("<script>", {
+        html: `window.postMessage({ handshake: "${handshake}", preloads: window._preloads }, "*");`,
+    });
+    $("head").append(inject);
+    inject.remove();
+
+    return new Promise(function(resolve, reject) {
+        window.addEventListener("message", function(event) {
+            if (event.source === window && event.data.handshake === handshake) {
+                preloads = event.data.preloads;
+                resolve();
+            }
+        }, false);
+    });
+}
+
+// create cache of comment id -> date
+function createPreloadCache() {
+    function getDateRecursive(comment) {
+        let id = comment.id;
+        let date = comment.date;
+        commentIdToDate[id] = date;
+
+        for (let i = 0; i < comment.children.length; i++) {
+            getDateRecursive(comment.children[i]);
+        }
+    }
+
+    if (!preloads.comments) {
+        console.error("Could not find _preloads.comments");
+        return;
+    }
+
+    commentIdToDate = {};
+
+    for (let i = 0; i < preloads.comments.length; i++) {
+        getDateRecursive(preloads.comments[i]);
+    }
+}
+
+async function processPreloads() {
+    await getPreloads();
+    createPreloadCache();
+    processAllComments($("#main"));
+}
+
 function addDomObserver() {
     let observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
@@ -225,14 +363,16 @@ function addDomObserver() {
 }
 
 async function setup() {
+    processPreloads();
     addDomObserver();
     processNewPageType();
 
+    // clicking on fake css permalink link
     $("#entry").on("click", ".comment-actions > span:nth-child(2)", function() {
         let comment = $(this).closest(".comment");
         let id = comment.children().first().attr("id")
         window.location.hash = id;
-    })
+    });
 }
 
 

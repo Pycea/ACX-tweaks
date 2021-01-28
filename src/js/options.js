@@ -6,16 +6,28 @@ const OPTIONS = {
         "hovertext": "Keep the header fixed, so it doesn't keep appearing when scrolling up",
     },
     "hideHearts": {
-        "priority": 20,
+        "priority": 40,
         "default": true,
         "runTime": "start",
         "hovertext": "Hide reactions to comments",
     },
-    "useOldStyling": {
+    "showFullDate": {
         "priority": 30,
+        "default": true,
+        "runTime": "start",
+        "hovertext": "Show the full date and time when a comment was posted",
+    },
+    "useOldStyling": {
+        "priority": 50,
         "default": false,
         "runTime": "start",
         "hovertext": "Use styling similar to the old blog",
+    },
+    "highlightNew": {
+        "priority": 30,
+        "default": false,
+        "runTime": "start",
+        "hovertext": "Highlight comments that you haven't seen yet",
     },
     "loadAll": {
         "priority": 10,

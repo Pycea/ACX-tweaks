@@ -8,3 +8,16 @@
     content: "Permalink";
     cursor: pointer;
 }
+
+/* Hide duplicate timestamp if not using full time option */
+
+.comment-meta span:nth-child(2) a:nth-child(2) {
+    display: none;
+}
+
+
+/* Highlight for new comments */
+
+table.comment-content.new-comment tr td {
+     border: 2px solid #5a5 !important;
+}
