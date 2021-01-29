@@ -17,6 +17,12 @@ const OPTIONS = {
         "runTime": "start",
         "hovertext": "Show the full date and time when a comment was posted",
     },
+    "highlightNew": {
+        "priority": 30,
+        "default": false,
+        "runTime": "start",
+        "hovertext": "Highlight comments that you haven't seen yet",
+    },
     "useOldStyling": {
         "priority": 50,
         "default": false,

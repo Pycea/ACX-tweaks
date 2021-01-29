@@ -16,6 +16,7 @@ if (typeof browser !== "undefined") {
 OPTIONS.fixHeader.toggleFunc = fixHeaderOption;
 OPTIONS.hideHearts.toggleFunc = hideHeartsOption;
 OPTIONS.showFullDate.toggleFunc = showFullDateOption;
+OPTIONS.highlightNew.toggleFunc = highlightNewOption;
 OPTIONS.useOldStyling.toggleFunc = useOldStylingOption;
 OPTIONS.loadAll.toggleFunc = loadAllOption;
 OPTIONS.hideNew.toggleFunc = hideNewOption;
@@ -27,6 +28,8 @@ const PageTypeEnum = Object.freeze({
     "unknown": "unknown",
 });
 
+const LOCAL_DATA_KEY = "acx-seen-comments";
+
 // cache of the current options
 let optionShadow = {};
 
@@ -35,6 +38,25 @@ let preloads;
 
 // cache of comment ids to exact comment time
 let commentIdToDate;
+
+// data from local storage
+// {
+//     "<post name>": {
+//         "lastViewedDate": "<date>",
+//         "seenComments": [<comment id>, ...],
+//     },
+//     ...
+// }
+let localStorageData;
+
+// a set of the seen comments, for optimized lookup
+let seenCommentsSet;
+
+// timer for writing new seen comments to local storage
+let localStorageTimer = null;
+
+// whether to keep reacting to changes
+let observeChanges = true;
 
 
 
@@ -46,11 +68,19 @@ function baseUrl() {
 }
 
 function getPageType() {
-    if (window.location.href.match(/astralcodexten.substack.com\/p\/[^/]+/)) {
+    if (window.location.pathname.match(/\/p\/[^/]+/)) {
         return PageTypeEnum.post;
     } else {
         return PageTypeEnum.main;
     }
+}
+
+function getPostName() {
+    let match = window.location.pathname.match(/\/p\/([^/]+)/);
+    if (match) {
+        return match[1];
+    }
+    return null;
 }
 
 function getLocalState(storageId) {
@@ -67,6 +97,18 @@ function getCommentId(comment) {
     return $(comment).children().first().attr("id");
 }
 
+function getCommentIdNumber(comment) {
+    let idString = getCommentId(comment);
+    let idRegexMatch = idString.match(/comment-(\d+)/);
+
+    if (!idRegexMatch) {
+        console.error(`Bad comment id found: ${idString}`);
+        return;
+    }
+
+    return parseInt(idRegexMatch[1]);
+}
+
 
 
 // Dealing with option changes
@@ -81,6 +123,14 @@ function hideHeartsOption(value) {
 
 function showFullDateOption(value) {
     $("#showFullDate-css").prop("disabled", !value);
+}
+
+function highlightNewOption(value) {
+    if (value) {
+        $(document.documentElement).addClass("highlight-new");
+    } else {
+        $(document.documentElement).removeClass("highlight-new");
+    }
 }
 
 function useOldStylingOption(value) {
@@ -134,6 +184,26 @@ function processStorageChange(changes, namespace) {
 
 
 
+// Dealing with saving to local storage
+
+// update the local storage with our cached version
+function saveLocalStorage() {
+    window.localStorage.setItem(LOCAL_DATA_KEY, JSON.stringify(localStorageData));
+    localStorageTimer = null;
+}
+
+// starts or resets a timer that saves any new local storage data when it expires
+// needed so that we don't have to save on every single comment load
+function startSaveTimer() {
+    if (localStorageTimer) {
+        clearTimeout(localStorageTimer);
+    }
+
+    localStorageTimer = setTimeout(saveLocalStorage, 500);
+}
+
+
+
 // Individual comment processing
 
 function getLocalDateString(date) {
@@ -165,15 +235,7 @@ function getLocalDateString(date) {
 }
 
 function addDateString(comment) {
-    let idString = getCommentId(comment);
-    let idRegexMatch = idString.match(/comment-(\d+)/);
-
-    if (!idRegexMatch) {
-        console.error(`Bad comment id found: ${idString}`);
-        return;
-    }
-
-    let id = idRegexMatch[1];
+    let commentId = getCommentIdNumber(comment);
     let dateSpan = $(comment).find("> .comment-content .comment-meta > span:nth-child(2)");
     let newDateDisplay = dateSpan.children(":first").clone();
     newDateDisplay.addClass("better-date");
@@ -182,10 +244,36 @@ function addDateString(comment) {
         dateSpan.append(newDateDisplay);
     }
 
-    if (id in commentIdToDate) {
-        let utcTime = commentIdToDate[id];
+    if (commentId in commentIdToDate) {
+        let utcTime = commentIdToDate[commentId];
         let date = new Date(utcTime);
         newDateDisplay.html(getLocalDateString(date));
+    }
+}
+
+function ensurePostEntry() {
+    let postName = getPostName();
+    if (!(postName in localStorageData)) {
+        localStorageData[postName] = {
+            "lastViewedDate": new Date().toISOString(),
+            "seenComments": [],
+        }
+    }
+}
+
+function addNewSeenComment(commentId) {
+    seenCommentsSet.add(commentId);
+    ensurePostEntry();
+    let postName = getPostName();
+    localStorageData[postName]["seenComments"].push(commentId);
+}
+
+function processSeenStatus(comment) {
+    let commentId = getCommentIdNumber(comment);
+    if (!seenCommentsSet.has(commentId)) {
+        addNewSeenComment(commentId);
+        startSaveTimer();
+        $(comment).find("> table.comment-content").addClass("new-comment");
     }
 }
 
@@ -223,6 +311,7 @@ function addCustomCollapser(collapser) {
 function processAllComments(node) {
     $(node).find("div.comment").addBack("div.comment").each(function() {
         addDateString(this);
+        processSeenStatus(this);
     });
 
     $(node).find(".comment-list-collapser").addBack(".comment-list-collapser").each(function() {
@@ -238,7 +327,16 @@ function processMainPage() {
     // nothing to do
 }
 
+function updatePostReadDate() {
+    let postName = getPostName();
+    ensurePostEntry(postName);
+    localStorageData[postName]["lastViewedDate"] = new Date().toISOString();
+    startSaveTimer();
+}
+
 async function processPostPage() {
+    updatePostReadDate();
+
     // oh god oh god
     setTimeout(function() {
         loadAllOption(optionShadow.loadAll);
@@ -259,12 +357,21 @@ function processNewPageType() {
 }
 
 function processMutation(mutation) {
+    if (!observeChanges) {
+        return;
+    }
+
     // is this a hack? even the wisest cannot tell
-    if (mutation.target.id === "main" || (mutation.target.classList.contains("single-post") && mutation.addedNodes[0].tagName.toLowerCase() === "article")) {
+    if (mutation.target.id === "main" ||
+            mutation.target.classList.contains("single-post") &&
+            mutation.addedNodes[0].tagName.toLowerCase() === "article") {
         // we switched to a different page with pushState
         if (optionShadow.dynamicLoad) {
             processNewPageType();
         } else {
+            // don't react to any more updates
+            observeChanges = false;
+
             // force refresh
             window.location.href = window.location.href;
         }
@@ -327,10 +434,22 @@ async function loadInitialOptionValues() {
     }
 }
 
+function loadLocalStorage() {
+    let dataString = window.localStorage.getItem(LOCAL_DATA_KEY);
+    if (!dataString) {
+        dataString = "{}";
+    }
+    localStorageData = JSON.parse(dataString);
+    let postName = getPostName();
+    seenCommentsSet = new Set(
+        localStorageData[postName] ? localStorageData[postName]["seenComments"] : []);
+}
+
 async function preloadSetup() {
     addStyles();
     await loadInitialOptionValues();
     webExtension.storage.onChanged.addListener(processStorageChange);
+    loadLocalStorage();
 }
 
 
@@ -404,7 +523,10 @@ function addDomObserver() {
 }
 
 async function setup() {
-    processPreloads();
+    if (getPageType() === PageTypeEnum.post) {
+        processPreloads();
+    }
+
     addDomObserver();
     processNewPageType();
 
@@ -420,5 +542,9 @@ async function setup() {
 
 // actually do the things
 
-preloadSetup();
-$(document).ready(setup);
+async function doAllSetup() {
+    await preloadSetup();
+    $(document).ready(setup);
+}
+
+doAllSetup();

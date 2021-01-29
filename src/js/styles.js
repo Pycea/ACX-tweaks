@@ -169,7 +169,7 @@ const STYLES = {
             background: #fafafa !important;
         }
 
-        table.comment-content.new-comment tr td {
+        .highlight-new table.comment-content.new-comment tr td:not(.comment-head) {
              border: 2px solid #5a5 !important;
         }
 
