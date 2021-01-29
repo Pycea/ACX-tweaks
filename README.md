@@ -13,10 +13,12 @@ Chrome doesn't allow automatically signed extensions, so you'll have to load it 
 
 ## Features
 - Adds a permalink button to comments
+- When collapsing a thread, scrolls to the parent comment
 - User configurable options
     - Keeps the header above the post, so it doesn't keep appearing whenever you scroll up a little.
     - Hides reactions (hearts). However, the note that the author liked a given comment is not removed.
     - Shows the full time that a comment was posted, instead of just the day.
+    - Highlights comments that you haven't seen yet
     - Makes the blog look more like the old blog, [Slate Star Codex](https://web.archive.org/web/20200601140029/https://slatestarcodex.com/).
     - Loads all comments at once, instead of having to keep clicking the "Load more" button.
     - Hides the notification that there are new comments.
@@ -35,6 +37,9 @@ If you have dynamic page loading enabled, then navigating to another post will b
 ### Only two comments are loaded, with a button that says "4753 new"
 This is an issue with Substack. Enabling the load all comments option can fix it, at the cost of loading all the comments.
 
+### Everything is broken
+Try refreshing the page. If that doesn't work, click on the extension icon and click on "Reset all data", then click again to confirm. Note that this will reset all data on what comments you have seen, so everything will appear new even if you have seen it before.
+
 ## Permissions explanation
-### [Access your data for astralcodexten.substack.com](https://support.mozilla.org/en-US/kb/permission-request-messages-firefox-extensions#w_access-your-data-for-named-site)
+### (Firefox) [Access your data for astralcodexten.substack.com](https://support.mozilla.org/en-US/kb/permission-request-messages-firefox-extensions#w_access-your-data-for-named-site)
 This is needed to change the look of the site, which is what pretty much all of the options do. This includes adding permalinks, imitating the old theme, and removing the hearts.
