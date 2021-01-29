@@ -19,7 +19,7 @@ const OPTIONS = {
     },
     "highlightNew": {
         "priority": 30,
-        "default": false,
+        "default": true,
         "runTime": "start",
         "hovertext": "Highlight comments that you haven't seen yet",
     },
