@@ -21,6 +21,7 @@ OPTIONS.useOldStyling.toggleFunc = useOldStylingOption;
 OPTIONS.loadAll.toggleFunc = loadAllOption;
 OPTIONS.hideNew.toggleFunc = hideNewOption;
 OPTIONS.dynamicLoad.toggleFunc = dynamicLoadOption;
+OPTIONS.resetData.toggleFunc = resetDataOption;
 
 const PageTypeEnum = Object.freeze({
     "main": "main",
@@ -160,6 +161,19 @@ function hideNewOption(value) {
 
 function dynamicLoadOption(value) {
     // nothing to do, value is read from options shadow where needed
+}
+
+function resetDataOption(value) {
+    if (value) {
+        // clear site local storage
+        window.localStorage.clear();
+        loadLocalStorage();
+
+        // reset options to defaults
+        for (let key in OPTIONS) {
+            webExtension.storage.local.set({[key]: OPTIONS[key].default});
+        }
+    }
 }
 
 // calls the appropriate option handling function for a given option value
@@ -425,6 +439,8 @@ async function loadInitialOptionValues() {
             $(document).ready(function() {
                 doOptionChange(key, value);
             });
+        } else if (OPTIONS[key].runTime === "never") {
+            // do nothing
         } else {
             console.error("Bad run time found: " + OPTIONS[key].runTime);
         }
@@ -536,6 +552,8 @@ async function setup() {
         let id = getCommentId(comment);
         window.location.hash = id;
     });
+
+
 }
 
 

@@ -12,15 +12,38 @@
             white-space: nowrap;
         }
 
-        label {
+        label, button {
             user-select: none;
             display: inline-block;
             vertical-align: middle;
             margin-right: 4px;
+            cursor: pointer;
         }
 
         input {
             vertical-align: middle;
+            cursor: pointer;
+        }
+
+        button {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: #fff;
+            border: 1px solid transparent;
+            border-radius: 3px;
+            padding: 4px 8px;
+            margin-left: 22px;
+            outline: none;
+            transition: background-color .15s ease-in-out, border-color .15s ease-in-out
+        }
+
+        button:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+
+        .spacer {
+            height: 10px;
         }
 
         #hideNew {
@@ -71,6 +94,8 @@
         <div><input type="checkbox" id="loadAll"><label for="loadAll">Load all comments</label></div>
         <div><input type="checkbox" id="hideNew"><label for="hideNew">Hide new comments</label></div>
         <div><input type="checkbox" id="dynamicLoad"><label for="dynamicLoad">Load new pages dynamically</label></div>
+        <div class="spacer"></div>
+        <div><button type="button" id="resetData">Reset all data</button></div>
     </div>
 </body>
 </html>

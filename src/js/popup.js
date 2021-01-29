@@ -61,6 +61,29 @@ async function setInitialState(id) {
     $(`#${id}`).prop("checked", checkmarkValue);
 }
 
+function createResetHandler(buttonId) {
+    // on the first click, verify intension
+    function firstClick(button) {
+        let width = button.getBoundingClientRect().width;
+        $(button).addClass("verify").html("Are you sure?").css("width", width);
+    }
+
+    // on the second click, clear the data
+    function secondClick(button) {
+        $(button).removeClass("verify").html("Reset all data");
+        webExtension.storage.local.set({[buttonId]: true});
+        window.close();
+    }
+
+    $(`#${buttonId}`).click(function() {
+        if ($(this).hasClass("verify")) {
+            secondClick(this);
+        } else {
+            firstClick(this);
+        }
+    });
+}
+
 function addDependencies() {
     $("#loadAll").change(function() {
         if (!this.checked) {
@@ -75,6 +98,14 @@ function addDependencies() {
     }
 }
 
+// make sure the reset option isn't stuck on, otherwise resetting is impossible
+async function resetDataFailsafe() {
+    let resetDataOption = await getLocalState("resetData");
+    if (resetDataOption["resetData"]) {
+        webExtension.storage.local.set({["resetData"]: false});
+    }
+}
+
 window.onload = async function() {
     for (let id in OPTIONS) {
         addHovertext(id);
@@ -82,5 +113,7 @@ window.onload = async function() {
         await setInitialState(id);
     };
 
+    createResetHandler("resetData");
     addDependencies();
+    resetDataFailsafe();
 }
