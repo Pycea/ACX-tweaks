@@ -37,6 +37,10 @@ const STYLES = {
     "useOldStyling": `
         /* I am so sorry */
 
+        #entry #main {
+            -webkit-font-smoothing: auto !important;
+        }
+
         article div p {
             color: #333 !important;
             font: 12px/20px Verdana, sans-serif !important;
@@ -209,7 +213,6 @@ const STYLES = {
 
         .comment-meta span:nth-child(2) a {
             font-family: Georgia, "Bitstream Charter", serif !important;
-            -webkit-font-smoothing: auto !important;
             color: #888 !important;
             text-decoration: none !important;
         }
@@ -225,7 +228,6 @@ const STYLES = {
 
         .comment-body p {
             font: 12px/20px Verdana, sans-serif !important;
-            -webkit-font-smoothing: auto !important;
             color: #333 !important;
         }
 
