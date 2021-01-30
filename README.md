@@ -6,7 +6,7 @@ The extension should work with Firefox and Chrome. Other browsers that use the W
 
 ## Loading instructions
 ### Firefox
-Under [releases](https://github.com/Pycea/ACX-tweaks/releases), download the latest .xpi file (named something like `acx_tweaks-0.3-fx.xpi`). Go to the extensions page (can be accessed at `about:addons`). Then just drag the file to the window and you'll be prompted to add it.
+Under [releases](https://github.com/Pycea/ACX-tweaks/releases), download the latest .xpi file (named something like `acx_tweaks-0.3-fx.xpi`). Then just drag the file to any Firefix window and you'll be prompted to add it.
 
 ### Chrome/Chromium
 Chrome doesn't allow automatically signed extensions, so you'll have to load it as an unpacked extension. Under [releases](https://github.com/Pycea/ACX-tweaks/releases), download the latest `chrome_src.zip` file, and unzip it. You'll end up with a folder called `src`. Then, go to the extensions page (can be accessed at `chrome://extensions`). In the upper right, there should be a toggle labeled "Developer mode". Turn it on, and some buttons will appear on the upper left. Click "Load unpacked", and select the `src` folder. The extension will then be loaded.
