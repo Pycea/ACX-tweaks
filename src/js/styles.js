@@ -173,6 +173,10 @@ const STYLES = {
              border: 2px solid #5a5 !important;
         }
 
+        .highlight-new table.comment-content.new-comment tr td .comment-meta span:nth-child(2) a:after {
+            color: #c5c5c5 !important;
+        }
+
         table.comment-content tr td.comment-head {
             border: none !important;
             flex-grow: 0 !important;

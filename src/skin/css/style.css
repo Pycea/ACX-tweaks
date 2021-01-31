@@ -20,5 +20,5 @@
 
 .highlight-new table.comment-content.new-comment tr td .comment-meta span:nth-child(2) a:after {
     content: " ~new~";
-    color: #c5c5c5;
+    color: #d35400;
 }

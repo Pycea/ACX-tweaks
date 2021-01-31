@@ -63,6 +63,29 @@ let observeChanges = true;
 
 // Utilities
 
+function getUrl(url, data={}) {
+    let getPromise = new Promise(function(resolve, reject) {
+        $.get(url, data, function(items) {
+            resolve(items);
+        });
+    });
+    return getPromise;
+}
+
+async function getPostData() {
+    let url = `https://astralcodexten.substack.com/api/v1/posts/${getPostName()}`;
+    let data = await getUrl(url);
+    return JSON.parse(data);
+}
+
+async function getPostComments() {
+    let postData = await getPostData();
+    let postId = postData.id;
+    let url = `https://astralcodexten.substack.com/api/v1/post/${postId}/comments?token=&all_comments=true`;
+    let data = await getUrl(url);
+    return JSON.parse(data).comments;
+}
+
 // the URL of the page without any hashes or params
 function baseUrl() {
     return window.location.origin + window.location.pathname;
