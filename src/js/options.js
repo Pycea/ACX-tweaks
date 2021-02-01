@@ -27,6 +27,13 @@ const OPTIONS = {
         "runTime": "start",
         "hovertext": "Highlight comments that you haven't seen yet",
     },
+    "addParentLinks": {
+        "default": true,
+        "type": "toggle",
+        "priority": 30,
+        "runTime": "start",
+        "hovertext": "Add links to scroll to the parent comment, or the top of the comments page for top level comments",
+    },
     "useOldStyling": {
         "default": false,
         "type": "toggle",

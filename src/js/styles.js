@@ -34,6 +34,11 @@ const STYLES = {
             display: inline !important;
         }
         `,
+    "addParentLinks": `
+        .comment-actions > span:nth-child(2):after {
+            display: none !important;
+        }
+        `,
     "useOldStyling": `
         /* I am so sorry */
 

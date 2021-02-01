@@ -17,6 +17,7 @@ OPTIONS.fixHeader.toggleFunc = fixHeaderOption;
 OPTIONS.hideHearts.toggleFunc = hideHeartsOption;
 OPTIONS.showFullDate.toggleFunc = showFullDateOption;
 OPTIONS.highlightNew.toggleFunc = highlightNewOption;
+OPTIONS.addParentLinks.toggleFunc = addParentLinksOption;
 OPTIONS.useOldStyling.toggleFunc = useOldStylingOption;
 OPTIONS.loadAll.toggleFunc = loadAllOption;
 OPTIONS.hideNew.toggleFunc = hideNewOption;
@@ -155,6 +156,10 @@ function highlightNewOption(value) {
     } else {
         $(document.documentElement).removeClass("highlight-new");
     }
+}
+
+function addParentLinksOption(value) {
+    $("#addParentLinks-css").prop("disabled", value);
 }
 
 function useOldStylingOption(value) {
@@ -575,8 +580,17 @@ async function setup() {
     // clicking on fake css permalink link
     $("#entry").on("click", ".comment-actions > span:nth-child(2)", function() {
         let comment = $(this).closest(".comment");
-        let id = getCommentId(comment);
-        window.location.hash = id;
+        let parentComment = $(comment).parent().closest(".comment");
+        let scrollElement;
+        if (parentComment.length === 0) {
+            // already at top level comment
+            scrollElement = $(".comments-page");
+        } else {
+            scrollElement = parentComment.find("> .comment-content");
+        }
+        let rect = scrollElement[0].getBoundingClientRect();
+        let anchor = scrollElement.children().first();
+        anchor[0].scrollIntoView({ "behavior": "smooth" });
     });
 
 
