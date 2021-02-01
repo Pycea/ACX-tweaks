@@ -577,15 +577,8 @@ function addDomObserver() {
     observer.observe(container, {childList: true, subtree: true});
 }
 
-async function setup() {
-    if (getPageType() === PageTypeEnum.post) {
-        processPreloads();
-    }
-
-    addDomObserver();
-    processNewPageType();
-
-    // clicking on fake css permalink link
+// add reaction to clicking on parent comment link
+function addParentClickListener() {
     $("#entry").on("click", ".comment-actions > span:nth-child(2)", function() {
         let comment = $(this).closest(".comment");
         let parentComment = $(comment).parent().closest(".comment");
@@ -594,14 +587,20 @@ async function setup() {
             // already at top level comment
             scrollElement = $(".comments-page");
         } else {
-            scrollElement = parentComment.find("> .comment-content");
+            scrollElement = parentComment.find("> .comment-anchor:first-child");
         }
-        let rect = scrollElement[0].getBoundingClientRect();
-        let anchor = scrollElement.children().first();
-        anchor[0].scrollIntoView({ "behavior": "smooth" });
+        scrollElement[0].scrollIntoView({ "behavior": "smooth" });
     });
+}
 
+async function setup() {
+    if (getPageType() === PageTypeEnum.post) {
+        processPreloads();
+    }
 
+    addDomObserver();
+    processNewPageType();
+    addParentClickListener();
 }
 
 
