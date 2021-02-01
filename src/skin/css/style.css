@@ -22,6 +22,16 @@
     display: none;
 }
 
+/* Hide 24 hour time */
+
+.hour24-time {
+    display: none;
+}
+
+.hour12-time {
+    display: inline;
+}
+
 
 /* Highlight for new comments */
 

@@ -96,6 +96,18 @@ function addDependencies() {
     if (!($("#loadAll").prop("checked"))) {
         $("#hideNew").prop("disabled", true);
     }
+
+    $("#showFullDate").change(function() {
+        if (!this.checked) {
+            $("#use24Hour").prop("checked", false).prop("disabled", true).trigger("change");
+        } else {
+            $("#use24Hour").prop("disabled", false);
+        }
+    });
+
+    if (!($("#showFullDate").prop("checked"))) {
+        $("#use24Hour").prop("disabled", true);
+    }
 }
 
 // make sure the reset option isn't stuck on, otherwise resetting is impossible

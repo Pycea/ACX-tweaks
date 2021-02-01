@@ -20,6 +20,13 @@ const OPTIONS = {
         "runTime": "start",
         "hovertext": "Show the full date and time when a comment was posted",
     },
+    "use24Hour": {
+        "default": false,
+        "type": "toggle",
+        "priority": 30,
+        "runTime": "start",
+        "hovertext": "Use 24 hour time for the full date",
+    },
     "highlightNew": {
         "default": true,
         "type": "toggle",

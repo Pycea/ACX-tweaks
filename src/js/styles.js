@@ -30,8 +30,18 @@ const STYLES = {
         .comment-meta span:nth-child(2) a:first-child {
             display: none !important;
         }
+
         .comment-meta span:nth-child(2) a:nth-child(2) {
             display: inline !important;
+        }
+        `,
+    "use24Hour": `
+        .hour24-time {
+            display: inline !important;
+        }
+
+        .hour12-time {
+            display: none !important;
         }
         `,
     "addParentLinks": `
@@ -201,32 +211,32 @@ const STYLES = {
             padding-top: 10px !important;
         }
 
-        .comment-meta span:first-child a {
+        .comment-meta > span:first-child a {
             font-family: Verdana, sans-serif !important;
             font-weight: bold !important;
             color: black !important;
             text-decoration: none !important;
         }
 
-        .comment-meta span:first-child  a:after {
+        .comment-meta > span:first-child  a:after {
             content: " says:" !important;
             font-weight: normal;
             font-style: italic;
         }
 
-        .comment-meta span:nth-child(2) {
+        .comment-meta > span:nth-child(2) {
             display: block !important;
             padding-bottom: 10px !important;
             margin-left: 0 !important;
         }
 
-        .comment-meta span:nth-child(2) a {
+        .comment-meta > span:nth-child(2) a {
             font-family: Georgia, "Bitstream Charter", serif !important;
             color: #888 !important;
             text-decoration: none !important;
         }
 
-        .comment-meta span:nth-child(2) a:before {
+        .comment-meta > span:nth-child(2) a:before {
             content: "\\a" !important;
             white-space: pre !important;
         }

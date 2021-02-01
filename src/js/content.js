@@ -16,6 +16,7 @@ if (typeof browser !== "undefined") {
 OPTIONS.fixHeader.toggleFunc = fixHeaderOption;
 OPTIONS.hideHearts.toggleFunc = hideHeartsOption;
 OPTIONS.showFullDate.toggleFunc = showFullDateOption;
+OPTIONS.use24Hour.toggleFunc = use24HourOption;
 OPTIONS.highlightNew.toggleFunc = highlightNewOption;
 OPTIONS.addParentLinks.toggleFunc = addParentLinksOption;
 OPTIONS.useOldStyling.toggleFunc = useOldStylingOption;
@@ -150,6 +151,10 @@ function showFullDateOption(value) {
     $("#showFullDate-css").prop("disabled", !value);
 }
 
+function use24HourOption(value) {
+    $("#use24Hour-css").prop("disabled", !value);
+}
+
 function highlightNewOption(value) {
     if (value) {
         $(document.documentElement).addClass("highlight-new");
@@ -271,9 +276,12 @@ function getLocalDateString(date) {
     let minute = date.getMinutes().toString().padStart(2, "0");
 
     let amPm = hour <= 11 ? "am" : "pm";
-    hour = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
+    let hour12 = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
 
-    return `${month} ${day}, ${year} at ${hour}:${minute} ${amPm}`;
+    let hour12Html = `<span class="hour12-time">${hour12}:${minute} ${amPm}</span>`;
+    let hour24Html = `<span class="hour24-time">${hour}:${minute}</span>`;
+
+    return `${month} ${day}, ${year} at ${hour12Html}${hour24Html}`;
 }
 
 function addDateString(comment) {
