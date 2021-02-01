@@ -12,12 +12,12 @@ Under [releases](https://github.com/Pycea/ACX-tweaks/releases), download the lat
 Chrome doesn't allow automatically signed extensions, so you'll have to load it as an unpacked extension. Under [releases](https://github.com/Pycea/ACX-tweaks/releases), download the latest `chrome_src.zip` file, and unzip it. You'll end up with a folder called `src`. Then, go to the extensions page (can be accessed at `chrome://extensions`). In the upper right, there should be a toggle labeled "Developer mode". Turn it on, and some buttons will appear on the upper left. Click "Load unpacked", and select the `src` folder. The extension will then be loaded.
 
 ## Features
-- Adds a permalink button to comments
 - When collapsing a thread, scrolls to the parent comment
 - User configurable options
     - Keeps the header above the post, so it doesn't keep appearing whenever you scroll up a little.
     - Hides reactions (hearts). However, the note that the author liked a given comment is not removed.
     - Shows the full time that a comment was posted, instead of just the day.
+    - Adds a button to scroll to the parent comment, or the top of the comment section for top level comments
     - Highlights comments that you haven't seen yet
     - Makes the blog look more like the old blog, [Slate Star Codex](https://web.archive.org/web/20200601140029/https://slatestarcodex.com/).
     - Loads all comments at once, instead of having to keep clicking the "Load more" button.
