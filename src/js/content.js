@@ -310,7 +310,10 @@ function processSeenStatus(comment) {
     if (!seenCommentsSet.has(commentId)) {
         addNewSeenComment(commentId);
         startSaveTimer();
-        $(comment).find("> table.comment-content").addClass("new-comment");
+        $(comment).find("> .comment-content").addClass("new-comment");
+        let dateSpan = $(comment).find("> .comment-content .comment-meta > span:nth-child(2)");
+        let newTag = ("<span class='new-tag'> ~new~</span>");
+        dateSpan.append(newTag);
     }
 }
 

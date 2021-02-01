@@ -18,7 +18,6 @@
 
 /* Highlight for new comments */
 
-.highlight-new table.comment-content.new-comment tr td .comment-meta span:nth-child(2) a:after {
-    content: " ~new~";
+.new-tag {
     color: #d35400;
 }
