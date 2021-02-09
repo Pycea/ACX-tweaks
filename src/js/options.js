@@ -41,6 +41,13 @@ const OPTIONS = {
         "runTime": "start",
         "hovertext": "Add links to scroll to the parent comment, or the top of the comments page for top level comments",
     },
+    "applyCommentStyling": {
+        "default": true,
+        "type": "toggle",
+        "priority": 30,
+        "runTime": "start",
+        "hovertext": "Apply basic styling to comments (italics and block quotes)",
+    },
     "useOldStyling": {
         "default": false,
         "type": "toggle",

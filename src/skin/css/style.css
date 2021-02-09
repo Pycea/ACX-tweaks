@@ -32,9 +32,14 @@
     display: inline;
 }
 
-
 /* Highlight for new comments */
 
 .new-tag {
     color: #d35400;
+}
+
+/* Hide new comment styling if not using comment styling option */
+
+.comment-body .new-style {
+    display: none;
 }

@@ -49,6 +49,15 @@ const STYLES = {
             display: none !important;
         }
         `,
+    "applyCommentStyling": `
+        .comment-body span.new-style {
+            display: inline !important;
+        }
+
+        .comment-body span:not(.new-style) {
+            display: none !important;
+        }
+        `,
     "useOldStyling": `
         /* I am so sorry */
 

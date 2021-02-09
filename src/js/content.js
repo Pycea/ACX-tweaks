@@ -19,6 +19,7 @@ OPTIONS.showFullDate.toggleFunc = showFullDateOption;
 OPTIONS.use24Hour.toggleFunc = use24HourOption;
 OPTIONS.highlightNew.toggleFunc = highlightNewOption;
 OPTIONS.addParentLinks.toggleFunc = addParentLinksOption;
+OPTIONS.applyCommentStyling.toggleFunc = applyCommentStylingOption;
 OPTIONS.useOldStyling.toggleFunc = useOldStylingOption;
 OPTIONS.loadAll.toggleFunc = loadAllOption;
 OPTIONS.hideNew.toggleFunc = hideNewOption;
@@ -165,6 +166,10 @@ function highlightNewOption(value) {
 
 function addParentLinksOption(value) {
     $("#addParentLinks-css").prop("disabled", value);
+}
+
+function applyCommentStylingOption(value) {
+    $("#applyCommentStyling-css").prop("disabled", !value);
 }
 
 function useOldStylingOption(value) {
@@ -330,6 +335,27 @@ function processSeenStatus(comment) {
     }
 }
 
+function processCommentParagraph(innerHtml) {
+    let italicRegex = /(^|\s|\(|\[|\{|\*)\*((?=[^*\s]).*?(?<=[^*\s]))\*/g;
+    let blockQuoteRegex = /^(>|&gt;) ?(.*)$/;
+    let linkRegex = /\[(.+?)\]\((.+?)\)/;
+
+    let newHtml = innerHtml;
+    newHtml = newHtml.replace(italicRegex, "$1<i>$2</i>");
+    newHtml = newHtml.replace(blockQuoteRegex, "<blockquote><p>$2</p></blockquote>")
+
+    return newHtml;
+}
+
+function processCommentContent(comment) {
+    let commentBody = $(comment).find("> .comment-content .comment-body");
+    $(commentBody).find("p span").each(function() {
+        let newText = processCommentParagraph($(this).html());
+        let newSpan = `<span class="new-style">${newText}</span>`;
+        $(this).parent().append(newSpan);
+    });
+}
+
 function addCustomCollapser(collapser) {
     collapser = $(collapser);
     if (collapser.hasClass("custom-collapser")) {
@@ -365,6 +391,7 @@ function processAllComments(node) {
     $(node).find("div.comment").addBack("div.comment").each(function() {
         addDateString(this);
         processSeenStatus(this);
+        processCommentContent(this);
     });
 
     $(node).find(".comment-list-collapser").addBack(".comment-list-collapser").each(function() {
