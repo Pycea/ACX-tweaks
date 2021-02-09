@@ -370,7 +370,8 @@ function processCommentContent(comment) {
 
 function addCustomCollapser(collapser) {
     collapser = $(collapser);
-    if (collapser.siblings(".custom-collapser").length !== 0) {
+
+    if (collapser.parent().children(".custom-collapser").length > 0) {
         return;
     }
 
@@ -401,8 +402,12 @@ function addCustomCollapser(collapser) {
 // processes to apply to all comments and children in a given dom element
 function processAllComments(node) {
     $(node).find("div.comment").addBack("div.comment").each(function() {
-        addDateString(this);
+        if (optionShadow.showFullDate) {
+            addDateString(this);
+        }
+
         processSeenStatus(this);
+
         if (optionShadow.applyCommentStyling) {
             processCommentContent(this);
         }
@@ -455,6 +460,16 @@ function processMutation(mutation) {
         return;
     }
 
+    function nodeHasClass(node, classList) {
+        for (let c of classList) {
+            if (node.classList.contains(c)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     // is this a hack? even the wisest cannot tell
     if (mutation.target.id === "main" ||
             mutation.target.classList.contains("single-post") &&
@@ -469,13 +484,18 @@ function processMutation(mutation) {
             // force refresh
             window.location.href = window.location.href;
         }
-    } else {
+    } else if (nodeHasClass(mutation.target, ["comment", "comment-list", "comment-list-items"])) {
         // check for comments
         if (commentIdToDate) {
             for (let i = 0; i < mutation.addedNodes.length; i++) {
-                processAllComments(mutation.addedNodes[i]);
+                let node = mutation.addedNodes[i];
+                if (nodeHasClass(node, ["comment", "comment-list", "comment-list-items", "comment-list-collapser"])) {
+                    processAllComments(node);
+                }
             }
         }
+    } else {
+        // no nothing
     }
 }
 

@@ -20,7 +20,7 @@ const OPTIONS = {
         "type": "toggle",
         "priority": 30,
         "runTime": "start",
-        "reprocessCommentsOnChange": false,
+        "reprocessCommentsOnChange": true,
         "hovertext": "Show the full date and time when a comment was posted",
     },
     "use24Hour": {
@@ -44,7 +44,7 @@ const OPTIONS = {
         "type": "toggle",
         "priority": 30,
         "runTime": "start",
-        "reprocessCommentsOnChange": false,
+        "reprocessCommentsOnChange": true,
         "hovertext": "Add links to scroll to the parent comment, or the top of the comments page for top level comments",
     },
     "applyCommentStyling": {
