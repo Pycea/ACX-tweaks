@@ -215,9 +215,12 @@ function resetDataOption(value) {
 }
 
 // calls the appropriate option handling function for a given option value
-function doOptionChange(key, value) {
+function doOptionChange(key, value, docReady=false) {
     if (key in OPTIONS && OPTIONS[key].toggleFunc) {
         OPTIONS[key].toggleFunc(value);
+        if (OPTIONS[key].reprocessCommentsOnChange && docReady) {
+            processAllComments($("#main"));
+        }
     }
 }
 
@@ -226,10 +229,10 @@ function doOptionChange(key, value) {
 function processStorageChange(changes, namespace) {
     if (namespace === "local") {
         for (let key in changes) {
-            doOptionChange(key, changes[key].newValue);
-
             // update option shadow
             optionShadow[key] = changes[key].newValue;
+
+            doOptionChange(key, changes[key].newValue, true);
         }
     }
 }
@@ -292,13 +295,17 @@ function getLocalDateString(date) {
 function addDateString(comment) {
     let commentId = getCommentIdNumber(comment);
     let dateSpan = $(comment).find("> .comment-content .comment-meta > span:nth-child(2)");
-    let newDateDisplay = dateSpan.children(":first").clone();
-    newDateDisplay.addClass("better-date");
 
-    if (dateSpan.find(".better-date").length === 0) {
-        dateSpan.append(newDateDisplay);
+    // don't add if the new date element already exists
+    if (dateSpan.find(".better-date").length !== 0) {
+        return;
     }
 
+    let newDateDisplay = dateSpan.children(":first").clone();
+    newDateDisplay.addClass("better-date");
+    dateSpan.append(newDateDisplay);
+
+    newDateDisplay.html("<unknown post time>");
     if (commentId in commentIdToDate) {
         let utcTime = commentIdToDate[commentId];
         let date = new Date(utcTime);
@@ -352,15 +359,18 @@ function processCommentParagraph(innerHtml) {
 function processCommentContent(comment) {
     let commentBody = $(comment).find("> .comment-content .comment-body");
     $(commentBody).find("p span").each(function() {
-        let newText = processCommentParagraph($(this).html());
-        let newSpan = `<span class="new-style">${newText}</span>`;
-        $(this).parent().append(newSpan);
+        // only process the text once
+        if ($(this).siblings().length === 0) {
+            let newText = processCommentParagraph($(this).html());
+            let newSpan = `<span class="new-style">${newText}</span>`;
+            $(this).parent().append(newSpan);
+        }
     });
 }
 
 function addCustomCollapser(collapser) {
     collapser = $(collapser);
-    if (collapser.hasClass("custom-collapser")) {
+    if (collapser.siblings(".custom-collapser").length !== 0) {
         return;
     }
 
@@ -393,7 +403,9 @@ function processAllComments(node) {
     $(node).find("div.comment").addBack("div.comment").each(function() {
         addDateString(this);
         processSeenStatus(this);
-        processCommentContent(this);
+        if (optionShadow.applyCommentStyling) {
+            processCommentContent(this);
+        }
     });
 
     $(node).find(".comment-list-collapser").addBack(".comment-list-collapser").each(function() {
