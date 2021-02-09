@@ -43,3 +43,14 @@
 .comment-body .new-style {
     display: none;
 }
+
+/* Comment blockquote style */
+
+.comments-page blockquote {
+    margin: 0 2em;
+    padding: 0 1em;
+}
+
+blockquote blockquote {
+    margin: 0 0 !important;
+}

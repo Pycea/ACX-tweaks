@@ -344,13 +344,22 @@ function processSeenStatus(comment) {
 
 function processCommentParagraph(innerHtml) {
     let italicRegex = /(^|\s|\(|\[|\{|\*)\*((?=[^*\s]).*?(?<=[^*\s]))\*/g;
-    let blockQuoteRegex = /^(>|&gt;) ?(.*)$/;
+    let blockQuoteRegex = /^(>|&gt;)\s*(.*)$/;
     // yes I'm parsing html with a regex. deal with it
-    let linkRegex = /\[(.+?)\]\(<a href="(.*?)".*?<\/a>\)/;
+    let linkRegex = /\[(.+?)\]\(<a href="(.*?)".*?<\/a>\)/g;
+
+    function processBlockquotes(text) {
+        let reMatch = text.match(blockQuoteRegex);
+        if (reMatch) {
+            return `<blockquote>${processBlockquotes(reMatch[2])}</blockquote>`;
+        } else {
+            return text;
+        }
+    }
 
     let newHtml = innerHtml;
     newHtml = newHtml.replace(italicRegex, "$1<i>$2</i>");
-    newHtml = newHtml.replace(blockQuoteRegex, "<blockquote>$2</blockquote>")
+    newHtml = processBlockquotes(newHtml);
     newHtml = newHtml.replace(linkRegex, `<a href="$2" target="_blank" rel="noreferrer noopener">$1</a>`);
 
     return newHtml;
@@ -697,6 +706,7 @@ function testCommentStyling() {
         let testCases = {
             "*test*": "<i>test</i>",
             "**test**": "*<i>test</i>*",
+            "*two* at *once*": "<i>two</i> at <i>once</i>",
             "******": "******",
             "**": "**",
             "*test many words*": "<i>test many words</i>",
@@ -726,6 +736,7 @@ function testCommentStyling() {
             "Not a > case": "Not a > case",
             "&gt; Basic case": "<blockquote>Basic case</blockquote>",
             "&gt;No space": "<blockquote>No space</blockquote>",
+            "&gt;   &gt;  Nested": "<blockquote><blockquote>Nested</blockquote></blockquote>",
             "Not a &gt; case": "Not a &gt; case",
         };
 
@@ -738,11 +749,18 @@ function testCommentStyling() {
 
     function testLink() {
         let testCases = {
-            '[Basic link](<a href="test.com" class="linkified" target="_blank" rel="nofollow ugc noopener">test.com</a>)': '<a href="test.com" target="_blank" rel="noreferrer noopener">Basic link</a>',
-            'some text [Basic link](<a href="test.com" class="linkified" target="_blank" rel="nofollow ugc noopener">test.com</a>) after': 'some text <a href="test.com" target="_blank" rel="noreferrer noopener">Basic link</a> after',
-            '[Full url](<a href="https://www.test.com" class="linkified" target="_blank" rel="nofollow ugc noopener">https://www.test.com</a>)': '<a href="https://www.test.com" target="_blank" rel="noreferrer noopener">Full url</a>',
-            '[Wî()rd ch[cter{}s&gt;](<a href="https://www.test.com" class="linkified" target="_blank" rel="nofollow ugc noopener">https://www.test.com</a>)': '<a href="https://www.test.com" target="_blank" rel="noreferrer noopener">Wî()rd ch[cter{}s&gt;</a>',
-            '(Bad format)[<a href="https://www.test.com" class="linkified" target="_blank" rel="nofollow ugc noopener">test.com</a>]': '(Bad format)[<a href="https://www.test.com" class="linkified" target="_blank" rel="nofollow ugc noopener">test.com</a>]',
+            '[Basic link](<a href="test.com" class="linkified" target="_blank" rel="nofollow ugc noopener">test.com</a>)':
+                '<a href="test.com" target="_blank" rel="noreferrer noopener">Basic link</a>',
+            'some text [Basic link](<a href="test.com" class="linkified" target="_blank" rel="nofollow ugc noopener">test.com</a>) after':
+                'some text <a href="test.com" target="_blank" rel="noreferrer noopener">Basic link</a> after',
+            'two [links](<a href="test.com" class="linkified" target="_?">test.com</a>) at [once](<a href="example.com" class="linkified" target="_blank" >test.com</a>)':
+                'two <a href="test.com" target="_blank" rel="noreferrer noopener">links</a> at <a href="example.com" target="_blank" rel="noreferrer noopener">once</a>',
+            '[Full url](<a href="https://www.test.com" class="linkified" target="_blank" rel="nofollow ugc noopener">https://www.test.com</a>)':
+                '<a href="https://www.test.com" target="_blank" rel="noreferrer noopener">Full url</a>',
+            '[Wî()rd ch[cter{}s&gt;](<a href="https://www.test.com" class="linkified" target="_blank" rel="nofollow ugc noopener">https://www.test.com</a>)':
+                '<a href="https://www.test.com" target="_blank" rel="noreferrer noopener">Wî()rd ch[cter{}s&gt;</a>',
+            '(Bad format)[<a href="https://www.test.com" class="linkified" target="_blank" rel="nofollow ugc noopener">test.com</a>]':
+                '(Bad format)[<a href="https://www.test.com" class="linkified" target="_blank" rel="nofollow ugc noopener">test.com</a>]',
             '[just brackets]': '[just brackets]',
             '[just parens]': '[just parens]',
         };
