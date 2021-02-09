@@ -56,7 +56,7 @@ const STYLES = {
             -webkit-font-smoothing: auto !important;
         }
 
-        article div p {
+        article div > p {
             color: #333 !important;
             font: 12px/20px Verdana, sans-serif !important;
         }
@@ -111,6 +111,21 @@ const STYLES = {
 
         .post {
             padding: 0 !important;
+        }
+
+        blockquote {
+            border-left: 4px solid #ddd !important;
+            margin: 0 2em !important;
+            padding: 0 1em !important;
+        }
+
+        blockquote p {
+            margin-left: 0 !important;
+            font-family: Georgia, "Bitstream Charter", serif !important;
+            font-style: italic !important;
+            font-size: 13px !important;
+            line-height: 24px !important;
+            color: #333 !important;
         }
 
         .subtitle {
