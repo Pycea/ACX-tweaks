@@ -683,11 +683,11 @@ let logTesting = false;
 
 function assertEqual(expected, actual) {
     if (logTesting) {
-        console.log(`${arguments.callee.caller.name}(): expected "${expected}", got "${actual}`);
+        console.log(`expected "${expected}", got "${actual}`);
     }
 
     if (expected !== actual) {
-        console.error(`In function ${arguments.callee.caller.name}(): expected "${expected}", got "${actual}"`);
+        console.error(`expected "${expected}", got "${actual}"`);
         console.trace();
     }
 }
