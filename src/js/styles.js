@@ -219,7 +219,7 @@ const STYLES = {
         table.comment-content tr td.comment-head {
             border: none !important;
             flex-grow: 0 !important;
-            background: white !important;
+            background: none !important;
         }
 
         table tr {
