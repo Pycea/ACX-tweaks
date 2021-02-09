@@ -338,11 +338,13 @@ function processSeenStatus(comment) {
 function processCommentParagraph(innerHtml) {
     let italicRegex = /(^|\s|\(|\[|\{|\*)\*((?=[^*\s]).*?(?<=[^*\s]))\*/g;
     let blockQuoteRegex = /^(>|&gt;) ?(.*)$/;
-    let linkRegex = /\[(.+?)\]\((.+?)\)/;
+    // yes I'm parsing html with a regex. deal with it
+    let linkRegex = /\[(.+?)\]\(<a href=.*?>(.*?)<\/a>\)/;
 
     let newHtml = innerHtml;
     newHtml = newHtml.replace(italicRegex, "$1<i>$2</i>");
-    newHtml = newHtml.replace(blockQuoteRegex, "<blockquote><p>$2</p></blockquote>")
+    newHtml = newHtml.replace(blockQuoteRegex, "<blockquote>$2</blockquote>")
+    newHtml = newHtml.replace(linkRegex, `<a href="$2" target="_blank" rel="noreferrer noopener">$1</a>`);
 
     return newHtml;
 }
@@ -702,11 +704,31 @@ function testCommentStyling() {
         }
     }
 
+    function testLink() {
+        let testCases = {
+            '[Basic link](<a href="test.com" class="linkified" target="_blank" rel="nofollow ugc noopener">test.com</a>)': '<a href="test.com" target="_blank" rel="noreferrer noopener">Basic link</a>',
+            'some text [Basic link](<a href="test.com" class="linkified" target="_blank" rel="nofollow ugc noopener">test.com</a>) after': 'some text <a href="test.com" target="_blank" rel="noreferrer noopener">Basic link</a> after',
+            '[Full url](<a href="https://www.test.com" class="linkified" target="_blank" rel="nofollow ugc noopener">https://www.test.com</a>)': '<a href="https://www.test.com" target="_blank" rel="noreferrer noopener">Full url</a>',
+            '[Wî()rd ch[cter{}s&gt;](<a href="https://www.test.com" class="linkified" target="_blank" rel="nofollow ugc noopener">https://www.test.com</a>)': '<a href="https://www.test.com" target="_blank" rel="noreferrer noopener">Wî()rd ch[cter{}s&gt;</a>',
+            '(Bad format)[<a href="https://www.test.com" class="linkified" target="_blank" rel="nofollow ugc noopener">test.com</a>]': '(Bad format)[<a href="https://www.test.com" class="linkified" target="_blank" rel="nofollow ugc noopener">test.com</a>]',
+            '[just brackets]': '[just brackets]',
+            '[just parens]': '[just parens]',
+        };
+
+        for (let testCase in testCases) {
+            let expected = testCases[testCase];
+            let actual = processCommentParagraph(testCase);
+            assertEqual(expected, actual);
+        }
+    }
+
     testItalics();
     testBlockquotes();
+    testLink();
 }
 
 function doTests() {
+    console.log("Running tests");
     testCommentStyling();
 }
 
