@@ -305,7 +305,6 @@ function addDateString(comment) {
     newDateDisplay.addClass("better-date");
     dateSpan.append(newDateDisplay);
 
-    newDateDisplay.html("<unknown post time>");
     if (commentId in commentIdToDate) {
         let utcTime = commentIdToDate[commentId];
         let date = new Date(utcTime);
@@ -493,14 +492,12 @@ function processMutation(mutation) {
             // force refresh
             window.location.href = window.location.href;
         }
-    } else if (nodeHasClass(mutation.target, ["comment", "comment-list", "comment-list-items"])) {
+    } else if (nodeHasClass(mutation.target, ["comment", "comment-list", "comment-list-items", "container"])) {
         // check for comments
-        if (commentIdToDate) {
-            for (let i = 0; i < mutation.addedNodes.length; i++) {
-                let node = mutation.addedNodes[i];
-                if (nodeHasClass(node, ["comment", "comment-list", "comment-list-items", "comment-list-collapser"])) {
-                    processAllComments(node);
-                }
+        for (let i = 0; i < mutation.addedNodes.length; i++) {
+            let node = mutation.addedNodes[i];
+            if (nodeHasClass(node, ["comment", "comment-list", "comment-list-items", "comment-list-collapser"])) {
+                processAllComments(node);
             }
         }
     } else {
@@ -616,12 +613,12 @@ function createPreloadCache() {
         }
     }
 
+    commentIdToDate = {};
+
     if (!preloads.comments) {
-        console.error("Could not find _preloads.comments");
+        console.log("Could not find _preloads.comments");
         return;
     }
-
-    commentIdToDate = {};
 
     for (let i = 0; i < preloads.comments.length; i++) {
         getDateRecursive(preloads.comments[i]);
