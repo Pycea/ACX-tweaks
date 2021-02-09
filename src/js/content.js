@@ -640,3 +640,74 @@ async function doAllSetup() {
 }
 
 doAllSetup();
+
+
+
+// unit tests
+
+let logTesting = false;
+
+function assertEqual(expected, actual) {
+    if (logTesting) {
+        console.log(`${arguments.callee.caller.name}(): expected "${expected}", got "${actual}`);
+    }
+
+    if (expected !== actual) {
+        console.error(`In function ${arguments.callee.caller.name}(): expected "${expected}", got "${actual}"`);
+        console.trace();
+    }
+}
+
+function testCommentStyling() {
+    function testItalics() {
+        let testCases = {
+            "*test*": "<i>test</i>",
+            "**test**": "*<i>test</i>*",
+            "******": "******",
+            "**": "**",
+            "*test many words*": "<i>test many words</i>",
+            "(*test*)": "(<i>test</i>)",
+            "[*test*]": "[<i>test</i>]",
+            "{*test*}": "{<i>test</i>}",
+            "This is 1*1 and 2*2": "This is 1*1 and 2*2",
+            "A different equation is 3 * 3 and 4 * 4": "A different equation is 3 * 3 and 4 * 4",
+            "*a*": "<i>a</i>",
+            "*ab*": "<i>ab</i>",
+            "*abc*": "<i>abc</i>",
+            "Here *there are* *many* different *words*": "Here <i>there are</i> <i>many</i> different <i>words</i>",
+            "How about some *punctuation*?": "How about some <i>punctuation</i>?",
+        };
+
+        for (let testCase in testCases) {
+            let expected = testCases[testCase];
+            let actual = processCommentParagraph(testCase);
+            assertEqual(expected, actual);
+        }
+    }
+
+    function testBlockquotes() {
+        let testCases = {
+            "> Basic case": "<blockquote>Basic case</blockquote>",
+            ">No space": "<blockquote>No space</blockquote>",
+            "Not a > case": "Not a > case",
+            "&gt; Basic case": "<blockquote>Basic case</blockquote>",
+            "&gt;No space": "<blockquote>No space</blockquote>",
+            "Not a &gt; case": "Not a &gt; case",
+        };
+
+        for (let testCase in testCases) {
+            let expected = testCases[testCase];
+            let actual = processCommentParagraph(testCase);
+            assertEqual(expected, actual);
+        }
+    }
+
+    testItalics();
+    testBlockquotes();
+}
+
+function doTests() {
+    testCommentStyling();
+}
+
+// doTests();
