@@ -346,7 +346,7 @@ function processCommentParagraph(innerHtml) {
     let italicRegex = /(^|\s|\(|\[|\{|\*)\*((?=[^*\s]).*?(?<=[^*\s]))\*/g;
     let blockQuoteRegex = /^(>|&gt;) ?(.*)$/;
     // yes I'm parsing html with a regex. deal with it
-    let linkRegex = /\[(.+?)\]\(<a href=.*?>(.*?)<\/a>\)/;
+    let linkRegex = /\[(.+?)\]\(<a href="(.*?)".*?<\/a>\)/;
 
     let newHtml = innerHtml;
     newHtml = newHtml.replace(italicRegex, "$1<i>$2</i>");
