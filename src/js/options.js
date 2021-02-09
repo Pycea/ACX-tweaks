@@ -53,7 +53,7 @@ const OPTIONS = {
         "priority": 30,
         "runTime": "start",
         "reprocessCommentsOnChange": true,
-        "hovertext": "Apply basic styling to comments (italics and block quotes)",
+        "hovertext": "Apply basic styling to comments (italics, block quotes, and Reddit style text links)",
     },
     "useOldStyling": {
         "default": false,
