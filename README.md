@@ -17,8 +17,9 @@ Chrome doesn't allow automatically signed extensions, so you'll have to load it 
     - Keeps the header above the post, so it doesn't keep appearing whenever you scroll up a little.
     - Hides reactions (hearts). However, the note that the author liked a given comment is not removed.
     - Shows the full time that a comment was posted, instead of just the day.
-    - Adds a button to scroll to the parent comment, or the top of the comment section for top level comments
-    - Highlights comments that you haven't seen yet
+    - Adds a button to scroll to the parent comment, or the top of the comment section for top level comments.
+    - Applies basic styling to comments, including italics, blockquotes, and Markdown style links.
+    - Highlights comments that you haven't seen yet.
     - Makes the blog look more like the old blog, [Slate Star Codex](https://web.archive.org/web/20200601140029/https://slatestarcodex.com/).
     - Loads all comments at once, instead of having to keep clicking the "Load more" button.
     - Hides the notification that there are new comments.
