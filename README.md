@@ -2,11 +2,11 @@
 A browser extension that provides various small improvements to the [Astral Codex Ten](https://astralcodexten.substack.com) blog on [Substack](https://substack.com).
 
 ## Compatibility
-The extension works with Firefox and Chrome. Other browsers that use the WebExtension API can probably use it too, but you'll have to figure out how to sideload it youself. Safari is right out.
+The extension works with any browser that can use extensions on the Firefox/Chrome web stores, including Brave and Opera. Other browsers that use the WebExtension API can probably use it too, but you'll have to figure out how to sideload it youself. Safari is right out.
 
 ## Loading instructions
 ### Firefox
-Available as a [Firefox addon](https://addons.mozilla.org/en-US/firefox/addon/acx-tweaks/).
+Available as a [Firefox extension](https://addons.mozilla.org/en-US/firefox/addon/acx-tweaks/).
 
 ### Chrome/Chromium
 Available as a [Chrome extension](https://chrome.google.com/webstore/detail/acx-tweaks/jdpghojhfigbpoeiadalafcmohaekglf).
