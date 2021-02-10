@@ -12,7 +12,7 @@ Available as a [Firefox addon](https://addons.mozilla.org/en-US/firefox/addon/ac
 Available as a [Chrome extension](https://chrome.google.com/webstore/detail/acx-tweaks/jdpghojhfigbpoeiadalafcmohaekglf).
 
 ### Other
-Under [releases](https://github.com/Pycea/ACX-tweaks/releases), you can get the source from `chrome_src.zip`. You may be able to do something with this.
+Under [releases](https://github.com/Pycea/ACX-tweaks/releases), you can get the source from the `chrome_src.zip` file under the latest release. You may be able to do something with this.
 
 ## Features
 - When collapsing a thread, scrolls to the parent comment
