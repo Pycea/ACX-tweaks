@@ -208,7 +208,7 @@ const STYLES = {
             background: #fafafa !important;
         }
 
-        .highlight-new table.comment-content.new-comment tr td:not(.comment-head) {
+        .highlight-new .comment.new-comment > table.comment-content tr td:not(.comment-head) {
              border: 2px solid #5a5 !important;
         }
 
