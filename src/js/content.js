@@ -24,7 +24,7 @@ OPTIONS.useOldStyling.toggleFunc = useOldStylingOption;
 OPTIONS.loadAll.toggleFunc = loadAllOption;
 OPTIONS.hideNew.toggleFunc = hideNewOption;
 OPTIONS.dynamicLoad.toggleFunc = dynamicLoadOption;
-OPTIONS.nextCommentJump.toggleFunc = nextCommentJumpOption;
+OPTIONS.allowKeyboardShortcuts.toggleFunc = allowKeyboardShortcutsOption;
 OPTIONS.resetData.toggleFunc = resetDataOption;
 
 const PageTypeEnum = Object.freeze({
@@ -207,7 +207,7 @@ function dynamicLoadOption(value) {
     // nothing to do, value is read from options shadow where needed
 }
 
-function nextCommentJumpOption(value) {
+function allowKeyboardShortcutsOption(value) {
     // nothing to do, value is read from options shadow where needed
 }
 
@@ -680,7 +680,11 @@ function addNextCommentListener() {
             return;
         }
 
-        if (event.code === optionShadow.nextCommentJump.key) {
+        if (!optionShadow.allowKeyboardShortcuts) {
+            return;
+        }
+
+        if (event.code === optionShadow.commentJumpKey) {
             function inView(element) {
                 // scrolling isn't pixel perfect, so include some buffer room
                 return element.getBoundingClientRect().top > 0;

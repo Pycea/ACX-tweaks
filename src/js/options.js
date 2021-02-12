@@ -87,13 +87,21 @@ const OPTIONS = {
         "reprocessCommentsOnChange": false,
         "hovertext": "Dynamically load content when switching between posts (default Substack behavior). Enabling can decrease load times, but may break some functionality.",
     },
-    "nextCommentJump": {
-        "default": {"key": "KeyQ", "scroll": "auto"},
+    "allowKeyboardShortcuts": {
+        "default": true,
+        "type": "toggle",
+        "priority": 10,
+        "runTime": "never",
+        "reprocessCommentsOnChange": false,
+        "hovertext": "Enable keyboard shortcuts for jumping between comments",
+    },
+    "commentJumpKey": {
+        "default": "Q",
         "type": "key",
         "priority": 10,
         "runTime": "never",
         "reprocessCommentsOnChange": false,
-        "hovertext": "Key or key combination to scroll to the next new comment",
+        "hovertext": "Key to move to the next new comment",
     },
     "resetData": {
         "default": false,

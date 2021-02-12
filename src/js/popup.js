@@ -11,17 +11,18 @@ if (typeof browser !== "undefined") {
     console.error("What kind of browser do you have anyway? (can't get WebExtension handle)")
 }
 
-function addHovertext(id) {
+function addHovertext(element) {
+    let id = $(element).attr("id");
     let iconSvg = webExtension.extension.getURL("icons/question-circle-regular.svg");
     let icon = $(`<img src="${iconSvg}" class="help-icon">`);
     let tooltip = $(`<span class="tooltip" id=${id + "-tooltip"}>${OPTIONS[id].hovertext}<span>`);
     tooltip.css("display", "none");
-    $(`#${id}`).parent().append(icon);
+    $(element).append(icon);
     $(`#wrapper`).append(tooltip);
 
     // yes I know hardcoding is evil. sue me
     let windowHeight = $(window).height();
-    let tooltipHeight = tooltip.height() + 12; // 8 to account for margin, plus some space
+    let tooltipHeight = tooltip.height() + 24; // 20 to account for margin, plus some space
     let iconPosition = icon.position().top + 7; // element height is 14, 7 is the middle
     let topSpace = iconPosition - tooltipHeight;
     let bottomSpace = (windowHeight - tooltipHeight) - iconPosition;
@@ -49,19 +50,41 @@ function getLocalState(storageId) {
     return storagePromise;
 }
 
-function createChangeHandler(checkId) {
-    $(`#${checkId}`).change(function() {
-        webExtension.storage.local.set({[checkId]: this.checked});
-    });
+function createChangeHandler(element) {
+    let id = $(element).attr("id");
+    let input = $(element).find("input");
+
+    if ($(input).attr("type") === "checkbox") {
+        $(input).change(function() {
+            webExtension.storage.local.set({[id]: $(input).prop("checked")});
+        });
+    } else if ($(input).attr("type") === "text") {
+        $(input).change(function() {
+            webExtension.storage.local.set({[id]: $(input).val()});
+        });
+    }
 }
 
-async function setInitialState(id) {
-    let value = await getLocalState(id);
-    let checkmarkValue = value[id] === undefined ? OPTIONS[id].default : value[id];
-    $(`#${id}`).prop("checked", checkmarkValue);
+async function setInitialState(element) {
+    let id = $(element).attr("id");
+    let input = $(element).find("input");
+    let storedValue = await getLocalState(id);
+    let setValue = storedValue[id] === undefined ? OPTIONS[id].default : storedValue[id];
+
+    if ($(input).attr("type") === "checkbox") {
+        $(input).prop("checked", setValue);
+    } else if ($(input).attr("type") === "text") {
+        $(input).val(setValue);
+    }
 }
 
-function createResetHandler(buttonId) {
+async function processOption(element) {
+    addHovertext(element);
+    createChangeHandler(element);
+    await setInitialState(element);
+}
+
+function createResetHandler() {
     // on the first click, verify intension
     function firstClick(button) {
         let width = button.getBoundingClientRect().width;
@@ -71,11 +94,11 @@ function createResetHandler(buttonId) {
     // on the second click, clear the data
     function secondClick(button) {
         $(button).removeClass("verify").html("Reset all data");
-        webExtension.storage.local.set({[buttonId]: true});
+        webExtension.storage.local.set({"resetData": true});
         window.close();
     }
 
-    $(`#${buttonId}`).click(function() {
+    $(`#resetDataButton`).click(function() {
         if ($(this).hasClass("verify")) {
             secondClick(this);
         } else {
@@ -85,28 +108,28 @@ function createResetHandler(buttonId) {
 }
 
 function addDependencies() {
-    $("#loadAll").change(function() {
+    $("#showFullDateCheck").change(function() {
         if (!this.checked) {
-            $("#hideNew").prop("checked", false).prop("disabled", true).trigger("change");
+            $("#use24HourCheck").prop("checked", false).prop("disabled", true).trigger("change");
         } else {
-            $("#hideNew").prop("disabled", false);
+            $("#use24HourCheck").prop("disabled", false);
         }
     });
 
-    if (!($("#loadAll").prop("checked"))) {
-        $("#hideNew").prop("disabled", true);
+    if (!($("#showFullDateCheck").prop("checked"))) {
+        $("#use24HourCheck").prop("disabled", true);
     }
 
-    $("#showFullDate").change(function() {
+    $("#loadAllCheck").change(function() {
         if (!this.checked) {
-            $("#use24Hour").prop("checked", false).prop("disabled", true).trigger("change");
+            $("#hideNewCheck").prop("checked", false).prop("disabled", true).trigger("change");
         } else {
-            $("#use24Hour").prop("disabled", false);
+            $("#hideNewCheck").prop("disabled", false);
         }
     });
 
-    if (!($("#showFullDate").prop("checked"))) {
-        $("#use24Hour").prop("disabled", true);
+    if (!($("#loadAllCheck").prop("checked"))) {
+        $("#hideNewCheck").prop("disabled", true);
     }
 }
 
@@ -114,18 +137,19 @@ function addDependencies() {
 async function resetDataFailsafe() {
     let resetDataOption = await getLocalState("resetData");
     if (resetDataOption["resetData"]) {
-        webExtension.storage.local.set({["resetData"]: false});
+        webExtension.storage.local.set({"resetData": false});
     }
 }
 
 window.onload = async function() {
-    for (let id in OPTIONS) {
-        addHovertext(id);
-        createChangeHandler(id);
-        await setInitialState(id);
-    };
+    let promiseArray = [];
+    for (let option of $(".option")) {
+        promiseArray.push(processOption(option));
+    }
 
-    createResetHandler("resetData");
+    await Promise.all(promiseArray);
+
+    createResetHandler();
     addDependencies();
     resetDataFailsafe();
 }
