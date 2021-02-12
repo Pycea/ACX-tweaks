@@ -87,6 +87,14 @@ const OPTIONS = {
         "reprocessCommentsOnChange": false,
         "hovertext": "Dynamically load content when switching between posts (default Substack behavior). Enabling can decrease load times, but may break some functionality.",
     },
+    "nextCommentJump": {
+        "default": {"key": "KeyQ", "scroll": "auto"},
+        "type": "key",
+        "priority": 10,
+        "runTime": "never",
+        "reprocessCommentsOnChange": false,
+        "hovertext": "Key or key combination to scroll to the next new comment",
+    },
     "resetData": {
         "default": false,
         "type": "oneshot",

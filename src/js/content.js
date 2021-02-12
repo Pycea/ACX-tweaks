@@ -24,6 +24,7 @@ OPTIONS.useOldStyling.toggleFunc = useOldStylingOption;
 OPTIONS.loadAll.toggleFunc = loadAllOption;
 OPTIONS.hideNew.toggleFunc = hideNewOption;
 OPTIONS.dynamicLoad.toggleFunc = dynamicLoadOption;
+OPTIONS.nextCommentJump.toggleFunc = nextCommentJumpOption;
 OPTIONS.resetData.toggleFunc = resetDataOption;
 
 const PageTypeEnum = Object.freeze({
@@ -65,6 +66,11 @@ let observeChanges = true;
 
 
 // Utilities
+
+// why is js so terrible?
+function mod(a, b) {
+    return ((a % b) + b) % b;
+}
 
 function getUrl(url, data={}) {
     let getPromise = new Promise(function(resolve, reject) {
@@ -198,6 +204,10 @@ function hideNewOption(value) {
 }
 
 function dynamicLoadOption(value) {
+    // nothing to do, value is read from options shadow where needed
+}
+
+function nextCommentJumpOption(value) {
     // nothing to do, value is read from options shadow where needed
 }
 
@@ -660,6 +670,63 @@ function addParentClickListener() {
     });
 }
 
+function addNextCommentListener() {
+    document.addEventListener("keydown", function(event) {
+        let source = event.target;
+        let exclude = ["input", "textarea"];
+
+        // don't trigger if people are writing comments
+        if (exclude.indexOf(source.tagName.toLowerCase()) !== -1) {
+            return;
+        }
+
+        if (event.code === optionShadow.nextCommentJump.key) {
+            function inView(element) {
+                // scrolling isn't pixel perfect, so include some buffer room
+                return element.getBoundingClientRect().top > 0;
+            }
+
+            function atEntry(element) {
+                // scrolling isn't pixel perfect, so include some buffer room
+                return Math.abs(element.getBoundingClientRect().top) < 3;
+            }
+
+            let comments = $("#main").find(".comment-content");
+
+            if (comments.length === 0) {
+                return;
+            }
+
+            let min = -1;
+            let max = comments.length;
+
+            while (max - min > 1) {
+                let mid = Math.floor((min + max) / 2);
+                if (inView(comments[mid])) {
+                    max = mid;
+                } else {
+                    min = mid;
+                }
+            }
+
+            let index;
+            if (event.shiftKey) {
+                index = min;
+            } else {
+                index = max;
+                if (atEntry(comments[index])) {
+                    index++;
+                }
+            }
+
+            // wrap around at the top and bottom
+            index = mod(index, comments.length);
+
+            comments[index].scrollIntoView({"behavior": optionShadow.nextCommentJump.scroll});
+        }
+    });
+}
+
 async function setup() {
     if (getPageType() === PageTypeEnum.post) {
         processPreloads();
@@ -668,6 +735,7 @@ async function setup() {
     addDomObserver();
     processNewPageType();
     addParentClickListener();
+    addNextCommentListener();
 }
 
 
