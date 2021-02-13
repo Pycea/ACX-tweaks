@@ -20,21 +20,22 @@ function addHovertext(element) {
     $(element).append(icon);
     $(`#wrapper`).append(tooltip);
 
-    // yes I know hardcoding is evil. sue me
-    let windowHeight = $(window).height();
-    // add 20 to account for padding, 8 for margin, 7 for half icon height, and some space
-    let tooltipHeight = tooltip.height() + 40;
-    let iconPosition = icon.position().top + 7; // element height is 14, 7 is the middle
-    let topSpace = iconPosition - tooltipHeight;
-    let bottomSpace = (windowHeight - tooltipHeight) - iconPosition;
-
-    if (topSpace > 0 || topSpace >= bottomSpace) {
-        tooltip.addClass("top");
-    } else {
-        tooltip.addClass("bottom");
-    }
-
     $(icon).hover(function() {
+        let windowHeight = $(window).height();
+        // magic offset because ???
+        let tooltipHeight = tooltip.height() + 30;
+        let iconPosition = this.getBoundingClientRect().top + 7; // element height is 14, 7 is the middle
+        let topSpace = iconPosition - tooltipHeight;
+        let bottomSpace = (windowHeight - tooltipHeight) - iconPosition;
+
+        if (topSpace > 8) {
+            tooltip.css("top", `${iconPosition - tooltipHeight}px`);
+        } else if (bottomSpace > 8) {
+            tooltip.css("top", `${iconPosition + 11}px`)
+        } else {
+            tooltip.css("top", `8px`);
+        }
+
         $(tooltip).css("display", "inline");
     }, function() {
         $(tooltip).css("display", "none");
