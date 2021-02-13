@@ -12,6 +12,11 @@
             white-space: nowrap;
         }
 
+        .heading {
+            margin-left: 4px;
+            font-weight: bold;
+        }
+
         label, button {
             user-select: none;
             display: inline-block;
@@ -24,19 +29,22 @@
             cursor: pointer;
         }
 
-        button {
+        #resetData {
+            text-align: center;
+        }
+
+        #resetDataButton {
             background-color: #dc3545;
             border-color: #dc3545;
             color: #fff;
             border: 1px solid transparent;
             border-radius: 3px;
             padding: 4px 8px;
-            margin-left: 22px;
             outline: none;
             transition: background-color .15s ease-in-out, border-color .15s ease-in-out
         }
 
-        button:hover {
+        #resetDataButton:hover {
             background-color: #c82333;
             border-color: #bd2130;
         }
@@ -101,11 +109,21 @@
 
 <body>
     <div id="wrapper">
-        <!-- Regular options -->
+        <!-- General settings -->
+        <div class="heading">General</div>
         <div id="fixHeader" class="option">
             <input type="checkbox" id="fixHeaderCheck" class="toggleOption">
             <label for="fixHeaderCheck">Fix header</label>
         </div>
+        <div id="useOldStyling" class="option">
+            <input type="checkbox" id="useOldStylingCheck" class="toggleOption">
+            <label for="useOldStylingCheck">Use old styling</label>
+        </div>
+
+        <div class="spacer"></div>
+
+        <!-- Things applied to comments -->
+        <div class="heading">Comments</div>
         <div id="hideHearts" class="option">
             <input type="checkbox" id="hideHeartsCheck" class="toggleOption">
             <label for="hideHeartsCheck">Hide hearts</label>
@@ -130,10 +148,6 @@
             <input type="checkbox" id="applyCommentStylingCheck" class="toggleOption">
             <label for="applyCommentStylingCheck">Apply comment styling</label>
         </div>
-        <div id="useOldStyling" class="option">
-            <input type="checkbox" id="useOldStylingCheck" class="toggleOption">
-            <label for="useOldStylingCheck">Use old styling</label>
-        </div>
         <div id="loadAll" class="option">
             <input type="checkbox" id="loadAllCheck" class="toggleOption">
             <label for="loadAllCheck">Load all comments</label>
@@ -142,14 +156,11 @@
             <input type="checkbox" id="hideNewCheck" class="toggleOption">
             <label for="hideNewCheck">Hide new comments</label>
         </div>
-        <div id="dynamicLoad" class="option">
-            <input type="checkbox" id="dynamicLoadCheck" class="toggleOption">
-            <label for="dynamicLoadCheck">Load new pages dynamically</label>
-        </div>
 
         <div class="spacer"></div>
 
         <!-- keyboard shortcuts -->
+        <div class="heading">Keyboard shortcuts</div>
         <div id="allowKeyboardShortcuts" class="option">
             <input type="checkbox" id="allowKeyboardShortcutsCheck" class="toggleOption">
             <label for="allowKeyboardShortcutsCheck">Allow keyboard shortcuts</label>
@@ -177,7 +188,15 @@
 
         <div class="spacer"></div>
 
-        <!-- data reset -->
+        <!-- keyboard shortcuts -->
+        <div class="heading">If you're having issues</div>
+        <div id="dynamicLoad" class="option">
+            <input type="checkbox" id="dynamicLoadCheck" class="toggleOption">
+            <label for="dynamicLoadCheck">Load new pages dynamically</label>
+        </div>
+
+        <div class="spacer"></div>
+
         <div id="resetData" class="option">
             <button type="button" id="resetDataButton" class="buttonOption">Reset all data</button>
         </div>

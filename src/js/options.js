@@ -165,6 +165,6 @@ const OPTIONS = {
         "priority": 0,
         "runTime": "never",
         "reprocessCommentsOnChange": false,
-        "hovertext": "Reset all extension data. Use if something breaks that refreshing doesn't fix. Will delete data about which comments have been seen.",
+        "hovertext": "Reset all extension data. Use if something breaks that refreshing doesn't fix. Will delete data about which comments have been seen. You must be on the ACX site for this to work.",
     },
 };
