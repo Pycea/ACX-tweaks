@@ -29,6 +29,9 @@ Under [releases](https://github.com/Pycea/ACX-tweaks/releases), you can get the 
 
 To change options, click the extension icon.
 
+## Custom styling
+If you want to do custom styling, including things that take advantage of the extension, you can use the [Stylebot](https://chrome.google.com/webstore/detail/stylebot/oiaejidbmkiecgbjeifoejpgmdaleoha/related?hl=en-US) extension to apply additional changes. For examples of what can be done, see [these](https://github.com/Pycea/ACX-tweaks/issues/3) [three](https://github.com/Pycea/ACX-tweaks/issues/6) [issues](https://github.com/Pycea/ACX-tweaks/issues/7).
+
 ## Troubleshooting
 ### The page loads slowly
 If you have the option to load all comments selected, it might cause some lag for large threads. This is a result of Substack comment loading being very laggy.
