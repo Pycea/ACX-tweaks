@@ -150,11 +150,13 @@ function addDependencies() {
 
     $("#allowKeyboardShortcutsCheck").change(function() {
         if (!this.checked) {
+            $("#smoothScrollCheck").prop("disabled", true);
             $("#prevCommentKeyText").prop("disabled", true);
             $("#nextCommentKeyText").prop("disabled", true);
             $("#prevUnreadKeyText").prop("disabled", true);
             $("#nextUnreadKeyText").prop("disabled", true);
         } else {
+            $("#smoothScrollCheck").prop("disabled", false);
             $("#prevCommentKeyText").prop("disabled", false);
             $("#nextCommentKeyText").prop("disabled", false);
             $("#prevUnreadKeyText").prop("disabled", false);
@@ -163,6 +165,7 @@ function addDependencies() {
     });
 
     if (!($("#allowKeyboardShortcutsCheck").prop("checked"))) {
+        $("#smoothScrollCheck").prop("disabled", true);
         $("#prevCommentKeyText").prop("disabled", true);
         $("#nextCommentKeyText").prop("disabled", true);
         $("#prevUnreadKeyText").prop("disabled", true);

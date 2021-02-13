@@ -745,7 +745,8 @@ function addNextCommentListener() {
             // wrap around at the top and bottom
             index = mod(index, comments.length);
 
-            comments[index].scrollIntoView();
+            let scrollBehavior = optionShadow.smoothScroll ? "smooth" : "auto";
+            comments[index].scrollIntoView({"behavior": scrollBehavior});
         }
     });
 }

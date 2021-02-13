@@ -95,6 +95,14 @@ const OPTIONS = {
         "reprocessCommentsOnChange": false,
         "hovertext": "Enable keyboard shortcuts for the various actions below",
     },
+    "smoothScroll": {
+        "default": true,
+        "type": "toggle",
+        "priority": 10,
+        "runTime": "never",
+        "reprocessCommentsOnChange": false,
+        "hovertext": "Smoothly scroll when moving between comments (disabling jumps directly to the next comment)",
+    },
     "prevCommentKey": {
         "default": {
             "key": 73,
