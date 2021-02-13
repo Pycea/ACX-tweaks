@@ -48,7 +48,7 @@ let optionShadow = {};
 let preloads;
 
 // cache of comment ids to exact comment time
-let commentIdToDate;
+let commentIdToDate = {};
 
 // data from local storage
 // {
@@ -621,8 +621,6 @@ function createPreloadCache() {
         }
     }
 
-    commentIdToDate = {};
-
     if (!preloads.comments) {
         console.log("Could not find _preloads.comments");
         return;
@@ -683,7 +681,11 @@ function addNextCommentListener() {
         }
 
         function getKeyCommand(event) {
-            if (isMatchingKeyEvent(optionShadow.prevUnreadKey, event)) {
+            if (isMatchingKeyEvent(optionShadow.prevCommentKey, event)) {
+                return KeyCommandEnum.prevComment;
+            } else if (isMatchingKeyEvent(optionShadow.nextCommentKey, event)) {
+                return KeyCommandEnum.nextComment;
+            } else if (isMatchingKeyEvent(optionShadow.prevUnreadKey, event)) {
                 return KeyCommandEnum.prevUnread;
             } else if (isMatchingKeyEvent(optionShadow.nextUnreadKey, event)) {
                 return KeyCommandEnum.nextUnread;
@@ -694,7 +696,9 @@ function addNextCommentListener() {
 
         let command = getKeyCommand(event);
 
-        if (command === KeyCommandEnum.prevUnread || command === KeyCommandEnum.nextUnread) {
+        if ([KeyCommandEnum.prevComment, KeyCommandEnum.nextComment,
+                KeyCommandEnum.prevUnread, KeyCommandEnum.nextUnread].includes(command)) {
+
             function inView(element) {
                 // scrolling isn't pixel perfect, so include some buffer room
                 return element.getBoundingClientRect().top > 0;
@@ -705,7 +709,12 @@ function addNextCommentListener() {
                 return Math.abs(element.getBoundingClientRect().top) < 3;
             }
 
-            let comments = $("#main").find(".new-comment");
+            let comments;
+            if (command === KeyCommandEnum.prevComment || command === KeyCommandEnum.nextComment) {
+                comments = $("#main").find(".comment-content");
+            } else {
+                comments = $("#main").find(".new-comment");
+            }
 
             if (comments.length === 0) {
                 return;
@@ -724,7 +733,7 @@ function addNextCommentListener() {
             }
 
             let index;
-            if (command === KeyCommandEnum.prevUnread) {
+            if (command === KeyCommandEnum.prevComment || command === KeyCommandEnum.prevUnread) {
                 index = min;
             } else {
                 index = max;

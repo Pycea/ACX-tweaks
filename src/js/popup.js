@@ -150,17 +150,23 @@ function addDependencies() {
 
     $("#allowKeyboardShortcutsCheck").change(function() {
         if (!this.checked) {
-            $("#nextUnreadKeyText").prop("disabled", true);
+            $("#prevCommentKeyText").prop("disabled", true);
+            $("#nextCommentKeyText").prop("disabled", true);
             $("#prevUnreadKeyText").prop("disabled", true);
+            $("#nextUnreadKeyText").prop("disabled", true);
         } else {
-            $("#nextUnreadKeyText").prop("disabled", false);
+            $("#prevCommentKeyText").prop("disabled", false);
+            $("#nextCommentKeyText").prop("disabled", false);
             $("#prevUnreadKeyText").prop("disabled", false);
+            $("#nextUnreadKeyText").prop("disabled", false);
         }
     });
 
     if (!($("#allowKeyboardShortcutsCheck").prop("checked"))) {
-        $("#nextUnreadKeyText").prop("disabled", true);
+        $("#prevCommentKeyText").prop("disabled", true);
+        $("#nextCommentKeyText").prop("disabled", true);
         $("#prevUnreadKeyText").prop("disabled", true);
+        $("#nextUnreadKeyText").prop("disabled", true);
     }
 }
 

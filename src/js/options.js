@@ -95,6 +95,34 @@ const OPTIONS = {
         "reprocessCommentsOnChange": false,
         "hovertext": "Enable keyboard shortcuts for jumping between comments",
     },
+    "prevCommentKey": {
+        "default": {
+            "key": 73,
+            "control": false,
+            "alt": false,
+            "shift": false,
+            "meta": false,
+        },
+        "type": "key",
+        "priority": 10,
+        "runTime": "never",
+        "reprocessCommentsOnChange": false,
+        "hovertext": "Key to move to the previous comment (click to set)",
+    },
+    "nextCommentKey": {
+        "default": {
+            "key": 85,
+            "control": false,
+            "alt": false,
+            "shift": false,
+            "meta": false,
+        },
+        "type": "key",
+        "priority": 10,
+        "runTime": "never",
+        "reprocessCommentsOnChange": false,
+        "hovertext": "Key to move to the next comment (click to set)",
+    },
     "prevUnreadKey": {
         "default": {
             "key": 75,
