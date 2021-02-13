@@ -93,7 +93,7 @@ const OPTIONS = {
         "priority": 10,
         "runTime": "never",
         "reprocessCommentsOnChange": false,
-        "hovertext": "Enable keyboard shortcuts for jumping between comments",
+        "hovertext": "Enable keyboard shortcuts for the various actions below",
     },
     "prevCommentKey": {
         "default": {
@@ -107,7 +107,7 @@ const OPTIONS = {
         "priority": 10,
         "runTime": "never",
         "reprocessCommentsOnChange": false,
-        "hovertext": "Key to move to the previous comment (click to set)",
+        "hovertext": "Key/key combo to move to the previous comment (click to set)",
     },
     "nextCommentKey": {
         "default": {
@@ -121,7 +121,7 @@ const OPTIONS = {
         "priority": 10,
         "runTime": "never",
         "reprocessCommentsOnChange": false,
-        "hovertext": "Key to move to the next comment (click to set)",
+        "hovertext": "Key/key combo to move to the next comment (click to set)",
     },
     "prevUnreadKey": {
         "default": {
@@ -135,7 +135,7 @@ const OPTIONS = {
         "priority": 10,
         "runTime": "never",
         "reprocessCommentsOnChange": false,
-        "hovertext": "Key to move to the previous new comment (click to set)",
+        "hovertext": "Key/key combo to move to the previous new comment (click to set)",
     },
     "nextUnreadKey": {
         "default": {
@@ -149,7 +149,7 @@ const OPTIONS = {
         "priority": 10,
         "runTime": "never",
         "reprocessCommentsOnChange": false,
-        "hovertext": "Key to move to the next new comment (click to set)",
+        "hovertext": "Key/key combo to move to the next new comment (click to set)",
     },
     "resetData": {
         "default": false,
