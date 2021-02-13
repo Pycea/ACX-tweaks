@@ -101,7 +101,7 @@ const OPTIONS = {
         "priority": 10,
         "runTime": "never",
         "reprocessCommentsOnChange": false,
-        "hovertext": "Smoothly scroll when moving between comments (disabling jumps directly to the next comment)",
+        "hovertext": "Smoothly scroll when moving between comments (disable this to jump directly to the next comment)",
     },
     "prevCommentKey": {
         "default": {
@@ -115,7 +115,7 @@ const OPTIONS = {
         "priority": 10,
         "runTime": "never",
         "reprocessCommentsOnChange": false,
-        "hovertext": "Key/key combo to move to the previous comment (click to set)",
+        "hovertext": "Key/key combo to move to the previous comment (click the box to set)",
     },
     "nextCommentKey": {
         "default": {
@@ -129,7 +129,7 @@ const OPTIONS = {
         "priority": 10,
         "runTime": "never",
         "reprocessCommentsOnChange": false,
-        "hovertext": "Key/key combo to move to the next comment (click to set)",
+        "hovertext": "Key/key combo to move to the next comment (click the box to set)",
     },
     "prevUnreadKey": {
         "default": {
@@ -143,7 +143,7 @@ const OPTIONS = {
         "priority": 10,
         "runTime": "never",
         "reprocessCommentsOnChange": false,
-        "hovertext": "Key/key combo to move to the previous new comment (click to set)",
+        "hovertext": "Key/key combo to move to the previous new comment (click the box to set)",
     },
     "nextUnreadKey": {
         "default": {
@@ -157,7 +157,7 @@ const OPTIONS = {
         "priority": 10,
         "runTime": "never",
         "reprocessCommentsOnChange": false,
-        "hovertext": "Key/key combo to move to the next new comment (click to set)",
+        "hovertext": "Key/key combo to move to the next new comment (click the box to set)",
     },
     "resetData": {
         "default": false,
