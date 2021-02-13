@@ -23,13 +23,19 @@ OPTIONS.applyCommentStyling.toggleFunc = applyCommentStylingOption;
 OPTIONS.useOldStyling.toggleFunc = useOldStylingOption;
 OPTIONS.loadAll.toggleFunc = loadAllOption;
 OPTIONS.hideNew.toggleFunc = hideNewOption;
-OPTIONS.dynamicLoad.toggleFunc = dynamicLoadOption;
-OPTIONS.allowKeyboardShortcuts.toggleFunc = allowKeyboardShortcutsOption;
 OPTIONS.resetData.toggleFunc = resetDataOption;
 
 const PageTypeEnum = Object.freeze({
     "main": "main",
     "post": "post",
+    "unknown": "unknown",
+});
+
+const KeyCommandEnum = Object.freeze({
+    "nextComment": "nextComment",
+    "prevComment": "prevComment",
+    "nextUnread": "nextUnread",
+    "prevUnread": "prevUnread",
     "unknown": "unknown",
 });
 
@@ -203,14 +209,6 @@ function hideNewOption(value) {
     $("#hideNew-css").prop("disabled", !value);
 }
 
-function dynamicLoadOption(value) {
-    // nothing to do, value is read from options shadow where needed
-}
-
-function allowKeyboardShortcutsOption(value) {
-    // nothing to do, value is read from options shadow where needed
-}
-
 function resetDataOption(value) {
     if (value) {
         // clear site local storage
@@ -294,7 +292,7 @@ function getLocalDateString(date) {
     let minute = date.getMinutes().toString().padStart(2, "0");
 
     let amPm = hour <= 11 ? "am" : "pm";
-    let hour12 = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
+    let hour12 = hour === 0 ? 12 : (hour > 12 ? hour - 12 : hour);
 
     let hour12Html = `<span class="hour12-time">${hour12}:${minute} ${amPm}</span>`;
     let hour24Html = `<span class="hour24-time">${hour}:${minute}</span>`;
@@ -684,7 +682,19 @@ function addNextCommentListener() {
             return;
         }
 
-        if (event.code === optionShadow.commentJumpKey) {
+        function getKeyCommand(event) {
+            if (isMatchingKeyEvent(optionShadow.nextUnreadKey, event)) {
+                return KeyCommandEnum.nextUnread;
+            } else if (isMatchingKeyEvent(optionShadow.prevUnreadKey, event)) {
+                return KeyCommandEnum.prevUnread;
+            } else {
+                return KeyCommandEnum.unknown;
+            }
+        }
+
+        let command = getKeyCommand(event);
+
+        if (command === KeyCommandEnum.nextUnread || command === KeyCommandEnum.prevUnread) {
             function inView(element) {
                 // scrolling isn't pixel perfect, so include some buffer room
                 return element.getBoundingClientRect().top > 0;
@@ -695,7 +705,7 @@ function addNextCommentListener() {
                 return Math.abs(element.getBoundingClientRect().top) < 3;
             }
 
-            let comments = $("#main").find(".comment-content");
+            let comments = $("#main").find(".new-comment");
 
             if (comments.length === 0) {
                 return;
@@ -714,7 +724,7 @@ function addNextCommentListener() {
             }
 
             let index;
-            if (event.shiftKey) {
+            if (command === KeyCommandEnum.prevUnread) {
                 index = min;
             } else {
                 index = max;
@@ -726,7 +736,7 @@ function addNextCommentListener() {
             // wrap around at the top and bottom
             index = mod(index, comments.length);
 
-            comments[index].scrollIntoView({"behavior": optionShadow.nextCommentJump.scroll});
+            comments[index].scrollIntoView();
         }
     });
 }

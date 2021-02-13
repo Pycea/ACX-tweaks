@@ -16,7 +16,6 @@
             user-select: none;
             display: inline-block;
             vertical-align: middle;
-            margin-right: 4px;
             cursor: pointer;
         }
 
@@ -46,17 +45,23 @@
             height: 10px;
         }
 
-        #use24Hour {
+        .keyOption {
+            /*border-color: black;*/
+        }
+
+        #use24Hour, #hideNew {
             margin-left: 22px;
         }
 
-        #hideNew {
-            margin-left: 22px;
+        #nextUnreadKey, #prevUnreadKey {
+            margin-left: 26px;
         }
 
         .help-icon {
             width: 14px;
             vertical-align: middle;
+            margin-right: 4px;
+            margin-left: 4px;
         }
 
         .tooltip {
@@ -77,6 +82,11 @@
             top: 8px;
         }
 
+        .tooltip.center {
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
         .tooltip.bottom {
             bottom: 8px;
         }
@@ -85,11 +95,13 @@
 
     <script type="text/javascript" src="../lib/jquery-3.5.1.min.js"></script>
     <script type="text/javascript" src="../js/options.js"></script>
+    <script type="text/javascript" src="../js/util.js"></script>
     <script type="text/javascript" src="../js/popup.js"></script>
 </head>
 
 <body>
     <div id="wrapper">
+        <!-- Regular options -->
         <div id="fixHeader" class="option">
             <input type="checkbox" id="fixHeaderCheck" class="toggleOption">
             <label for="fixHeaderCheck">Fix header</label>
@@ -137,17 +149,23 @@
 
         <div class="spacer"></div>
 
+        <!-- keyboard shortcuts -->
         <div id="allowKeyboardShortcuts" class="option">
             <input type="checkbox" id="allowKeyboardShortcutsCheck" class="toggleOption">
             <label for="allowKeyboardShortcutsCheck">Allow keyboard shortcuts</label>
         </div>
-        <div id="commentJumpKey" class="option">
-            <input type="text" maxlength="1" size="1" id="commentJumpKeyText" class="keyOption">
-            <label for="commentJumpKeyText">Jump to next unread</label>
+        <div id="nextUnreadKey" class="option">
+            <input type="text" size="10" id="nextUnreadKeyText" class="keyOption">
+            <label for="nextUnreadKeyText">Jump to next unread</label>
+        </div>
+        <div id="prevUnreadKey" class="option">
+            <input type="text" size="10" id="prevUnreadKeyText" class="keyOption">
+            <label for="prevUnreadKeyText">Jump to previous unread</label>
         </div>
 
         <div class="spacer"></div>
 
+        <!-- data reset -->
         <div id="resetData" class="option">
             <button type="button" id="resetDataButton" class="buttonOption">Reset all data</button>
         </div>

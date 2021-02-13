@@ -22,7 +22,8 @@ function addHovertext(element) {
 
     // yes I know hardcoding is evil. sue me
     let windowHeight = $(window).height();
-    let tooltipHeight = tooltip.height() + 24; // 20 to account for margin, plus some space
+    // add 20 to account for padding, 8 for margin, 7 for half icon height, and some space
+    let tooltipHeight = tooltip.height() + 40;
     let iconPosition = icon.position().top + 7; // element height is 14, 7 is the middle
     let topSpace = iconPosition - tooltipHeight;
     let bottomSpace = (windowHeight - tooltipHeight) - iconPosition;
@@ -59,8 +60,14 @@ function createChangeHandler(element) {
             webExtension.storage.local.set({[id]: $(input).prop("checked")});
         });
     } else if ($(input).attr("type") === "text") {
-        $(input).change(function() {
-            webExtension.storage.local.set({[id]: $(input).val()});
+        $(input).focus(async function() {
+            this.blur();
+            $("#key-input-text").css("display", "inline");
+            let keyPress = await getKeyPress();
+            webExtension.storage.local.set({[id]: keyPress});
+            let displayValue = keyDictToString(keyPress);
+            $(this).val(displayValue);
+            $("#key-input-text").css("display", "none");
         });
     }
 }
@@ -74,7 +81,8 @@ async function setInitialState(element) {
     if ($(input).attr("type") === "checkbox") {
         $(input).prop("checked", setValue);
     } else if ($(input).attr("type") === "text") {
-        $(input).val(setValue);
+        let displayValue = keyDictToString(setValue);
+        $(input).val(displayValue);
     }
 }
 
@@ -82,6 +90,13 @@ async function processOption(element) {
     addHovertext(element);
     createChangeHandler(element);
     await setInitialState(element);
+}
+
+function addKeyModal() {
+    let modal = $(`<span class="tooltip" id="key-input-text">Press a key or key combo, or click anywhere to disable<span>`);
+    modal.css("display", "none");
+    modal.addClass("center");
+    $(`#wrapper`).append(modal);
 }
 
 function createResetHandler() {
@@ -131,6 +146,21 @@ function addDependencies() {
     if (!($("#loadAllCheck").prop("checked"))) {
         $("#hideNewCheck").prop("disabled", true);
     }
+
+    $("#allowKeyboardShortcutsCheck").change(function() {
+        if (!this.checked) {
+            $("#nextUnreadKeyText").prop("disabled", true);
+            $("#prevUnreadKeyText").prop("disabled", true);
+        } else {
+            $("#nextUnreadKeyText").prop("disabled", false);
+            $("#prevUnreadKeyText").prop("disabled", false);
+        }
+    });
+
+    if (!($("#allowKeyboardShortcutsCheck").prop("checked"))) {
+        $("#nextUnreadKeyText").prop("disabled", true);
+        $("#prevUnreadKeyText").prop("disabled", true);
+    }
 }
 
 // make sure the reset option isn't stuck on, otherwise resetting is impossible
@@ -149,6 +179,7 @@ window.onload = async function() {
 
     await Promise.all(promiseArray);
 
+    addKeyModal();
     createResetHandler();
     addDependencies();
     resetDataFailsafe();
