@@ -36,6 +36,11 @@
 
 .new-tag {
     color: #d35400;
+    margin-left: 6px;
+}
+
+.new-tag:after {
+    content: "~new~";
 }
 
 /* Hide new comment styling if not using comment styling option */

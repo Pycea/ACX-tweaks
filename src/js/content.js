@@ -344,7 +344,7 @@ function processSeenStatus(comment) {
         startSaveTimer();
         $(comment).addClass("new-comment");
         let dateSpan = $(comment).find("> .comment-content .comment-meta > span:nth-child(2)");
-        let newTag = ("<span class='new-tag'> ~new~</span>");
+        let newTag = ("<span class='new-tag'></span>");
         dateSpan.append(newTag);
     }
 }
