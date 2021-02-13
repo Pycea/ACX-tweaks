@@ -509,7 +509,7 @@ function processMutation(mutation) {
             }
         }
     } else {
-        // no nothing
+        // do nothing
     }
 }
 
@@ -735,6 +735,9 @@ function addNextCommentListener() {
             let index;
             if (command === KeyCommandEnum.prevComment || command === KeyCommandEnum.prevUnread) {
                 index = min;
+                if (atEntry(comments[index])) {
+                    index--;
+                }
             } else {
                 index = max;
                 if (atEntry(comments[index])) {
