@@ -95,23 +95,9 @@ const OPTIONS = {
         "reprocessCommentsOnChange": false,
         "hovertext": "Enable keyboard shortcuts for jumping between comments",
     },
-    "nextUnreadKey": {
-        "default": {
-            "key": "J",
-            "control": false,
-            "alt": false,
-            "shift": false,
-            "meta": false,
-        },
-        "type": "key",
-        "priority": 10,
-        "runTime": "never",
-        "reprocessCommentsOnChange": false,
-        "hovertext": "Key to move to the next new comment (click to set)",
-    },
     "prevUnreadKey": {
         "default": {
-            "key": "K",
+            "key": 75,
             "control": false,
             "alt": false,
             "shift": false,
@@ -122,6 +108,20 @@ const OPTIONS = {
         "runTime": "never",
         "reprocessCommentsOnChange": false,
         "hovertext": "Key to move to the previous new comment (click to set)",
+    },
+    "nextUnreadKey": {
+        "default": {
+            "key": 74,
+            "control": false,
+            "alt": false,
+            "shift": false,
+            "meta": false,
+        },
+        "type": "key",
+        "priority": 10,
+        "runTime": "never",
+        "reprocessCommentsOnChange": false,
+        "hovertext": "Key to move to the next new comment (click to set)",
     },
     "resetData": {
         "default": false,

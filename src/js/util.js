@@ -92,10 +92,10 @@ function getKeyDictFromEvent(event) {
 
     let keyDict = {
         "key": event.keyCode || null,
-        "control": event.ctrlKey || null,
-        "alt": event.altKey || null,
-        "shift": event.shiftKey || null,
-        "meta": event.metaKey || null,
+        "control": event.ctrlKey || false,
+        "alt": event.altKey || false,
+        "shift": event.shiftKey || false,
+        "meta": event.metaKey || false,
     }
 
     return keyDict;

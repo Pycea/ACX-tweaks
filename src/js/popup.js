@@ -78,6 +78,7 @@ async function setInitialState(element) {
     let storedValue = await getLocalState(id);
     let setValue = storedValue[id] === undefined ? OPTIONS[id].default : storedValue[id];
 
+
     if ($(input).attr("type") === "checkbox") {
         $(input).prop("checked", setValue);
     } else if ($(input).attr("type") === "text") {

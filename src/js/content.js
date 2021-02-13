@@ -32,10 +32,10 @@ const PageTypeEnum = Object.freeze({
 });
 
 const KeyCommandEnum = Object.freeze({
-    "nextComment": "nextComment",
     "prevComment": "prevComment",
-    "nextUnread": "nextUnread",
+    "nextComment": "nextComment",
     "prevUnread": "prevUnread",
+    "nextUnread": "nextUnread",
     "unknown": "unknown",
 });
 
@@ -683,10 +683,10 @@ function addNextCommentListener() {
         }
 
         function getKeyCommand(event) {
-            if (isMatchingKeyEvent(optionShadow.nextUnreadKey, event)) {
-                return KeyCommandEnum.nextUnread;
-            } else if (isMatchingKeyEvent(optionShadow.prevUnreadKey, event)) {
+            if (isMatchingKeyEvent(optionShadow.prevUnreadKey, event)) {
                 return KeyCommandEnum.prevUnread;
+            } else if (isMatchingKeyEvent(optionShadow.nextUnreadKey, event)) {
+                return KeyCommandEnum.nextUnread;
             } else {
                 return KeyCommandEnum.unknown;
             }
@@ -694,7 +694,7 @@ function addNextCommentListener() {
 
         let command = getKeyCommand(event);
 
-        if (command === KeyCommandEnum.nextUnread || command === KeyCommandEnum.prevUnread) {
+        if (command === KeyCommandEnum.prevUnread || command === KeyCommandEnum.nextUnread) {
             function inView(element) {
                 // scrolling isn't pixel perfect, so include some buffer room
                 return element.getBoundingClientRect().top > 0;
