@@ -53,16 +53,20 @@
             height: 10px;
         }
 
-        .keyOption {
-            /*border-color: black;*/
-        }
-
         #use24Hour, #hideNew, #smoothScroll {
             margin-left: 22px;
         }
 
-        #nextCommentKey, #prevCommentKey, #nextUnreadKey, #prevUnreadKey {
+        #newTime, #nextCommentKey, #prevCommentKey, #nextUnreadKey, #prevUnreadKey {
             margin-left: 26px;
+        }
+
+        #newTime * {
+            vertical-align: middle;
+        }
+
+        #newTimeNumber {
+            width: 30px;
         }
 
         .help-icon {
@@ -139,6 +143,11 @@
         <div id="highlightNew" class="option">
             <input type="checkbox" id="highlightNewCheck" class="toggleOption">
             <label for="highlightNewCheck">Highlight new comments</label>
+        </div>
+        <div id="newTime" class="option">
+            <input type="number" id="newTimeNumber" class="numberOption">
+            <select id="newTimeSelect"><option>Day</option><option>Hour</option><option>Min</option></select>
+            <label>New comment time range</label>
         </div>
         <div id="addParentLinks" class="option">
             <input type="checkbox" id="addParentLinksCheck" class="toggleOption">

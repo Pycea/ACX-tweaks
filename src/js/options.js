@@ -1,3 +1,6 @@
+// the local storage key of the options
+const OPTION_KEY = "options";
+
 const OPTIONS = {
     "fixHeader": {
         "default": true,
@@ -38,6 +41,14 @@ const OPTIONS = {
         "runTime": "start",
         "reprocessCommentsOnChange": false,
         "hovertext": "Highlight comments that you haven't seen yet",
+    },
+    "newTime": {
+        "default": true,
+        "type": "toggle",
+        "priority": 30,
+        "runTime": "start",
+        "reprocessCommentsOnChange": false,
+        "hovertext": "Comments newer than this will also be marked as new",
     },
     "addParentLinks": {
         "default": true,
