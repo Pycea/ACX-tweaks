@@ -273,6 +273,13 @@ function addDependencies() {
         $("#prevUnreadKeyText").prop("disabled", true);
         $("#nextUnreadKeyText").prop("disabled", true);
     }
+
+    // update newTime setting on each keystroke, not just when the value changes
+    $("#newTimeNumber").keydown(function(event) {
+        if (["+", "-", ".", "e", "E"].includes(event.originalEvent.key)) {
+            event.preventDefault();
+        }
+    });
 }
 
 // make sure the reset option isn't stuck on, otherwise resetting is impossible
