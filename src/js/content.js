@@ -626,6 +626,8 @@ function addNextCommentListener() {
         if ([KeyCommandEnum.prevComment, KeyCommandEnum.nextComment,
                 KeyCommandEnum.prevUnread, KeyCommandEnum.nextUnread].includes(command)) {
 
+            event.preventDefault();
+
             function inView(element) {
                 // scrolling isn't pixel perfect, so include some buffer room
                 return element.getBoundingClientRect().top > 0;
