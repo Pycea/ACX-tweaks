@@ -303,4 +303,9 @@ const STYLES = {
             padding-top: 12px !important;
         }
         `,
+    "hideBanned": `
+        .hiddenPost {
+            display: none;
+        }
+        `,
 }

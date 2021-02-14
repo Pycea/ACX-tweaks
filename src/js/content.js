@@ -261,7 +261,6 @@ function addDateString(comment) {
 function processSeenStatus(comment, lastNewDate) {
     let commentId = getCommentIdNumber(comment);
     let commentDate = new Date(commentIdToDate[commentId]);
-    // let lastNewDate = newCommentDate();
 
     if (commentDate > lastNewDate) {
         if (!$(comment).hasClass("new-comment")) {
@@ -274,6 +273,19 @@ function processSeenStatus(comment, lastNewDate) {
         $(comment).removeClass("new-comment");
         let dateSpan = $(comment).find("> .comment-content .comment-meta > span:nth-child(2)");
         dateSpan.find(".new-tag").remove();
+    }
+}
+
+function processHidden(comment, hiddenSet) {
+    let nameTag = $(comment).find("> .comment-content .comment-meta > span:first-child > a");
+    let name = nameTag.text();
+    if (hiddenSet.has(name)) {
+        $(comment).addClass("hiddenPost");
+
+        // no siblings, so remove the enclosing comment list
+        if ($(comment).parent().children().length === 1) {
+            $(comment).parent().parent().addClass("hiddenPost");
+        }
     }
 }
 
@@ -346,12 +358,17 @@ function addCustomCollapser(collapser) {
 // processes to apply to all comments and children in a given dom element
 function processAllComments(node) {
     let date = newCommentDate();
+    // TODO implement
+    // let hiddenSet = new Set(optionShadow.hidden);
+    let hiddenSet = new Set();
+
     $(node).find("div.comment").addBack("div.comment").each(function() {
         if (optionShadow.showFullDate) {
             addDateString(this);
         }
 
         processSeenStatus(this, date);
+        processHidden(this, hiddenSet);
 
         if (optionShadow.applyCommentStyling) {
             processCommentContent(this);
