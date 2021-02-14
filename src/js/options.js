@@ -1,6 +1,3 @@
-// the local storage key of the options
-const OPTION_KEY = "options";
-
 const OPTIONS = {
     "fixHeader": {
         "default": true,
@@ -172,7 +169,7 @@ const OPTIONS = {
     },
     "resetData": {
         "default": false,
-        "type": "oneshot",
+        "type": "unused",
         "priority": 0,
         "runTime": "never",
         "reprocessCommentsOnChange": false,

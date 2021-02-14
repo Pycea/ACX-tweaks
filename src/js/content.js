@@ -13,8 +13,6 @@ if (typeof browser !== "undefined") {
 // OPTIONS loaded from options.js
 // STYLES loaded from styles.js
 
-const SEEN_DATES_KEY = "seenDates";
-
 OPTIONS.fixHeader.toggleFunc = fixHeaderOption;
 OPTIONS.hideHearts.toggleFunc = hideHeartsOption;
 OPTIONS.showFullDate.toggleFunc = showFullDateOption;
@@ -26,7 +24,6 @@ OPTIONS.applyCommentStyling.toggleFunc = applyCommentStylingOption;
 OPTIONS.useOldStyling.toggleFunc = useOldStylingOption;
 OPTIONS.loadAll.toggleFunc = loadAllOption;
 OPTIONS.hideNew.toggleFunc = hideNewOption;
-OPTIONS.resetData.toggleFunc = resetDataOption;
 
 const PageTypeEnum = Object.freeze({
     "main": "main",
@@ -161,20 +158,6 @@ function loadAllOption(value) {
 
 function hideNewOption(value) {
     $("#hideNew-css").prop("disabled", !value);
-}
-
-function resetDataOption(value) {
-    if (value) {
-        // reset options to defaults
-        for (let key in OPTIONS) {
-            optionShadow[key] = OPTIONS[key].default;
-        }
-
-        webExtension.storage.local.set({[OPTION_KEY]: optionShadow});
-
-        // clear last seen data
-        webExtension.storage.local.set({[SEEN_DATES_KEY]: {}});
-    }
 }
 
 // calls the appropriate option handling function for a given option value

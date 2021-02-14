@@ -183,7 +183,17 @@ function createResetHandler() {
     // on the second click, clear the data
     function secondClick(button) {
         $(button).removeClass("verify").html("Reset all data");
-        setOption("resetData", true);
+
+        // reset options to defaults
+        for (let key in OPTIONS) {
+            optionShadow[key] = OPTIONS[key].default;
+        }
+
+        webExtension.storage.local.set({[OPTION_KEY]: optionShadow});
+
+        // clear last seen data
+        webExtension.storage.local.set({[SEEN_DATES_KEY]: {}});
+
         window.close();
     }
 
