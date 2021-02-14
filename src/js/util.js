@@ -167,3 +167,16 @@ function getKeyPress() {
         });
     });
 }
+
+class StringRecognizer {
+    constructor(string) {
+        this.string = string;
+        this.soFar = " ".repeat(string.length);
+    }
+
+    nextInput(char) {
+        this.soFar += char;
+        this.soFar = this.soFar.substring(1);
+        return this.soFar == this.string;
+    }
+}

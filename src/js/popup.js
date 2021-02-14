@@ -282,6 +282,22 @@ function addDependencies() {
     });
 }
 
+function addDebugChecker() {
+    let debugChecker = new StringRecognizer("debug");
+
+    document.addEventListener("keydown", function(event) {
+        if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
+            return;
+        }
+
+        let checkPassed = debugChecker.nextInput(event.key);
+        if (checkPassed) {
+            console.log("yes")
+            $(".hidden").removeClass("hidden");
+        }
+    });
+}
+
 window.onload = async function() {
     await loadInitialOptionValues();
 
@@ -295,4 +311,5 @@ window.onload = async function() {
     addKeyModal();
     createResetHandler();
     addDependencies();
+    addDebugChecker();
 }
