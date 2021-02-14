@@ -20,6 +20,7 @@ OPTIONS.hideHearts.toggleFunc = hideHeartsOption;
 OPTIONS.showFullDate.toggleFunc = showFullDateOption;
 OPTIONS.use24Hour.toggleFunc = use24HourOption;
 OPTIONS.highlightNew.toggleFunc = highlightNewOption;
+OPTIONS.newTime.toggleFunc = newTimeOption;
 OPTIONS.addParentLinks.toggleFunc = addParentLinksOption;
 OPTIONS.applyCommentStyling.toggleFunc = applyCommentStylingOption;
 OPTIONS.useOldStyling.toggleFunc = useOldStylingOption;
@@ -125,6 +126,10 @@ function highlightNewOption(value) {
     }
 }
 
+function newTimeOption(value) {
+    // comments are automatically reprocessed
+}
+
 function addParentLinksOption(value) {
     $("#addParentLinks-css").prop("disabled", value);
 }
@@ -204,6 +209,21 @@ function processStorageChange(changes, namespace) {
 
 // Individual comment processing
 
+// comments newer than this date should be considered new
+function newCommentDate() {
+    // the delta is in milliseconds
+    let newCommentDelta = optionShadow.newTime;
+    let newCommentDate = new Date(new Date().getTime() - newCommentDelta);
+
+    // any comments newer than either the last time the post was seen, or the custom delta set, are
+    // considered new
+    if (lastSeenDate < newCommentDate) {
+        return lastSeenDate;
+    }
+
+    return newCommentDate;
+}
+
 function getLocalDateString(date) {
     let months = [
         "January",
@@ -257,16 +277,16 @@ function addDateString(comment) {
 
 function processSeenStatus(comment, date) {
     let commentId = getCommentIdNumber(comment);
-
     let commentDate = new Date(commentIdToDate[commentId]);
-
-    let lastNewDate = lastSeenDate;
+    let lastNewDate = newCommentDate();
 
     if (commentDate > lastNewDate) {
-        $(comment).addClass("new-comment");
-        let dateSpan = $(comment).find("> .comment-content .comment-meta > span:nth-child(2)");
-        let newTag = ("<span class='new-tag'></span>");
-        dateSpan.append(newTag);
+        if (!$(comment).hasClass("new-comment")) {
+            $(comment).addClass("new-comment");
+            let dateSpan = $(comment).find("> .comment-content .comment-meta > span:nth-child(2)");
+            let newTag = ("<span class='new-tag'></span>");
+            dateSpan.append(newTag);
+        }
     } else {
         $(comment).removeClass("new-comment");
         let dateSpan = $(comment).find("> .comment-content .comment-meta > span:nth-child(2)");

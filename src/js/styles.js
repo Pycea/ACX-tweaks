@@ -189,7 +189,7 @@ const STYLES = {
 
         div.buttons.notification-container {
             filter: brightness(3) !important;
-            transform: scale(.7)
+            transform: scale(.7) !important;
         }
 
         img.logo {

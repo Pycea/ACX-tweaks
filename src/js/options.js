@@ -43,12 +43,12 @@ const OPTIONS = {
         "hovertext": "Highlight comments that you haven't seen yet",
     },
     "newTime": {
-        "default": true,
+        "default": 0,
         "type": "toggle",
         "priority": 30,
         "runTime": "start",
-        "reprocessCommentsOnChange": false,
-        "hovertext": "Comments newer than this will also be marked as new",
+        "reprocessCommentsOnChange": true,
+        "hovertext": "Comments posted within this time period will also be marked as new",
     },
     "addParentLinks": {
         "default": true,

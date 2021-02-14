@@ -116,11 +116,11 @@
         <!-- General settings -->
         <div class="heading">General</div>
         <div id="fixHeader" class="option">
-            <input type="checkbox" id="fixHeaderCheck" class="toggleOption">
+            <input type="checkbox" id="fixHeaderCheck" class="trigger">
             <label for="fixHeaderCheck">Fix header</label>
         </div>
         <div id="useOldStyling" class="option">
-            <input type="checkbox" id="useOldStylingCheck" class="toggleOption">
+            <input type="checkbox" id="useOldStylingCheck" class="trigger">
             <label for="useOldStylingCheck">Use old styling</label>
         </div>
 
@@ -129,40 +129,43 @@
         <!-- Things applied to comments -->
         <div class="heading">Comments</div>
         <div id="hideHearts" class="option">
-            <input type="checkbox" id="hideHeartsCheck" class="toggleOption">
+            <input type="checkbox" id="hideHeartsCheck" class="trigger">
             <label for="hideHeartsCheck">Hide hearts</label>
         </div>
         <div id="showFullDate" class="option">
-            <input type="checkbox" id="showFullDateCheck" class="toggleOption">
+            <input type="checkbox" id="showFullDateCheck" class="trigger">
             <label for="showFullDateCheck">Show full comment date</label>
         </div>
         <div id="use24Hour" class="option">
-            <input type="checkbox" id="use24HourCheck" class="toggleOption">
+            <input type="checkbox" id="use24HourCheck" class="trigger">
             <label for="use24HourCheck">Use 24 hour time</label>
         </div>
         <div id="highlightNew" class="option">
-            <input type="checkbox" id="highlightNewCheck" class="toggleOption">
+            <input type="checkbox" id="highlightNewCheck" class="trigger">
             <label for="highlightNewCheck">Highlight new comments</label>
         </div>
         <div id="newTime" class="option">
-            <input type="number" id="newTimeNumber" class="numberOption">
-            <select id="newTimeSelect"><option>Day</option><option>Hour</option><option>Min</option></select>
+            <input type="number" id="newTimeNumber" min="0" class="trigger">
+            <select id="newTimeSelect" class="trigger">
+                <option value="1440">Day</option>
+                <option value="60">Hour</option>
+                <option value="1">Min</option></select>
             <label>New comment time range</label>
         </div>
         <div id="addParentLinks" class="option">
-            <input type="checkbox" id="addParentLinksCheck" class="toggleOption">
+            <input type="checkbox" id="addParentLinksCheck" class="trigger">
             <label for="addParentLinksCheck">Add parent links</label>
         </div>
         <div id="applyCommentStyling" class="option">
-            <input type="checkbox" id="applyCommentStylingCheck" class="toggleOption">
+            <input type="checkbox" id="applyCommentStylingCheck" class="trigger">
             <label for="applyCommentStylingCheck">Apply comment styling</label>
         </div>
         <div id="loadAll" class="option">
-            <input type="checkbox" id="loadAllCheck" class="toggleOption">
+            <input type="checkbox" id="loadAllCheck" class="trigger">
             <label for="loadAllCheck">Load all comments</label>
         </div>
         <div id="hideNew" class="option">
-            <input type="checkbox" id="hideNewCheck" class="toggleOption">
+            <input type="checkbox" id="hideNewCheck" class="trigger">
             <label for="hideNewCheck">Hide new comments</label>
         </div>
 
@@ -171,27 +174,27 @@
         <!-- keyboard shortcuts -->
         <div class="heading">Keyboard shortcuts</div>
         <div id="allowKeyboardShortcuts" class="option">
-            <input type="checkbox" id="allowKeyboardShortcutsCheck" class="toggleOption">
+            <input type="checkbox" id="allowKeyboardShortcutsCheck" class="trigger">
             <label for="allowKeyboardShortcutsCheck">Allow keyboard shortcuts</label>
         </div>
         <div id="smoothScroll" class="option">
-            <input type="checkbox" id="smoothScrollCheck" class="toggleOption">
+            <input type="checkbox" id="smoothScrollCheck" class="trigger">
             <label for="smoothScrollCheck">Smooth scroll</label>
         </div>
         <div id="prevCommentKey" class="option">
-            <input type="text" size="10" id="prevCommentKeyText" class="keyOption">
+            <input type="text" size="10" id="prevCommentKeyText" class="trigger">
             <label for="prevCommentKeyText">Jump to previous comment</label>
         </div>
         <div id="nextCommentKey" class="option">
-            <input type="text" size="10" id="nextCommentKeyText" class="keyOption">
+            <input type="text" size="10" id="nextCommentKeyText" class="trigger">
             <label for="nextCommentKeyText">Jump to next comment</label>
         </div>
         <div id="prevUnreadKey" class="option">
-            <input type="text" size="10" id="prevUnreadKeyText" class="keyOption">
+            <input type="text" size="10" id="prevUnreadKeyText" class="trigger">
             <label for="prevUnreadKeyText">Jump to previous unread</label>
         </div>
         <div id="nextUnreadKey" class="option">
-            <input type="text" size="10" id="nextUnreadKeyText" class="keyOption">
+            <input type="text" size="10" id="nextUnreadKeyText" class="trigger">
             <label for="nextUnreadKeyText">Jump to next unread</label>
         </div>
 
@@ -200,14 +203,14 @@
         <!-- keyboard shortcuts -->
         <div class="heading">If you're having issues</div>
         <div id="dynamicLoad" class="option">
-            <input type="checkbox" id="dynamicLoadCheck" class="toggleOption">
+            <input type="checkbox" id="dynamicLoadCheck" class="trigger">
             <label for="dynamicLoadCheck">Load new pages dynamically</label>
         </div>
 
         <div class="spacer"></div>
 
         <div id="resetData" class="option">
-            <button type="button" id="resetDataButton" class="buttonOption">Reset all data</button>
+            <button type="button" id="resetDataButton" class="trigger">Reset all data</button>
         </div>
     </div>
 </body>
