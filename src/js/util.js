@@ -4,6 +4,14 @@ const OPTION_KEY = "options";
 // the local storage key of the page last visited time
 const SEEN_DATES_KEY = "seenDates";
 
+DEBUG = false;
+
+function debug(string) {
+    if (DEBUG) {
+        console.log(string);
+    }
+}
+
 // why is js so terrible?
 function mod(a, b) {
     return ((a % b) + b) % b;

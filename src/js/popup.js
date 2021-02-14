@@ -124,11 +124,11 @@ function createChangeHandler(element) {
     }
 
     // otherwise create default handler
-    if ($(input).attr("type") === "checkbox") {
+    if ($(input).hasClass("check")) {
         $(input).change(function() {
             setOption(id, $(input).prop("checked"));
         });
-    } else if ($(input).attr("type") === "text") {
+    } else if ($(input).hasClass("key")) {
         $(input).focus(async function() {
             this.blur();
             $("#key-input-text").css("display", "inline");
@@ -137,6 +137,10 @@ function createChangeHandler(element) {
             let displayValue = keyDictToString(keyPress);
             $(this).val(displayValue);
             $("#key-input-text").css("display", "none");
+        });
+    } else if ($(input).hasClass("text")) {
+        $(input).change(function() {
+            setOption(id, $(input).val());
         });
     }
 }
@@ -152,11 +156,13 @@ async function setInitialState(element) {
         return;
     }
 
-    if ($(input).attr("type") === "checkbox") {
+    if ($(input).hasClass("check")) {
         $(input).prop("checked", setValue);
-    } else if ($(input).attr("type") === "text") {
+    } else if ($(input).hasClass("key")) {
         let displayValue = keyDictToString(setValue);
         $(input).val(displayValue);
+    } else if ($(input).hasClass("text")) {
+        $(input).val(setValue);
     }
 }
 
@@ -292,7 +298,6 @@ function addDebugChecker() {
 
         let checkPassed = debugChecker.nextInput(event.key);
         if (checkPassed) {
-            console.log("yes")
             $(".hidden").removeClass("hidden");
         }
     });

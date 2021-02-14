@@ -14,6 +14,7 @@ if (typeof browser !== "undefined") {
 // STYLES loaded from styles.js
 
 OPTIONS.fixHeader.toggleFunc = fixHeaderOption;
+OPTIONS.hideUsers.toggleFunc = hideUsersOption;
 OPTIONS.hideHearts.toggleFunc = hideHeartsOption;
 OPTIONS.showFullDate.toggleFunc = showFullDateOption;
 OPTIONS.use24Hour.toggleFunc = use24HourOption;
@@ -103,6 +104,10 @@ function fixHeaderOption(value) {
     $("#fixHeader-css").prop("disabled", !value);
 }
 
+function hideUsersOption(value) {
+    // comments are automatically reprocessed
+}
+
 function hideHeartsOption(value) {
     $("#hideHearts-css").prop("disabled", !value);
 }
@@ -164,6 +169,7 @@ function hideNewOption(value) {
 function doOptionChange(key, value, docReady=false) {
     if (key in OPTIONS && OPTIONS[key].toggleFunc) {
         OPTIONS[key].toggleFunc(value);
+        debug(`Processing option change for ${key}${OPTIONS[key].reprocessCommentsOnChange ? " and reprocessing" : ""}`);
         if (OPTIONS[key].reprocessCommentsOnChange && docReady) {
             processAllComments($("#main"));
         }
@@ -180,6 +186,7 @@ function processStorageChange(changes, namespace) {
                 let newValueString = JSON.stringify(changes.options.newValue[key]);
                 let oldValueString = JSON.stringify(optionShadow[key]);
                 if (newValueString !== oldValueString) {
+                    debug(`Got change for ${key}, ${JSON.stringify(changes.options.oldValue[key])} -> ${JSON.stringify(changes.options.newValue[key])}`);
                     optionShadow[key] = changes.options.newValue[key];
                     doOptionChange(key, changes.options.newValue[key], true);
                 }
@@ -286,6 +293,9 @@ function processHidden(comment, hiddenSet) {
         if ($(comment).parent().children().length === 1) {
             $(comment).parent().parent().addClass("hiddenPost");
         }
+    } else {
+        $(comment).removeClass("hiddenPost");
+        $(comment).parent().parent().removeClass("hiddenPost");
     }
 }
 
@@ -358,9 +368,7 @@ function addCustomCollapser(collapser) {
 // processes to apply to all comments and children in a given dom element
 function processAllComments(node) {
     let date = newCommentDate();
-    // TODO implement
-    // let hiddenSet = new Set(optionShadow.hidden);
-    let hiddenSet = new Set();
+    let hiddenSet = new Set(optionShadow.hideUsers.split(",").map(x => x.trim()));
 
     $(node).find("div.comment").addBack("div.comment").each(function() {
         if (optionShadow.showFullDate) {

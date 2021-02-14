@@ -7,6 +7,14 @@ const OPTIONS = {
         "reprocessCommentsOnChange": false,
         "hovertext": "Keep the header fixed, so it doesn't keep appearing when scrolling up",
     },
+    "hideUsers": {
+        "default": true,
+        "type": "text",
+        "priority": 40,
+        "runTime": "start",
+        "reprocessCommentsOnChange": true,
+        "hovertext": "Hide comments from the listed users, in a comma separated list",
+    },
     "hideHearts": {
         "default": true,
         "type": "toggle",

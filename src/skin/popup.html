@@ -61,6 +61,14 @@
             margin-left: 26px;
         }
 
+        #hideUsers {
+            margin-left: 4px;
+        }
+
+        #hideUsersText {
+            width: 120px;
+        }
+
         #newTime * {
             vertical-align: middle;
         }
@@ -120,11 +128,11 @@
         <!-- General settings -->
         <div class="heading">General</div>
         <div id="fixHeader" class="option">
-            <input type="checkbox" id="fixHeaderCheck" class="trigger">
+            <input type="checkbox" id="fixHeaderCheck" class="trigger check">
             <label for="fixHeaderCheck">Fix header</label>
         </div>
         <div id="useOldStyling" class="option">
-            <input type="checkbox" id="useOldStylingCheck" class="trigger">
+            <input type="checkbox" id="useOldStylingCheck" class="trigger check">
             <label for="useOldStylingCheck">Use old styling</label>
         </div>
 
@@ -133,19 +141,19 @@
         <!-- Things applied to comments -->
         <div class="heading">Comments</div>
         <div id="hideHearts" class="option">
-            <input type="checkbox" id="hideHeartsCheck" class="trigger">
+            <input type="checkbox" id="hideHeartsCheck" class="trigger check">
             <label for="hideHeartsCheck">Hide hearts</label>
         </div>
         <div id="showFullDate" class="option">
-            <input type="checkbox" id="showFullDateCheck" class="trigger">
+            <input type="checkbox" id="showFullDateCheck" class="trigger check">
             <label for="showFullDateCheck">Show full comment date</label>
         </div>
         <div id="use24Hour" class="option">
-            <input type="checkbox" id="use24HourCheck" class="trigger">
+            <input type="checkbox" id="use24HourCheck" class="trigger check">
             <label for="use24HourCheck">Use 24 hour time</label>
         </div>
         <div id="highlightNew" class="option">
-            <input type="checkbox" id="highlightNewCheck" class="trigger">
+            <input type="checkbox" id="highlightNewCheck" class="trigger check">
             <label for="highlightNewCheck">Highlight new comments</label>
         </div>
         <div id="newTime" class="option">
@@ -157,20 +165,24 @@
             <label>New comment time range</label>
         </div>
         <div id="addParentLinks" class="option">
-            <input type="checkbox" id="addParentLinksCheck" class="trigger">
+            <input type="checkbox" id="addParentLinksCheck" class="trigger check">
             <label for="addParentLinksCheck">Add parent links</label>
         </div>
         <div id="applyCommentStyling" class="option">
-            <input type="checkbox" id="applyCommentStylingCheck" class="trigger">
+            <input type="checkbox" id="applyCommentStylingCheck" class="trigger check">
             <label for="applyCommentStylingCheck">Apply comment styling</label>
         </div>
         <div id="loadAll" class="option">
-            <input type="checkbox" id="loadAllCheck" class="trigger">
+            <input type="checkbox" id="loadAllCheck" class="trigger check">
             <label for="loadAllCheck">Load all comments</label>
         </div>
         <div id="hideNew" class="option">
-            <input type="checkbox" id="hideNewCheck" class="trigger">
+            <input type="checkbox" id="hideNewCheck" class="trigger check">
             <label for="hideNewCheck">Hide new comments</label>
+        </div>
+        <div id="hideUsers" class="option hidden">
+            <input type="text" id="hideUsersText" class="trigger text">
+            <label for="hideUsersText">Hide user comments</label>
         </div>
 
         <div class="spacer"></div>
@@ -178,27 +190,27 @@
         <!-- keyboard shortcuts -->
         <div class="heading">Keyboard shortcuts</div>
         <div id="allowKeyboardShortcuts" class="option">
-            <input type="checkbox" id="allowKeyboardShortcutsCheck" class="trigger">
+            <input type="checkbox" id="allowKeyboardShortcutsCheck" class="trigger check">
             <label for="allowKeyboardShortcutsCheck">Allow keyboard shortcuts</label>
         </div>
         <div id="smoothScroll" class="option">
-            <input type="checkbox" id="smoothScrollCheck" class="trigger">
+            <input type="checkbox" id="smoothScrollCheck" class="trigger check">
             <label for="smoothScrollCheck">Smooth scroll</label>
         </div>
         <div id="prevCommentKey" class="option">
-            <input type="text" size="10" id="prevCommentKeyText" class="trigger">
+            <input type="text" size="10" id="prevCommentKeyText" class="trigger key">
             <label for="prevCommentKeyText">Jump to previous comment</label>
         </div>
         <div id="nextCommentKey" class="option">
-            <input type="text" size="10" id="nextCommentKeyText" class="trigger">
+            <input type="text" size="10" id="nextCommentKeyText" class="trigger key">
             <label for="nextCommentKeyText">Jump to next comment</label>
         </div>
         <div id="prevUnreadKey" class="option">
-            <input type="text" size="10" id="prevUnreadKeyText" class="trigger">
+            <input type="text" size="10" id="prevUnreadKeyText" class="trigger key">
             <label for="prevUnreadKeyText">Jump to previous unread</label>
         </div>
         <div id="nextUnreadKey" class="option">
-            <input type="text" size="10" id="nextUnreadKeyText" class="trigger">
+            <input type="text" size="10" id="nextUnreadKeyText" class="trigger key">
             <label for="nextUnreadKeyText">Jump to next unread</label>
         </div>
 
@@ -207,7 +219,7 @@
         <!-- keyboard shortcuts -->
         <div class="heading">If you're having issues</div>
         <div id="dynamicLoad" class="option">
-            <input type="checkbox" id="dynamicLoadCheck" class="trigger">
+            <input type="checkbox" id="dynamicLoadCheck" class="trigger check">
             <label for="dynamicLoadCheck">Load new pages dynamically</label>
         </div>
 
