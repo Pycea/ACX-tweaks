@@ -282,14 +282,6 @@ function addDependencies() {
     });
 }
 
-// make sure the reset option isn't stuck on, otherwise resetting is impossible
-async function resetDataFailsafe() {
-    let resetDataOption = await getLocalState("resetData");
-    if (resetDataOption) {
-        setOption("resetData", false);
-    }
-}
-
 window.onload = async function() {
     await loadInitialOptionValues();
 
@@ -303,5 +295,4 @@ window.onload = async function() {
     addKeyModal();
     createResetHandler();
     addDependencies();
-    resetDataFailsafe();
 }
