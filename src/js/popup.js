@@ -210,7 +210,7 @@ function addDependencies() {
     // option to use 24 hour time depends on showing the full date
     $("#showFullDateCheck").change(function() {
         if (!this.checked) {
-            $("#use24HourCheck").prop("checked", false).prop("disabled", true).trigger("change");
+            $("#use24HourCheck").prop("disabled", true).trigger("change");
         } else {
             $("#use24HourCheck").prop("disabled", false);
         }
