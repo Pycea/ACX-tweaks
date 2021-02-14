@@ -2,7 +2,7 @@
 A browser extension that provides various small improvements to the [Astral Codex Ten](https://astralcodexten.substack.com) blog on [Substack](https://substack.com).
 
 ## Compatibility
-The extension works with any browser that can use extensions on the Firefox/Chrome web stores, including Brave and Opera. Other browsers that use the WebExtension API can probably use it too, but you'll have to figure out how to sideload it youself. Safari is right out.
+The extension works with any browser that can use extensions on the Firefox/Chrome web stores, including Brave and Opera. Other browsers that use the WebExtension API can probably use it too, but you'll have to figure out how to sideload it youself. Safari is right out (see below for some options).
 
 ## Loading instructions
 ### Firefox
@@ -13,6 +13,8 @@ Available as a [Chrome extension](https://chrome.google.com/webstore/detail/acx-
 
 ### Other
 Under [releases](https://github.com/Pycea/ACX-tweaks/releases), you can get the source from the `chrome_src.zip` file under the latest release. You may be able to do something with this.
+
+If you're using Safari, you can get some of the pure CSS fixes [here](https://gist.github.com/Pycea/73eeee25ff4f697b76c0d3d36035c749). See the page for how to load them.
 
 ## Features
 - When collapsing a thread, scrolls to the parent comment
