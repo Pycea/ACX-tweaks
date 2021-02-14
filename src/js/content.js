@@ -664,11 +664,13 @@ function addNextCommentListener() {
             let index;
             if (command === KeyCommandEnum.prevComment || command === KeyCommandEnum.prevUnread) {
                 index = min;
+                index = mod(index, comments.length);
                 if (atEntry(comments[index])) {
                     index--;
                 }
             } else {
                 index = max;
+                index = mod(index, comments.length);
                 if (atEntry(comments[index])) {
                     index++;
                 }
