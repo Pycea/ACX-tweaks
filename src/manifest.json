@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "ACX Tweaks",
     "description": "Quality of life improvements for the Astral Codex Ten blog on Substack.",
-    "version": "0.11",
+    "version": "0.12",
     "permissions": [
         "storage"
     ],
