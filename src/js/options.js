@@ -8,7 +8,7 @@ const OPTIONS = {
         "hovertext": "Keep the header fixed, so it doesn't keep appearing when scrolling up",
     },
     "hideUsers": {
-        "default": true,
+        "default": "",
         "type": "text",
         "priority": 40,
         "runTime": "start",
