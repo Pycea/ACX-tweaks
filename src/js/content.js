@@ -7,11 +7,13 @@ if (typeof browser !== "undefined") {
 } else if (typeof chrome !== "undefined"){
     webExtension = chrome;
 } else {
-    console.error("What kind of browser do you have anyway? (can't get WebExtension handle)")
+    console.error("What kind of browser do you have anyway? (can't get WebExtension handle)");
 }
 
 // OPTIONS loaded from options.js
 // STYLES loaded from styles.js
+
+const SEEN_DATES_KEY = "seenDates";
 
 OPTIONS.fixHeader.toggleFunc = fixHeaderOption;
 OPTIONS.hideHearts.toggleFunc = hideHeartsOption;
@@ -39,32 +41,17 @@ const KeyCommandEnum = Object.freeze({
     "unknown": "unknown",
 });
 
-const LOCAL_DATA_KEY = "acx-seen-comments";
-
 // cache of the current options
-let optionShadow = {};
+let optionShadow;
+
+// cache of last seen date of the post
+let lastSeenDate;
 
 // bunch of metadata
 let preloads;
 
 // cache of comment ids to exact comment time
 let commentIdToDate = {};
-
-// data from local storage
-// {
-//     "<post name>": {
-//         "lastViewedDate": "<date>",
-//         "seenComments": [<comment id>, ...],
-//     },
-//     ...
-// }
-let localStorageData;
-
-// a set of the seen comments, for optimized lookup
-let seenCommentsSet;
-
-// timer for writing new seen comments to local storage
-let localStorageTimer = null;
 
 // whether to keep reacting to changes
 let observeChanges = true;
@@ -120,16 +107,6 @@ function getPostName() {
         return match[1];
     }
     return null;
-}
-
-function getLocalState(storageId) {
-    let storagePromise = new Promise(function(resolve, reject) {
-        webExtension.storage.local.get(storageId, function(items) {
-            resolve(items);
-        });
-    });
-
-    return storagePromise;
 }
 
 function getCommentId(comment) {
@@ -211,14 +188,15 @@ function hideNewOption(value) {
 
 function resetDataOption(value) {
     if (value) {
-        // clear site local storage
-        window.localStorage.clear();
-        loadLocalStorage();
-
         // reset options to defaults
         for (let key in OPTIONS) {
-            webExtension.storage.local.set({[key]: OPTIONS[key].default});
+            optionShadow[key] = OPTIONS[key].default;
         }
+
+        webExtension.storage.local.set({[OPTION_KEY]: optionShadow});
+
+        // clear last seen data
+        webExtension.storage.local.set({[SEEN_DATES_KEY]: {}});
     }
 }
 
@@ -236,33 +214,18 @@ function doOptionChange(key, value, docReady=false) {
 // was changed
 function processStorageChange(changes, namespace) {
     if (namespace === "local") {
-        for (let key in changes) {
-            // update option shadow
-            optionShadow[key] = changes[key].newValue;
-
-            doOptionChange(key, changes[key].newValue, true);
+        if (changes.options) {
+            for (let key in changes.options.newValue) {
+                // ew, but I don't really want to implement isEqual for dicts
+                let newValueString = JSON.stringify(changes.options.newValue[key]);
+                let oldValueString = JSON.stringify(optionShadow[key]);
+                if (newValueString !== oldValueString) {
+                    optionShadow[key] = changes.options.newValue[key];
+                    doOptionChange(key, changes.options.newValue[key], true);
+                }
+            }
         }
     }
-}
-
-
-
-// Dealing with saving to local storage
-
-// update the local storage with our cached version
-function saveLocalStorage() {
-    window.localStorage.setItem(LOCAL_DATA_KEY, JSON.stringify(localStorageData));
-    localStorageTimer = null;
-}
-
-// starts or resets a timer that saves any new local storage data when it expires
-// needed so that we don't have to save on every single comment load
-function startSaveTimer() {
-    if (localStorageTimer) {
-        clearTimeout(localStorageTimer);
-    }
-
-    localStorageTimer = setTimeout(saveLocalStorage, 500);
 }
 
 
@@ -320,32 +283,22 @@ function addDateString(comment) {
     }
 }
 
-function ensurePostEntry() {
-    let postName = getPostName();
-    if (!(postName in localStorageData)) {
-        localStorageData[postName] = {
-            "lastViewedDate": new Date().toISOString(),
-            "seenComments": [],
-        }
-    }
-}
-
-function addNewSeenComment(commentId) {
-    seenCommentsSet.add(commentId);
-    ensurePostEntry();
-    let postName = getPostName();
-    localStorageData[postName]["seenComments"].push(commentId);
-}
-
-function processSeenStatus(comment) {
+function processSeenStatus(comment, date) {
     let commentId = getCommentIdNumber(comment);
-    if (!seenCommentsSet.has(commentId)) {
-        addNewSeenComment(commentId);
-        startSaveTimer();
+
+    let commentDate = new Date(commentIdToDate[commentId]);
+
+    let lastNewDate = lastSeenDate;
+
+    if (commentDate > lastNewDate) {
         $(comment).addClass("new-comment");
         let dateSpan = $(comment).find("> .comment-content .comment-meta > span:nth-child(2)");
         let newTag = ("<span class='new-tag'></span>");
         dateSpan.append(newTag);
+    } else {
+        $(comment).removeClass("new-comment");
+        let dateSpan = $(comment).find("> .comment-content .comment-meta > span:nth-child(2)");
+        dateSpan.find(".new-tag").remove();
     }
 }
 
@@ -442,16 +395,7 @@ function processMainPage() {
     // nothing to do
 }
 
-function updatePostReadDate() {
-    let postName = getPostName();
-    ensurePostEntry(postName);
-    localStorageData[postName]["lastViewedDate"] = new Date().toISOString();
-    startSaveTimer();
-}
-
 async function processPostPage() {
-    updatePostReadDate();
-
     // oh god oh god
     setTimeout(function() {
         loadAllOption(optionShadow.loadAll);
@@ -537,14 +481,18 @@ async function loadInitialOptionValues() {
     let keys = Object.keys(OPTIONS);
     keys.sort((a, b) => OPTIONS[b].priority - OPTIONS[a].priority);
 
+    optionShadow = await getLocalState(OPTION_KEY);
+    if (!optionShadow) {
+        optionShadow = {};
+    }
+
     for (let i = 0; i < keys.length; i++) {
         let key = keys[i];
-        let storageValue = await getLocalState(key);
-        let value = storageValue[key];
+        let value = optionShadow[key];
         if (value === undefined) {
             // the option hasn't been set in local storage, set it to the default
             value = OPTIONS[key].default;
-            webExtension.storage.local.set({[key]: value});
+            optionShadow[key] = value;
         }
 
         if (OPTIONS[key].runTime === "start") {
@@ -558,28 +506,32 @@ async function loadInitialOptionValues() {
         } else {
             console.error("Bad run time found: " + OPTIONS[key].runTime);
         }
-
-        // update the option shadow
-        optionShadow[key] = value;
     }
+
+    webExtension.storage.local.set({[OPTION_KEY]: optionShadow});
 }
 
-function loadLocalStorage() {
-    let dataString = window.localStorage.getItem(LOCAL_DATA_KEY);
-    if (!dataString) {
-        dataString = "{}";
+// load the values of the last seen dates of posts
+async function loadInitialPostSeenDate() {
+    let postSeenDates = await getLocalState(SEEN_DATES_KEY);
+    if (!postSeenDates) {
+        postSeenDates = {};
     }
-    localStorageData = JSON.parse(dataString);
+
+    // get previous last seen date, or start of epoch if it doesn't exist
     let postName = getPostName();
-    seenCommentsSet = new Set(
-        localStorageData[postName] ? localStorageData[postName]["seenComments"] : []);
+    lastSeenDate = new Date(postSeenDates[postName] || 0);
+
+    // update last seen date to now
+    postSeenDates[postName] = new Date().toISOString();
+    webExtension.storage.local.set({[SEEN_DATES_KEY]: postSeenDates});
 }
 
 async function preloadSetup() {
     addStyles();
     await loadInitialOptionValues();
+    await loadInitialPostSeenDate();
     webExtension.storage.onChanged.addListener(processStorageChange);
-    loadLocalStorage();
 }
 
 

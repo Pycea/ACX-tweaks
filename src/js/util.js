@@ -1,3 +1,13 @@
+function getLocalState(storageId) {
+    let storagePromise = new Promise(function(resolve, reject) {
+        webExtension.storage.local.get(storageId, function(items) {
+            resolve(items[storageId]);
+        });
+    });
+
+    return storagePromise;
+}
+
 const keyCodes = {
     8: "backspace",
     9: "tab",

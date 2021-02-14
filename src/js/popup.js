@@ -8,7 +8,30 @@ if (typeof browser !== "undefined") {
 } else if (typeof chrome !== "undefined"){
     webExtension = chrome;
 } else {
-    console.error("What kind of browser do you have anyway? (can't get WebExtension handle)")
+    console.error("What kind of browser do you have anyway? (can't get WebExtension handle)");
+}
+
+// cache of the current options
+let optionShadow;
+
+
+
+function setOption(key, value) {
+    optionShadow[key] = value;
+    webExtension.storage.local.set({[OPTION_KEY]: optionShadow});
+}
+
+async function loadInitialOptionValues() {
+    optionShadow = await getLocalState(OPTION_KEY);
+    if (!optionShadow) {
+        optionShadow = {};
+    }
+
+    for (let key in OPTIONS) {
+        if (optionShadow[key] === undefined) {
+            optionShadow[key] = OPTIONS[key].default;
+        }
+    }
 }
 
 function addHovertext(element) {
@@ -42,30 +65,20 @@ function addHovertext(element) {
     });
 }
 
-function getLocalState(storageId) {
-    let storagePromise = new Promise(function(resolve, reject) {
-        webExtension.storage.local.get(storageId, function(items) {
-            resolve(items);
-        });
-    });
-
-    return storagePromise;
-}
-
 function createChangeHandler(element) {
     let id = $(element).attr("id");
     let input = $(element).find("input");
 
     if ($(input).attr("type") === "checkbox") {
         $(input).change(function() {
-            webExtension.storage.local.set({[id]: $(input).prop("checked")});
+            setOption(id, $(input).prop("checked"));
         });
     } else if ($(input).attr("type") === "text") {
         $(input).focus(async function() {
             this.blur();
             $("#key-input-text").css("display", "inline");
             let keyPress = await getKeyPress();
-            webExtension.storage.local.set({[id]: keyPress});
+            setOption(id, keyPress);
             let displayValue = keyDictToString(keyPress);
             $(this).val(displayValue);
             $("#key-input-text").css("display", "none");
@@ -76,9 +89,7 @@ function createChangeHandler(element) {
 async function setInitialState(element) {
     let id = $(element).attr("id");
     let input = $(element).find("input");
-    let storedValue = await getLocalState(id);
-    let setValue = storedValue[id] === undefined ? OPTIONS[id].default : storedValue[id];
-
+    let setValue = optionShadow[id];
 
     if ($(input).attr("type") === "checkbox") {
         $(input).prop("checked", setValue);
@@ -111,7 +122,7 @@ function createResetHandler() {
     // on the second click, clear the data
     function secondClick(button) {
         $(button).removeClass("verify").html("Reset all data");
-        webExtension.storage.local.set({"resetData": true});
+        setOption("resetData", true);
         window.close();
     }
 
@@ -177,12 +188,14 @@ function addDependencies() {
 // make sure the reset option isn't stuck on, otherwise resetting is impossible
 async function resetDataFailsafe() {
     let resetDataOption = await getLocalState("resetData");
-    if (resetDataOption["resetData"]) {
-        webExtension.storage.local.set({"resetData": false});
+    if (resetDataOption) {
+        setOption("resetData", false);
     }
 }
 
 window.onload = async function() {
+    await loadInitialOptionValues();
+
     let promiseArray = [];
     for (let option of $(".option")) {
         promiseArray.push(processOption(option));
