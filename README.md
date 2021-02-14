@@ -16,6 +16,8 @@ Under [releases](https://github.com/Pycea/ACX-tweaks/releases), you can get the 
 
 ## Features
 - When collapsing a thread, scrolls to the parent comment
+- Keyboard shortcuts
+    - Configurable keys for scrolling to the previous or next unread comment
 - User configurable options
     - Keeps the header above the post, so it doesn't keep appearing whenever you scroll up a little.
     - Hides reactions (hearts). However, the note that the author liked a given comment is not removed.
