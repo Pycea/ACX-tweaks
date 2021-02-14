@@ -258,10 +258,10 @@ function addDateString(comment) {
     }
 }
 
-function processSeenStatus(comment, date) {
+function processSeenStatus(comment, lastNewDate) {
     let commentId = getCommentIdNumber(comment);
     let commentDate = new Date(commentIdToDate[commentId]);
-    let lastNewDate = newCommentDate();
+    // let lastNewDate = newCommentDate();
 
     if (commentDate > lastNewDate) {
         if (!$(comment).hasClass("new-comment")) {
@@ -345,12 +345,13 @@ function addCustomCollapser(collapser) {
 
 // processes to apply to all comments and children in a given dom element
 function processAllComments(node) {
+    let date = newCommentDate();
     $(node).find("div.comment").addBack("div.comment").each(function() {
         if (optionShadow.showFullDate) {
             addDateString(this);
         }
 
-        processSeenStatus(this);
+        processSeenStatus(this, date);
 
         if (optionShadow.applyCommentStyling) {
             processCommentContent(this);
