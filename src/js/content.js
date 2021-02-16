@@ -462,17 +462,23 @@ function processMutation(mutation) {
 
 // Setup before page load
 
-// adds styles for all the features, which can be disabled later
-function addStyles() {
+function addStyle(key) {
+    let value = STYLES[key];
+    let css = value.css;
+    let style = $("<style>", {
+        "id": `${key}-css`,
+        "html": css,
+    });
+
+    $(document.documentElement).append(style);
+}
+
+// add styles for features
+function addStyles(atStart) {
     for (let key in STYLES) {
-        let css = STYLES[key];
-
-        let style = $("<style>", {
-            id: `${key}-css`,
-            html: css,
-        });
-
-        $(document.documentElement).append(style);
+        if (STYLES[key].runAtStart === atStart) {
+            addStyle(key);
+        }
     }
 }
 
@@ -529,7 +535,7 @@ async function loadInitialPostSeenDate() {
 }
 
 async function preloadSetup() {
-    addStyles();
+    addStyles(true);
     await loadInitialOptionValues();
     await loadInitialPostSeenDate();
     webExtension.storage.onChanged.addListener(processStorageChange);
@@ -713,11 +719,12 @@ function addNextCommentListener() {
 
 async function setup() {
     if (getPageType() === PageTypeEnum.post) {
-        processPreloads();
+        await processPreloads();
     }
 
     addDomObserver();
     processNewPageType();
+    addStyles(false);
     addParentClickListener();
     addNextCommentListener();
 }
