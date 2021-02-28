@@ -65,7 +65,7 @@ const STYLES = {
                 display: inline !important;
             }
 
-            .comment-body span:not(.new-style) {
+            .comment-body span.old-style {
                 display: none !important;
             }`,
         "runAtStart": false,

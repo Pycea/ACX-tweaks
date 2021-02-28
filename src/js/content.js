@@ -327,6 +327,7 @@ function processCommentContent(comment) {
     $(commentBody).find("p span").each(function() {
         // only process the text once
         if ($(this).siblings().length === 0) {
+            $(this).addClass("old-style");
             let newText = processCommentParagraph($(this).html());
             let newSpan = `<span class="new-style">${newText}</span>`;
             $(this).parent().append(newSpan);
