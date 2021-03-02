@@ -541,6 +541,8 @@ let optionArray = [
 //     run onCommentChange with comment
 // When option change:
 //     run onValueChange with new value
+// On dynamic page load:
+//     run onLoad
 
 let OPTIONS = {};
 

@@ -98,15 +98,22 @@ function doOptionChange(key, value) {
 function processStorageChange(changes, namespace) {
     if (namespace === "local") {
         if (changes.options) {
+            let changedKeys = [];
+
             for (let key in changes.options.newValue) {
                 // ew, but I don't really want to implement isEqual for dicts
                 let newValueString = JSON.stringify(changes.options.newValue[key]);
                 let oldValueString = JSON.stringify(optionShadow[key]);
+
                 if (newValueString !== oldValueString) {
                     debug(`Got change for ${key}, ${JSON.stringify(changes.options.oldValue[key])} -> ${JSON.stringify(changes.options.newValue[key])}`);
                     optionShadow[key] = changes.options.newValue[key];
-                    doOptionChange(key, changes.options.newValue[key]);
+                    changedKeys.push(key);
                 }
+            }
+
+            for (let key of changedKeys) {
+                doOptionChange(key, changes.options.newValue[key]);
             }
         }
     }
