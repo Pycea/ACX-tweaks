@@ -60,6 +60,10 @@ blockquote blockquote {
     margin: 0 0 !important;
 }
 
+.comment-list-container blockquote > * {
+    margin-left: 0 !important;
+}
+
 /* Don't display hidden posts */
 
 .hiddenPost {
