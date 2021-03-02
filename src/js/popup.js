@@ -226,19 +226,6 @@ function addDependencies() {
         $("#use24HourCheck").prop("disabled", true);
     }
 
-    // option to hide new comments depends on loading all
-    $("#loadAllCheck").change(function() {
-        if (!this.checked) {
-            $("#hideNewCheck").prop("checked", false).prop("disabled", true).trigger("change");
-        } else {
-            $("#hideNewCheck").prop("disabled", false);
-        }
-    });
-
-    if (!($("#loadAllCheck").prop("checked"))) {
-        $("#hideNewCheck").prop("disabled", true);
-    }
-
     // option to highlight recent comments depends on highlighting comments
     $("#highlightNewCheck").change(function() {
         if (!this.checked) {

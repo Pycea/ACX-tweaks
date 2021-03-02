@@ -303,11 +303,11 @@ const STYLES = {
     },
     "hideNew": {
         "css": `
-            button.collapsed-reply {
+            button.new-comments {
                 display: none;
             }
 
-            .comments-page .container .comment-list.has-new-comments {
+            .comment-list-container .comment-list.has-new-comments {
                 padding-top: 12px !important;
             }`,
     },

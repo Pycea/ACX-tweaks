@@ -155,17 +155,17 @@ function processAllComments() {
 
 // processes to apply to all comments and children in a given dom element
 function processChildComments(node) {
-    let handlerObjects = [];
+    let commentHandlerObjects = [];
 
     for (let option in OPTIONS) {
         if (OPTIONS[option].onCommentChange && optionShadow[option]) {
-            handlerObjects.push(OPTIONS[option]);
+            commentHandlerObjects.push(OPTIONS[option]);
         }
     }
 
-    if (handlerObjects.length > 0) {
+    if (commentHandlerObjects.length > 0) {
         $(node).find("div.comment").addBack("div.comment").each(function() {
-            for (let object of handlerObjects) {
+            for (let object of commentHandlerObjects) {
                 object.onCommentChange(this);
             }
         });
@@ -217,6 +217,21 @@ function processMutation(mutation) {
         }
     } else {
         // do nothing
+    }
+
+    // call mutation handlers
+    let mutationHandlerObjects = [];
+
+    for (let option in OPTIONS) {
+        if (OPTIONS[option].onMutation && optionShadow[option]) {
+            mutationHandlerObjects.push(OPTIONS[option]);
+        }
+    }
+
+    if (mutationHandlerObjects.length > 0) {
+        for (let object of mutationHandlerObjects) {
+            object.onMutation(mutation);
+        }
     }
 }
 

@@ -19,6 +19,7 @@ function addStyle(key) {
 //     onStart: function() { ... },
 //     onLoad: function() { ... },
 //     onCommentChange: function(comment) { ... },
+//     onMutation: function(mutation) { ... },
 //     onValueChange: function(value, isInitial) { ... },
 // }
 //
@@ -304,6 +305,41 @@ let loadAllOption = {
     },
 }
 
+let hideNewOption = {
+    key: "hideNew",
+    default: false,
+    hovertext: "Hide the button that shows when new comments have been added",
+    onStart: function() {
+        addStyle(this.key);
+    },
+    processButton: function(button) {
+        if ($(button).text().includes("new")) {
+            $(button).addClass("new-comments");
+        }
+    },
+    onMutation: function(mutation) {
+        if (!mutation.target.classList.contains("collapsed")) {
+            return;
+        }
+
+        for (let i = 0; i < mutation.addedNodes.length; i++) {
+            let node = mutation.addedNodes[i];
+            if (node.classList.contains("collapsed-reply")) {
+                this.processButton(node);
+            }
+        }
+    },
+    onValueChange: function(value, isInitial) {
+        $(`#${this.key}-css`).prop("disabled", !value);
+        if (value && !isInitial) {
+            let processFunc = this.processButton
+            $("#main").find("button.collapsed-reply").each(function() {
+                processFunc(this);
+            });
+        }
+    },
+}
+
 let hideUsersOption = {
     key: "hideUsers",
     default: "",
@@ -417,6 +453,7 @@ let optionArray = [
     addParentLinksOption,
     applyCommentStylingOption,
     loadAllOption,
+    hideNewOption,
     hideUsersOption,
     allowKeyboardShortcutsOption,
     smoothScrollOption,
