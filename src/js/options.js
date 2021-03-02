@@ -397,20 +397,25 @@ let hideUsersOption = {
         let nameTag = $(comment).find("> .comment-content .comment-meta > span:first-child > a");
         let name = nameTag.text();
         if (this.hiddenSet.has(name)) {
-            $(comment).addClass("hiddenPost");
+            $(comment).addClass("hidden-post");
 
-            // no siblings, so remove the enclosing comment list
-            if ($(comment).parent().children().length === 1) {
-                $(comment).parent().parent().addClass("hiddenPost");
+            // no visible siblings, so remove the enclosing comment list
+            if ($(comment).parent().children(":not(.hidden-post)").length === 0) {
+                $(comment).parent().parent().addClass("hidden-post");
             }
         } else {
-            $(comment).removeClass("hiddenPost");
-            $(comment).parent().parent().removeClass("hiddenPost");
+            $(comment).removeClass("hidden-post");
+            $(comment).parent().parent().removeClass("hidden-post");
         }
     },
     onValueChange: function(value, isInitial) {
         this.hiddenSet = new Set(optionShadow[this.key].split(",").map(x => x.trim()).filter(x => x));
-        if (value && !isInitial) {
+
+        if (value) {
+            this.alwaysProcessComments = true;
+        }
+
+        if (!isInitial) {
             processAllComments();
         }
     },

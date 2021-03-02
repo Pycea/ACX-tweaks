@@ -66,6 +66,12 @@ blockquote blockquote {
 
 /* Don't display hidden posts */
 
-.hiddenPost {
+.hidden-post {
     display: none;
+}
+
+/* is this a hack? */
+.hidden-post:first-child + .comment, .hidden-post:first-child + .hidden-post + .comment,
+.hidden-post:first-child + .hidden-post + .hidden-post + .comment {
+    margin-top: 0 !important;
 }
