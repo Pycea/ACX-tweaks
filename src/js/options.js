@@ -198,36 +198,27 @@ let highlightNewOption = {
         let newCommentDelta = optionShadow.newTime;
         let newCommentDate = new Date(new Date().getTime() - newCommentDelta);
 
-        // any comments newer than either the last time the post was seen, or the custom delta set, are
-        // considered new
-        if (lastSeenDate < newCommentDate) {
-            this.lastNewDate = lastSeenDate;
-        } else {
-            this.lastNewDate = newCommentDate;
-        }
+        this.newCommentDate = newCommentDate;
     },
     onCommentChange: function(comment) {
-        function processCommentNew(comment, lastNewDate) {
-            let commentId = getCommentIdNumber(comment);
-            let commentDate = new Date(commentIdToDate[commentId]);
+        let commentId = getCommentIdNumber(comment);
+        let commentDate = new Date(commentIdToDate[commentId]);
+        let commentSeen = seenCommentsSet.has(commentId);
 
-            if (commentDate > lastNewDate) {
-                if (!$(comment).hasClass("new-comment")) {
-                    $(comment).addClass("new-comment");
-                    let dateSpan = $(comment).find("> .comment-content .comment-meta > span:nth-child(2)");
-                    let newTagText = ("<span class='new-tag-text'>~new~</span>");
-                    let newTagCss = ("<span class='new-tag-css'></span>");
-                    dateSpan.append(newTagText);
-                    dateSpan.append(newTagCss);
-                }
-            } else {
-                $(comment).removeClass("new-comment");
+        if (!commentSeen || commentDate > this.newCommentDate) {
+            if (!$(comment).hasClass("new-comment")) {
+                $(comment).addClass("new-comment");
                 let dateSpan = $(comment).find("> .comment-content .comment-meta > span:nth-child(2)");
-                dateSpan.find(".new-tag").remove();
+                let newTagText = ("<span class='new-tag-text'>~new~</span>");
+                let newTagCss = ("<span class='new-tag-css'></span>");
+                dateSpan.append(newTagText);
+                dateSpan.append(newTagCss);
             }
+        } else {
+            $(comment).removeClass("new-comment");
+            let dateSpan = $(comment).find("> .comment-content .comment-meta > span:nth-child(2)");
+            dateSpan.find(".new-tag").remove();
         }
-
-        processCommentNew(comment, this.lastNewDate);
     },
     onValueChange: function(value, isInitial) {
         if (value) {

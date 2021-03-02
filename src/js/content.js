@@ -31,14 +31,27 @@ const KeyCommandEnum = Object.freeze({
 // cache of the current options
 let optionShadow;
 
-// cache of last seen date of the post
-let lastSeenDate;
+// data from local storage
+// {
+//     "<post name>": {
+//         "lastViewedDate": "<date>",
+//         "seenComments": [<comment id>, ...],
+//     },
+//     ...
+// }
+let localStorageData;
+
+// a set of the seen comments, for optimized lookup
+let seenCommentsSet;
 
 // bunch of metadata
 let preloads;
 
 // cache of comment ids to exact comment time
 let commentIdToDate = {};
+
+// timer for writing new seen comments to local storage
+let localStorageTimer = null;
 
 // whether to keep reacting to changes
 let observeChanges = true;
@@ -103,6 +116,38 @@ function processStorageChange(changes, namespace) {
 
 // Individual comment processing
 
+function ensurePostEntry() {
+    let postName = getPostName();
+    if (!(postName in localStorageData)) {
+        localStorageData[postName] = {
+            "lastViewedDate": new Date().toISOString(),
+            "seenComments": [],
+        }
+    }
+}
+
+function addNewSeenComment(commentId) {
+    ensurePostEntry();
+    let postName = getPostName();
+    localStorageData[postName]["seenComments"].push(commentId);
+}
+
+// update the local storage with our cached version
+function saveLocalStorage() {
+    window.localStorage.setItem(LOCAL_DATA_KEY, JSON.stringify(localStorageData));
+    localStorageTimer = null;
+}
+
+// starts or resets a timer that saves any new local storage data when it expires
+// needed so that we don't have to save on every single comment load
+function startSaveTimer() {
+    if (localStorageTimer) {
+        clearTimeout(localStorageTimer);
+    }
+
+    localStorageTimer = setTimeout(saveLocalStorage, 500);
+}
+
 function addCustomCollapser(collapser) {
     collapser = $(collapser);
 
@@ -153,6 +198,10 @@ function processChildComments(node) {
             for (let object of commentHandlerObjects) {
                 object.onCommentChange(this);
             }
+
+            let commentId = getCommentIdNumber(this);
+            addNewSeenComment(commentId);
+            startSaveTimer();
         });
     }
 
@@ -257,26 +306,21 @@ async function loadInitialOptionValues() {
     webExtension.storage.local.set({[OPTION_KEY]: optionShadow});
 }
 
-// load the values of the last seen dates of posts
-async function loadInitialPostSeenDate() {
-    let postSeenDates = await getLocalState(SEEN_DATES_KEY);
-    if (!postSeenDates) {
-        postSeenDates = {};
+function loadLocalStorage() {
+    let dataString = window.localStorage.getItem(LOCAL_DATA_KEY);
+    if (!dataString) {
+        dataString = "{}";
     }
-
-    // get previous last seen date, or start of epoch if it doesn't exist
+    localStorageData = JSON.parse(dataString);
     let postName = getPostName();
-    lastSeenDate = new Date(postSeenDates[postName] || 0);
-
-    // update last seen date to now
-    postSeenDates[postName] = new Date().toISOString();
-    webExtension.storage.local.set({[SEEN_DATES_KEY]: postSeenDates});
+    seenCommentsSet = new Set(
+        localStorageData[postName] ? localStorageData[postName]["seenComments"] : []);
 }
 
 // called when the extension is first loaded
 async function preloadSetup() {
     await loadInitialOptionValues();
-    await loadInitialPostSeenDate();
+    await loadLocalStorage();
     webExtension.storage.onChanged.addListener(processStorageChange);
 }
 
@@ -333,6 +377,13 @@ async function processPreloads() {
     await getPreloads();
     createPreloadCache();
     processAllComments();
+}
+
+function updatePostReadDate() {
+    let postName = getPostName();
+    ensurePostEntry(postName);
+    localStorageData[postName]["lastViewedDate"] = new Date().toISOString();
+    startSaveTimer();
 }
 
 function addDomObserver() {
@@ -461,6 +512,7 @@ function addKeyListener() {
 async function setup() {
     if (getPageType() === PageTypeEnum.post) {
         await processPreloads();
+        updatePostReadDate();
     }
 
     addDomObserver();

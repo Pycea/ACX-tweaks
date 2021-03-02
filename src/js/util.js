@@ -2,7 +2,14 @@
 const OPTION_KEY = "options";
 
 // the local storage key of the page last visited time
-const SEEN_DATES_KEY = "seenDates";
+// SEEN_COMMENTS_KEY: {
+//     "title": [
+//         commentId,
+//         ...
+//     ],
+//     ...
+// }
+const LOCAL_DATA_KEY = "acx-local-data";
 
 DEBUG = false;
 
@@ -51,19 +58,19 @@ function getLocalState(storageId) {
 }
 
 function getCommentId(comment) {
-    return $(comment).children().first().attr("id");
+    return comment.firstElementChild.id;
 }
 
 function getCommentIdNumber(comment) {
     let idString = getCommentId(comment);
-    let idRegexMatch = idString.match(/comment-(\d+)/);
+    let id = parseInt(idString.substring(8));
 
-    if (!idRegexMatch) {
+    if (!id) {
         console.error(`Bad comment id found: ${idString}`);
         return;
     }
 
-    return parseInt(idRegexMatch[1]);
+    return id;
 }
 
 const keyCodes = {
