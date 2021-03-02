@@ -34,13 +34,13 @@
 
 /* Highlight for new comments */
 
-.new-tag {
+.new-tag-text {
     color: #d35400;
     margin-left: 6px;
 }
 
-.new-tag:after {
-    content: "~new~";
+.new-tag-css {
+    margin-left: 6px;
 }
 
 /* Hide new comment styling if not using comment styling option */

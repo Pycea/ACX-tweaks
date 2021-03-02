@@ -225,7 +225,7 @@ const STYLES = {
                  border: 2px solid #5a5 !important;
             }
 
-            .new-tag {
+            .new-tag-text {
                 color: #c5c5c5 !important;
             }
 

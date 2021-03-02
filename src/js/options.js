@@ -215,8 +215,10 @@ let highlightNewOption = {
                 if (!$(comment).hasClass("new-comment")) {
                     $(comment).addClass("new-comment");
                     let dateSpan = $(comment).find("> .comment-content .comment-meta > span:nth-child(2)");
-                    let newTag = ("<span class='new-tag'></span>");
-                    dateSpan.append(newTag);
+                    let newTagText = ("<span class='new-tag-text'>~new~</span>");
+                    let newTagCss = ("<span class='new-tag-css'></span>");
+                    dateSpan.append(newTagText);
+                    dateSpan.append(newTagCss);
                 }
             } else {
                 $(comment).removeClass("new-comment");
