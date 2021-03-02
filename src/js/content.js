@@ -234,7 +234,17 @@ function processMutation(mutation) {
             mutation.target.classList.contains("single-post") &&
             mutation.addedNodes[0].tagName.toLowerCase() === "article") {
         // we switched to a different page with pushState
-        if (!optionShadow.dynamicLoad) {
+        if (optionShadow.dynamicLoad) {
+            for (let key in OPTIONS) {
+                if (OPTIONS[key].onLoad) {
+                    $(document).ready(function() {
+                        OPTIONS[key].onLoad();
+                    });
+                }
+
+                processAllComments();
+            }
+        } else {
             // don't react to any more updates
             observeChanges = false;
 
