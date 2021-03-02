@@ -165,11 +165,15 @@ function isMatchingKeyEvent(keyDict, event) {
 
 function getKeyPress() {
     return new Promise(function(resolve, reject) {
-        $(document).one("keydown", function(event) {
+        function keyPress(event) {
             if (!["Control", "Alt", "Shift", "Meta"].includes(event.key)) {
                 resolve(getKeyDictFromEvent(event));
+            } else {
+                $(document).one("keydown", keyPress);
             }
-        });
+        }
+
+        $(document).one("keydown", keyPress);
         $(document).one("mousedown", function(event) {
             resolve(getKeyDictFromEvent(null));
         });
