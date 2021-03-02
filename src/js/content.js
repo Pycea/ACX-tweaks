@@ -245,7 +245,7 @@ function processMutation(mutation) {
         // check for comments
         for (let i = 0; i < mutation.addedNodes.length; i++) {
             let node = mutation.addedNodes[i];
-            if (nodeHasClass(node, ["comment", "comment-list", "comment-list-items", "comment-list-collapser"])) {
+            if (nodeHasClass(node, ["comment", "comment-list", "comment-list-container", "comment-list-items", "comment-list-collapser"])) {
                 processChildComments(node);
             }
         }
