@@ -249,12 +249,14 @@ function addDependencies() {
             $("#nextCommentKeyText").prop("disabled", true);
             $("#prevUnreadKeyText").prop("disabled", true);
             $("#nextUnreadKeyText").prop("disabled", true);
+            $("#parentKeyText").prop("disabled", true);
         } else {
             $("#smoothScrollCheck").prop("disabled", false);
             $("#prevCommentKeyText").prop("disabled", false);
             $("#nextCommentKeyText").prop("disabled", false);
             $("#prevUnreadKeyText").prop("disabled", false);
             $("#nextUnreadKeyText").prop("disabled", false);
+            $("#parentKeyText").prop("disabled", false);
         }
     });
 
@@ -264,6 +266,7 @@ function addDependencies() {
         $("#nextCommentKeyText").prop("disabled", true);
         $("#prevUnreadKeyText").prop("disabled", true);
         $("#nextUnreadKeyText").prop("disabled", true);
+        $("#parentKeyText").prop("disabled", true);
     }
 
     // update newTime setting on each keystroke, not just when the value changes
