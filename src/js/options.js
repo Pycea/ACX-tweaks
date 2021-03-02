@@ -205,7 +205,7 @@ let highlightNewOption = {
         let commentDate = new Date(commentIdToDate[commentId]);
         let commentSeen = seenCommentsSet.has(commentId);
 
-        if (!commentSeen || commentDate > this.newCommentDate) {
+        if ((!commentSeen || commentDate > this.newCommentDate) && optionShadow[this.key]) {
             if (!$(comment).hasClass("new-comment")) {
                 $(comment).addClass("new-comment");
                 let dateSpan = $(comment).find("> .comment-content .comment-meta > span:nth-child(2)");
@@ -217,17 +217,20 @@ let highlightNewOption = {
         } else {
             $(comment).removeClass("new-comment");
             let dateSpan = $(comment).find("> .comment-content .comment-meta > span:nth-child(2)");
-            dateSpan.find(".new-tag").remove();
+            dateSpan.find(".new-tag-text").remove();
+            dateSpan.find(".new-tag-css").remove();
         }
     },
     onValueChange: function(value, isInitial) {
         if (value) {
+            this.alwaysProcessComments = true;
             $(document.documentElement).addClass("highlight-new");
-            if (!isInitial) {
-                processAllComments();
-            }
         } else {
             $(document.documentElement).removeClass("highlight-new");
+        }
+
+        if (!isInitial) {
+            processAllComments();
         }
     },
 }
