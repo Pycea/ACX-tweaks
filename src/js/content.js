@@ -13,19 +13,6 @@ if (typeof browser !== "undefined") {
 // OPTIONS loaded from options.js
 // STYLES loaded from styles.js
 
-OPTIONS.fixHeader.toggleFunc = fixHeaderOption;
-OPTIONS.hideUsers.toggleFunc = hideUsersOption;
-OPTIONS.hideHearts.toggleFunc = hideHeartsOption;
-OPTIONS.showFullDate.toggleFunc = showFullDateOption;
-OPTIONS.use24Hour.toggleFunc = use24HourOption;
-OPTIONS.highlightNew.toggleFunc = highlightNewOption;
-OPTIONS.newTime.toggleFunc = newTimeOption;
-OPTIONS.addParentLinks.toggleFunc = addParentLinksOption;
-OPTIONS.applyCommentStyling.toggleFunc = applyCommentStylingOption;
-OPTIONS.useOldStyling.toggleFunc = useOldStylingOption;
-OPTIONS.loadAll.toggleFunc = loadAllOption;
-OPTIONS.hideNew.toggleFunc = hideNewOption;
-
 const PageTypeEnum = Object.freeze({
     "main": "main",
     "post": "post",
@@ -100,79 +87,11 @@ function getCommentIdNumber(comment) {
 
 // Dealing with option changes
 
-function fixHeaderOption(value) {
-    $("#fixHeader-css").prop("disabled", !value);
-}
-
-function hideUsersOption(value) {
-    // comments are automatically reprocessed
-}
-
-function hideHeartsOption(value) {
-    $("#hideHearts-css").prop("disabled", !value);
-}
-
-function showFullDateOption(value) {
-    $("#showFullDate-css").prop("disabled", !value);
-}
-
-function use24HourOption(value) {
-    $("#use24Hour-css").prop("disabled", !value);
-}
-
-function highlightNewOption(value) {
-    if (value) {
-        $(document.documentElement).addClass("highlight-new");
-    } else {
-        $(document.documentElement).removeClass("highlight-new");
-    }
-}
-
-function newTimeOption(value) {
-    // comments are automatically reprocessed
-}
-
-function addParentLinksOption(value) {
-    $("#addParentLinks-css").prop("disabled", value);
-}
-
-function applyCommentStylingOption(value) {
-    $("#applyCommentStyling-css").prop("disabled", !value);
-}
-
-function useOldStylingOption(value) {
-    $("#useOldStyling-css").prop("disabled", !value);
-}
-
-function loadAllOption(value) {
-    // this is ugliness incarnate, but what else are ya gonna do with substack?
-    function recursiveExpand() {
-        let expandButtons = $("button.collapsed-reply");
-        if (expandButtons.length) {
-            expandButtons.click();
-            setTimeout(recursiveExpand, 500);
-        }
-    }
-
-    if (value) {
-        recursiveExpand();
-    } else {
-        // nothing to do once the page is loaded
-    }
-}
-
-function hideNewOption(value) {
-    $("#hideNew-css").prop("disabled", !value);
-}
-
-// calls the appropriate option handling function for a given option value
-function doOptionChange(key, value, docReady=false) {
-    if (key in OPTIONS && OPTIONS[key].toggleFunc) {
-        OPTIONS[key].toggleFunc(value);
-        debug(`Processing option change for ${key}${OPTIONS[key].reprocessCommentsOnChange ? " and reprocessing" : ""}`);
-        if (OPTIONS[key].reprocessCommentsOnChange && docReady) {
-            processAllComments($("#main"));
-        }
+// calls the option handling function for the given option value
+function doOptionChange(key, value) {
+    if (key in OPTIONS && OPTIONS[key].onValueChange) {
+        debug(`Processing option change for ${key}`);
+        OPTIONS[key].onValueChange(value, false);
     }
 }
 
@@ -188,7 +107,7 @@ function processStorageChange(changes, namespace) {
                 if (newValueString !== oldValueString) {
                     debug(`Got change for ${key}, ${JSON.stringify(changes.options.oldValue[key])} -> ${JSON.stringify(changes.options.newValue[key])}`);
                     optionShadow[key] = changes.options.newValue[key];
-                    doOptionChange(key, changes.options.newValue[key], true);
+                    doOptionChange(key, changes.options.newValue[key]);
                 }
             }
         }
@@ -198,142 +117,6 @@ function processStorageChange(changes, namespace) {
 
 
 // Individual comment processing
-
-// comments newer than this date should be considered new
-function newCommentDate() {
-    // the delta is in milliseconds
-    let newCommentDelta = optionShadow.newTime;
-    let newCommentDate = new Date(new Date().getTime() - newCommentDelta);
-
-    // any comments newer than either the last time the post was seen, or the custom delta set, are
-    // considered new
-    if (lastSeenDate < newCommentDate) {
-        return lastSeenDate;
-    }
-
-    return newCommentDate;
-}
-
-function getLocalDateString(date) {
-    let months = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-    ];
-
-    let year = date.getFullYear();
-    let month = months[date.getMonth()];
-    let day = date.getDate();
-    let hour = date.getHours();
-    let minute = date.getMinutes().toString().padStart(2, "0");
-
-    let amPm = hour <= 11 ? "am" : "pm";
-    let hour12 = hour === 0 ? 12 : (hour > 12 ? hour - 12 : hour);
-
-    let hour12Html = `<span class="hour12-time">${hour12}:${minute} ${amPm}</span>`;
-    let hour24Html = `<span class="hour24-time">${hour}:${minute}</span>`;
-
-    return `${month} ${day}, ${year} at ${hour12Html}${hour24Html}`;
-}
-
-function addDateString(comment) {
-    let commentId = getCommentIdNumber(comment);
-    let dateSpan = $(comment).find("> .comment-content .comment-meta > span:nth-child(2)");
-
-    // don't add if the new date element already exists
-    if (dateSpan.find(".better-date").length !== 0) {
-        return;
-    }
-
-    let newDateDisplay = dateSpan.children(":first").clone();
-    newDateDisplay.addClass("better-date");
-    dateSpan.append(newDateDisplay);
-
-    if (commentId in commentIdToDate) {
-        let utcTime = commentIdToDate[commentId];
-        let date = new Date(utcTime);
-        newDateDisplay.html(getLocalDateString(date));
-    }
-}
-
-function processSeenStatus(comment, lastNewDate) {
-    let commentId = getCommentIdNumber(comment);
-    let commentDate = new Date(commentIdToDate[commentId]);
-
-    if (commentDate > lastNewDate) {
-        if (!$(comment).hasClass("new-comment")) {
-            $(comment).addClass("new-comment");
-            let dateSpan = $(comment).find("> .comment-content .comment-meta > span:nth-child(2)");
-            let newTag = ("<span class='new-tag'></span>");
-            dateSpan.append(newTag);
-        }
-    } else {
-        $(comment).removeClass("new-comment");
-        let dateSpan = $(comment).find("> .comment-content .comment-meta > span:nth-child(2)");
-        dateSpan.find(".new-tag").remove();
-    }
-}
-
-function processHidden(comment, hiddenSet) {
-    let nameTag = $(comment).find("> .comment-content .comment-meta > span:first-child > a");
-    let name = nameTag.text();
-    if (hiddenSet.has(name)) {
-        $(comment).addClass("hiddenPost");
-
-        // no siblings, so remove the enclosing comment list
-        if ($(comment).parent().children().length === 1) {
-            $(comment).parent().parent().addClass("hiddenPost");
-        }
-    } else {
-        $(comment).removeClass("hiddenPost");
-        $(comment).parent().parent().removeClass("hiddenPost");
-    }
-}
-
-function processCommentParagraph(innerHtml) {
-    let italicRegex = /(^|\s|\(|\[|\{|\*)\*((?=[^*\s]).*?(?<=[^*\s]))\*/g;
-    let blockQuoteRegex = /^(>|&gt;)\s*(.*)$/;
-    // yes I'm parsing html with a regex. deal with it
-    let linkRegex = /\[(.+?)\]\(<a href="(.*?)".*?<\/a>\)/g;
-
-    function processBlockquotes(text) {
-        let reMatch = text.match(blockQuoteRegex);
-        if (reMatch) {
-            return `<blockquote>${processBlockquotes(reMatch[2])}</blockquote>`;
-        } else {
-            return text;
-        }
-    }
-
-    let newHtml = innerHtml;
-    newHtml = newHtml.replace(italicRegex, "$1<i>$2</i>");
-    newHtml = processBlockquotes(newHtml);
-    newHtml = newHtml.replace(linkRegex, `<a href="$2" target="_blank" rel="noreferrer noopener">$1</a>`);
-
-    return newHtml;
-}
-
-function processCommentContent(comment) {
-    let commentBody = $(comment).find("> .comment-content .comment-body");
-    $(commentBody).find("p span").each(function() {
-        // only process the text once
-        if ($(this).siblings().length === 0) {
-            $(this).addClass("old-style");
-            let newText = processCommentParagraph($(this).html());
-            let newSpan = `<span class="new-style">${newText}</span>`;
-            $(this).parent().append(newSpan);
-        }
-    });
-}
 
 function addCustomCollapser(collapser) {
     collapser = $(collapser);
@@ -366,23 +149,27 @@ function addCustomCollapser(collapser) {
     });
 }
 
+function processAllComments() {
+    processChildComments($("#main"));
+}
+
 // processes to apply to all comments and children in a given dom element
-function processAllComments(node) {
-    let date = newCommentDate();
-    let hiddenSet = new Set(optionShadow.hideUsers.split(",").map(x => x.trim()));
+function processChildComments(node) {
+    let handlerObjects = [];
 
-    $(node).find("div.comment").addBack("div.comment").each(function() {
-        if (optionShadow.showFullDate) {
-            addDateString(this);
+    for (let option in OPTIONS) {
+        if (OPTIONS[option].onCommentChange && optionShadow[option]) {
+            handlerObjects.push(OPTIONS[option]);
         }
+    }
 
-        processSeenStatus(this, date);
-        processHidden(this, hiddenSet);
-
-        if (optionShadow.applyCommentStyling) {
-            processCommentContent(this);
-        }
-    });
+    if (handlerObjects.length > 0) {
+        $(node).find("div.comment").addBack("div.comment").each(function() {
+            for (let object of handlerObjects) {
+                object.onCommentChange(this);
+            }
+        });
+    }
 
     $(node).find(".comment-list-collapser").addBack(".comment-list-collapser").each(function() {
         addCustomCollapser(this);
@@ -391,31 +178,7 @@ function processAllComments(node) {
 
 
 
-// First processing of different page types
-
-function processMainPage() {
-    // nothing to do
-}
-
-async function processPostPage() {
-    // oh god oh god
-    setTimeout(function() {
-        loadAllOption(optionShadow.loadAll);
-    }, 2000);
-}
-
-function processNewPageType() {
-    switch (getPageType()) {
-        case PageTypeEnum.main:
-            processMainPage();
-            break;
-        case PageTypeEnum.post:
-            processPostPage();
-            break;
-        default:
-            console.error(`Unknown page type: ${getPageType()}`);
-    }
-}
+// Processing page mutations
 
 function processMutation(mutation) {
     if (!observeChanges) {
@@ -437,9 +200,7 @@ function processMutation(mutation) {
             mutation.target.classList.contains("single-post") &&
             mutation.addedNodes[0].tagName.toLowerCase() === "article") {
         // we switched to a different page with pushState
-        if (optionShadow.dynamicLoad) {
-            processNewPageType();
-        } else {
+        if (!optionShadow.dynamicLoad) {
             // don't react to any more updates
             observeChanges = false;
 
@@ -451,7 +212,7 @@ function processMutation(mutation) {
         for (let i = 0; i < mutation.addedNodes.length; i++) {
             let node = mutation.addedNodes[i];
             if (nodeHasClass(node, ["comment", "comment-list", "comment-list-items", "comment-list-collapser"])) {
-                processAllComments(node);
+                processChildComments(node);
             }
         }
     } else {
@@ -463,39 +224,14 @@ function processMutation(mutation) {
 
 // Setup before page load
 
-function addStyle(key) {
-    let value = STYLES[key];
-    let css = value.css;
-    let style = $("<style>", {
-        "id": `${key}-css`,
-        "html": css,
-    });
-
-    $(document.documentElement).append(style);
-}
-
-// add styles for features
-function addStyles(atStart) {
-    for (let key in STYLES) {
-        if (STYLES[key].runAtStart === atStart) {
-            addStyle(key);
-        }
-    }
-}
-
 // load the initial values of the options and do any necessary config for them
 async function loadInitialOptionValues() {
-    // process options in order of priority (highest first)
-    let keys = Object.keys(OPTIONS);
-    keys.sort((a, b) => OPTIONS[b].priority - OPTIONS[a].priority);
-
     optionShadow = await getLocalState(OPTION_KEY);
     if (!optionShadow) {
         optionShadow = {};
     }
 
-    for (let i = 0; i < keys.length; i++) {
-        let key = keys[i];
+    for (let key in OPTIONS) {
         let value = optionShadow[key];
         if (value === undefined) {
             // the option hasn't been set in local storage, set it to the default
@@ -503,16 +239,18 @@ async function loadInitialOptionValues() {
             optionShadow[key] = value;
         }
 
-        if (OPTIONS[key].runTime === "start") {
-            doOptionChange(key, value);
-        } else if (OPTIONS[key].runTime === "end") {
+        if (OPTIONS[key].onStart) {
+            OPTIONS[key].onStart();
+        }
+
+        if (OPTIONS[key].onValueChange) {
+            OPTIONS[key].onValueChange(value, true);
+        }
+
+        if (OPTIONS[key].onLoad) {
             $(document).ready(function() {
-                doOptionChange(key, value);
+                OPTIONS[key].onLoad();
             });
-        } else if (OPTIONS[key].runTime === "never") {
-            // do nothing
-        } else {
-            console.error("Bad run time found: " + OPTIONS[key].runTime);
         }
     }
 
@@ -535,8 +273,8 @@ async function loadInitialPostSeenDate() {
     webExtension.storage.local.set({[SEEN_DATES_KEY]: postSeenDates});
 }
 
+// called when the extension is first loaded
 async function preloadSetup() {
-    addStyles(true);
     await loadInitialOptionValues();
     await loadInitialPostSeenDate();
     webExtension.storage.onChanged.addListener(processStorageChange);
@@ -594,7 +332,7 @@ function createPreloadCache() {
 async function processPreloads() {
     await getPreloads();
     createPreloadCache();
-    processAllComments($("#main"));
+    processAllComments();
 }
 
 function addDomObserver() {
@@ -610,23 +348,8 @@ function addDomObserver() {
     observer.observe(container, {childList: true, subtree: true});
 }
 
-// add reaction to clicking on parent comment link
-function addParentClickListener() {
-    $("#entry").on("click", ".comment-actions > span:nth-child(2)", function() {
-        let comment = $(this).closest(".comment");
-        let parentComment = $(comment).parent().closest(".comment");
-        let scrollElement;
-        if (parentComment.length === 0) {
-            // already at top level comment
-            scrollElement = $(".comments-page");
-        } else {
-            scrollElement = parentComment.find("> .comment-anchor:first-child");
-        }
-        scrollElement[0].scrollIntoView({ "behavior": "smooth" });
-    });
-}
-
-function addNextCommentListener() {
+// reacts to key presses
+function addKeyListener() {
     document.addEventListener("keydown", function(event) {
         let source = event.target;
         let exclude = ["input", "textarea"];
@@ -718,16 +441,14 @@ function addNextCommentListener() {
     });
 }
 
+// called when the DOM is loaded
 async function setup() {
     if (getPageType() === PageTypeEnum.post) {
         await processPreloads();
     }
 
     addDomObserver();
-    processNewPageType();
-    addStyles(false);
-    addParentClickListener();
-    addNextCommentListener();
+    addKeyListener();
 }
 
 

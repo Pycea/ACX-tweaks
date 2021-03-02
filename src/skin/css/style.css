@@ -4,13 +4,13 @@
     margin-right: 12px;
 }
 
-.container > .comment-list > .comment-list-items > .comment > .comment-content .comment-actions > span:nth-child(2):after {
+.comment-list-container > .comment-list > .comment-list-items > .comment > .comment-content .comment-actions > span:nth-child(2):after {
     content: "Top";
     cursor: pointer;
     color: #888;
 }
 
-.container .comment .comment .comment-actions > span:nth-child(2):after {
+.comment-list-container .comment .comment .comment-actions > span:nth-child(2):after {
     content: "Parent" !important;
     cursor: pointer;
     color: #888;
@@ -18,7 +18,7 @@
 
 /* Hide duplicate timestamp if not using full time option */
 
-.comment-meta span:nth-child(2) a:nth-child(2) {
+.comment-meta span:nth-child(2) a.better-date {
     display: none;
 }
 
@@ -58,4 +58,10 @@
 
 blockquote blockquote {
     margin: 0 0 !important;
+}
+
+/* Don't display hidden posts */
+
+.hiddenPost {
+    display: none;
 }

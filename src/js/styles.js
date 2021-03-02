@@ -17,7 +17,6 @@ const STYLES = {
             .comment .comment-anchor {
                 top: 0 !important;
             }`,
-        "runAtStart": true,
     },
     "hideHearts": {
         "css": `
@@ -28,18 +27,16 @@ const STYLES = {
             .comment-actions span:nth-child(2) {
                 margin-left: 0 !important;
             }`,
-        "runAtStart": true,
     },
     "showFullDate": {
         "css": `
-            .comment-meta span:nth-child(2) a:first-child {
+            .comment-meta span:nth-child(2) a.worse-date {
                 display: none !important;
             }
 
-            .comment-meta span:nth-child(2) a:nth-child(2) {
+            .comment-meta span:nth-child(2) a.better-date {
                 display: inline !important;
             }`,
-        "runAtStart": false,
     },
     "use24Hour": {
         "css": `
@@ -50,14 +47,12 @@ const STYLES = {
             .hour12-time {
                 display: none !important;
             }`,
-        "runAtStart": true,
     },
     "addParentLinks": {
         "css": `
             .comment-actions > span:nth-child(2):after {
                 display: none !important;
             }`,
-        "runAtStart": true,
     },
     "applyCommentStyling": {
         "css": `
@@ -68,7 +63,6 @@ const STYLES = {
             .comment-body span.old-style {
                 display: none !important;
             }`,
-        "runAtStart": false,
     },
     "useOldStyling": {
         "css": `
@@ -306,7 +300,6 @@ const STYLES = {
                 position: relative !important;
                 right: 8px !important;
             }`,
-        "runAtStart": true,
     },
     "hideNew": {
         "css": `
@@ -317,13 +310,5 @@ const STYLES = {
             .comments-page .container .comment-list.has-new-comments {
                 padding-top: 12px !important;
             }`,
-        "runAtStart": true,
-    },
-    "hideBanned": {
-        "css": `
-            .hiddenPost {
-                display: none;
-            }`,
-        "runAtStart": true,
     },
 }
