@@ -50,6 +50,54 @@ let useOldStylingOption = {
     },
 }
 
+let hideSubOnlyPostsOption = {
+    key: "hideSubOnlyPosts",
+    default: false,
+    hovertext: "Hide posts that are subscriber only",
+    processPost: function(post) {
+        let lock = $(post).find(".audience-lock");
+        if (lock.length !== 0) {
+            $(post).addClass("sub-post");
+        }
+    },
+    onStart: function() {
+        addStyle(this.key);
+    },
+    onLoad: function() {
+        if (optionShadow[this.key]) {
+            let processFunc = this.processPost;
+            $("#main").find(".post-preview").each(function() {
+                processFunc(this);
+            });
+        }
+    },
+    onMutation: function(mutation) {
+        if (!mutation.target.classList.contains("portable-archive-list") &&
+                mutation.target.tagName.toLowerCase() !== "tr") {
+            return;
+        }
+
+        for (let i = 0; i < mutation.addedNodes.length; i++) {
+            let node = mutation.addedNodes[i];
+            if (node.classList.contains("post-preview")) {
+                this.processPost(node);
+            } else if (node.classList.contains("audience-lock")) {
+                // for some reason substack caches everything except the lock icon?
+                this.processPost($(node).closest(".post-preview"));
+            }
+        }
+    },
+    onValueChange: function(value, isInitial) {
+        $(`#${this.key}-css`).prop("disabled", !value);
+        if (value && !isInitial) {
+            let processFunc = this.processPost;
+            $("#main").find(".post-preview").each(function() {
+                processFunc(this);
+            });
+        }
+    },
+}
+
 let hideHeartsOption = {
     key: "hideHearts",
     default: true,
@@ -332,7 +380,7 @@ let hideNewOption = {
     onValueChange: function(value, isInitial) {
         $(`#${this.key}-css`).prop("disabled", !value);
         if (value && !isInitial) {
-            let processFunc = this.processButton
+            let processFunc = this.processButton;
             $("#main").find("button.collapsed-reply").each(function() {
                 processFunc(this);
             });
@@ -345,7 +393,7 @@ let hideUsersOption = {
     default: "",
     hovertext: "Hide comments from the listed users, in a comma separated list",
     onStart: function() {
-        this.hiddenSet = new Set(optionShadow.hideUsers.split(",").map(x => x.trim()).filter(x => x));
+        this.hiddenSet = new Set(optionShadow[this.key].split(",").map(x => x.trim()).filter(x => x));
     },
     onCommentChange: function(comment) {
         let nameTag = $(comment).find("> .comment-content .comment-meta > span:first-child > a");
@@ -363,7 +411,7 @@ let hideUsersOption = {
         }
     },
     onValueChange: function(value, isInitial) {
-        this.hiddenSet = new Set(optionShadow.hideUsers.split(",").map(x => x.trim()).filter(x => x));
+        this.hiddenSet = new Set(optionShadow[this.key].split(",").map(x => x.trim()).filter(x => x));
         if (value && !isInitial) {
             processAllComments();
         }
@@ -445,6 +493,7 @@ let resetDataOption = {
 let optionArray = [
     fixHeaderOption,
     useOldStylingOption,
+    hideSubOnlyPostsOption,
     hideHeartsOption,
     showFullDateOption,
     use24HourOption,

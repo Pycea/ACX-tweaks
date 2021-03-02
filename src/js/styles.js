@@ -18,6 +18,12 @@ const STYLES = {
                 top: 0 !important;
             }`,
     },
+    "hideSubOnlyPosts": {
+        "css": `
+            .sub-post {
+                display: none;
+            }`,
+    },
     "hideHearts": {
         "css": `
             .comment-actions span:first-child {
