@@ -50,6 +50,22 @@ function getLocalState(storageId) {
     return storagePromise;
 }
 
+function getCommentId(comment) {
+    return $(comment).children().first().attr("id");
+}
+
+function getCommentIdNumber(comment) {
+    let idString = getCommentId(comment);
+    let idRegexMatch = idString.match(/comment-(\d+)/);
+
+    if (!idRegexMatch) {
+        console.error(`Bad comment id found: ${idString}`);
+        return;
+    }
+
+    return parseInt(idRegexMatch[1]);
+}
+
 const keyCodes = {
     8: "backspace",
     9: "tab",
