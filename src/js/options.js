@@ -246,6 +246,8 @@ let newTimeOption = {
     default: 0,
     hovertext: "Comments posted within this time period will also be marked as new",
     onValueChange: function(value, isInitial) {
+        OPTIONS.highlightNew.onStart();
+
         if (!isInitial) {
             processAllComments();
         }
