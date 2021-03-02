@@ -1,17 +1,12 @@
 # ACX-tweaks
-A browser extension that provides various small improvements to the [Astral Codex Ten](https://astralcodexten.substack.com) blog on [Substack](https://substack.com).
+A browser extension that provides various small improvements to the [Astral Codex Ten](https://astralcodexten.substack.com) blog on [Substack](https://substack.com). It is currently compatible with Firefix and Chrome, though some pure CSS can be applied to Safari.
 
-## Compatibility
-The extension works with any browser that can use extensions on the Firefox/Chrome web stores, including Brave and Opera. Other browsers that use the WebExtension API can probably use it too, but you'll have to figure out how to sideload it youself. Safari is right out (see below for some options).
+## How to get
+[Firefox extension](https://addons.mozilla.org/en-US/firefox/addon/acx-tweaks/).
 
-## Loading instructions
-### Firefox
-Available as a [Firefox extension](https://addons.mozilla.org/en-US/firefox/addon/acx-tweaks/).
+[Chrome extension](https://chrome.google.com/webstore/detail/acx-tweaks/jdpghojhfigbpoeiadalafcmohaekglf). Works for anything that can use extension from the Chrome Web Store, including Opera and Brave.
 
-### Chrome/Chromium
-Available as a [Chrome extension](https://chrome.google.com/webstore/detail/acx-tweaks/jdpghojhfigbpoeiadalafcmohaekglf).
-
-### Other
+## Other
 Under [releases](https://github.com/Pycea/ACX-tweaks/releases), you can get the source from the `chrome_src.zip` file under the latest release. You may be able to do something with this.
 
 If you're using Safari, you can get some of the pure CSS fixes [here](https://gist.github.com/Pycea/73eeee25ff4f697b76c0d3d36035c749). See the page for how to load them.
@@ -33,23 +28,13 @@ If you're using Safari, you can get some of the pure CSS fixes [here](https://gi
 
 To change options, click the extension icon.
 
+For a full list with explanations, see [here](https://github.com/Pycea/ACX-tweaks/wiki/Options).
+
 ## Custom styling
-If you want to do custom styling, including things that take advantage of the extension, you can use the [Stylebot](https://chrome.google.com/webstore/detail/stylebot/oiaejidbmkiecgbjeifoejpgmdaleoha/related?hl=en-US) extension to apply additional changes. For examples of what can be done, see [these](https://github.com/Pycea/ACX-tweaks/issues/3) [three](https://github.com/Pycea/ACX-tweaks/issues/6) [issues](https://github.com/Pycea/ACX-tweaks/issues/7).
+If you want to do custom styling, including things that take advantage of the extension, you can check out [this page](https://github.com/Pycea/ACX-tweaks/wiki/Customization).
 
 ## Troubleshooting
-### The page loads slowly
-If you have the option to load all comments selected, it might cause some lag for large threads. This is a result of Substack comment loading being very laggy.
-
-Additionally, you might notice that going from one post to another is slower with this extension. This is becauase the extension refreshes the page, whereas Substack dynamically loads the content and switches to it. This shouldn't cause much of a noticeable difference in practice unless you're switching pages a lot. However, if you want to disable refreshes, enable the "Load new pages dynamically" setting.
-
-### The full comment dates aren't showing
-If you have dynamic page loading enabled, then navigating to another post will break that feature. Refreshing the page will fix it, but there's no other way around that. If you don't have it enabled, try refreshing anyway.
-
-### Only two comments are loaded, with a button that says "4753 new"
-This is an issue with Substack. Enabling the load all comments option can fix it, at the cost of loading all the comments.
-
-### Everything is broken
-Try refreshing the page. If that doesn't work, click on the extension icon and click on "Reset all data", then click again to confirm. Note that this will reset all data on what comments you have seen, so everything will appear new even if you have seen it before.
+See the page [here](https://github.com/Pycea/ACX-tweaks/wiki/Troubleshooting).
 
 ## Privacy policy
 See [here](https://github.com/Pycea/ACX-tweaks/wiki/Privacy-policy). Tl;dr there never is/was/will be any data collection.
