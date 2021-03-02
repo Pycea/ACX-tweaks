@@ -443,7 +443,7 @@ let prevCommentKeyOption = {
         "shift": false,
         "meta": false,
     },
-    hovertext: "Key/key combo to move to the previous comment (click the box to set)",
+    hovertext: "Key/key combo to jump to the previous comment (click the box to set)",
 }
 
 let nextCommentKeyOption = {
@@ -455,7 +455,7 @@ let nextCommentKeyOption = {
         "shift": false,
         "meta": false,
     },
-    hovertext: "Key/key combo to move to the next comment (click the box to set)",
+    hovertext: "Key/key combo to jump to the next comment (click the box to set)",
 }
 
 let prevUnreadKeyOption = {
@@ -467,7 +467,7 @@ let prevUnreadKeyOption = {
         "shift": false,
         "meta": false,
     },
-    hovertext: "Key/key combo to move to the previous new comment (click the box to set)",
+    hovertext: "Key/key combo to jump to the previous new comment (click the box to set)",
 }
 
 let nextUnreadKeyOption = {
@@ -479,7 +479,19 @@ let nextUnreadKeyOption = {
         "shift": false,
         "meta": false,
     },
-    hovertext: "Key/key combo to move to the next new comment (click the box to set)",
+    hovertext: "Key/key combo to jump to the next new comment (click the box to set)",
+}
+
+let parentKeyOption = {
+    key: "parentKey",
+    default: {
+        "key": 80,
+        "control": false,
+        "alt": false,
+        "shift": false,
+        "meta": false,
+    },
+    hovertext: "Key/key combo to jump to the parent of the current comment (click the box to set)",
 }
 
 let dynamicLoadOption = {
@@ -514,6 +526,7 @@ let optionArray = [
     nextCommentKeyOption,
     prevUnreadKeyOption,
     nextUnreadKeyOption,
+    parentKeyOption,
     dynamicLoadOption,
     resetDataOption,
 ]

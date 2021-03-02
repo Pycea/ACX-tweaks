@@ -24,6 +24,7 @@ const KeyCommandEnum = Object.freeze({
     "nextComment": "nextComment",
     "prevUnread": "prevUnread",
     "nextUnread": "nextUnread",
+    "parent": "parent",
     "unknown": "unknown",
 });
 
@@ -371,6 +372,8 @@ function addKeyListener() {
                 return KeyCommandEnum.prevUnread;
             } else if (isMatchingKeyEvent(optionShadow.nextUnreadKey, event)) {
                 return KeyCommandEnum.nextUnread;
+            } else if (isMatchingKeyEvent(optionShadow.parentKey, event)) {
+                return KeyCommandEnum.parent;
             } else {
                 return KeyCommandEnum.unknown;
             }
@@ -379,22 +382,22 @@ function addKeyListener() {
         let command = getKeyCommand(event);
 
         if ([KeyCommandEnum.prevComment, KeyCommandEnum.nextComment,
-                KeyCommandEnum.prevUnread, KeyCommandEnum.nextUnread].includes(command)) {
+                KeyCommandEnum.prevUnread, KeyCommandEnum.nextUnread,
+                KeyCommandEnum.parent].includes(command)) {
 
             event.preventDefault();
 
             function inView(element) {
-                // scrolling isn't pixel perfect, so include some buffer room
-                return element.getBoundingClientRect().top > 0;
+                return element.getBoundingClientRect().top > -5;
             }
 
             function atEntry(element) {
                 // scrolling isn't pixel perfect, so include some buffer room
-                return Math.abs(element.getBoundingClientRect().top) < 3;
+                return Math.abs(element.getBoundingClientRect().top) < 5;
             }
 
             let comments;
-            if (command === KeyCommandEnum.prevComment || command === KeyCommandEnum.nextComment) {
+            if ([KeyCommandEnum.prevComment, KeyCommandEnum.nextComment, KeyCommandEnum.parent].includes(command)) {
                 comments = $("#main").find(".comment-content");
             } else {
                 comments = $("#main").find(".new-comment");
@@ -423,12 +426,26 @@ function addKeyListener() {
                 if (atEntry(comments[index])) {
                     index--;
                 }
-            } else {
+            } else if (command === KeyCommandEnum.nextComment || command === KeyCommandEnum.nextUnread) {
                 index = max;
                 index = mod(index, comments.length);
                 if (atEntry(comments[index])) {
                     index++;
                 }
+            } else if (command === KeyCommandEnum.parent) {
+                index = max;
+                if (index < 0 || index >= comments.length) {
+                    return;
+                }
+
+                let parent = $(comments[index]).parent().parent().closest(".comment");
+                if (parent.length === 0) {
+                    return;
+                }
+
+                let scrollBehavior = optionShadow.smoothScroll ? "smooth" : "auto";
+                parent[0].scrollIntoView({"behavior": scrollBehavior});
+                return;
             }
 
             // wrap around at the top and bottom
