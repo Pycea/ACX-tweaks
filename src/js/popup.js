@@ -195,10 +195,9 @@ function createResetHandler() {
             optionShadow[key] = OPTIONS[key].default;
         }
 
-        webExtension.storage.local.set({[OPTION_KEY]: optionShadow});
+        optionShadow.resetData = true;
 
-        // clear last seen data
-        webExtension.storage.local.set({[SEEN_DATES_KEY]: {}});
+        webExtension.storage.local.set({[OPTION_KEY]: optionShadow});
 
         window.close();
     }

@@ -495,6 +495,16 @@ let resetDataOption = {
     key: "resetData",
     default: false,
     hovertext: "Reset all extension data. Use if something breaks that refreshing doesn't fix. Will delete data about which comments have been seen.",
+    onStart: function() {
+        optionShadow.resetData = false;
+    },
+    onValueChange: function(value) {
+        if (value) {
+            window.localStorage.removeItem(LOCAL_DATA_KEY);
+            optionShadow.resetData = false;
+            webExtension.storage.local.set({[OPTION_KEY]: optionShadow});
+        }
+    }
 }
 
 let optionArray = [
