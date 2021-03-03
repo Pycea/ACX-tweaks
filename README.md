@@ -1,15 +1,15 @@
 # ACX-tweaks
-A browser extension that provides various small improvements to the [Astral Codex Ten](https://astralcodexten.substack.com) blog on [Substack](https://substack.com). It is currently compatible with Firefix and Chrome, though some pure CSS can be applied to Safari.
+A browser extension that provides various small improvements to the [Astral Codex Ten](https://astralcodexten.substack.com) blog on [Substack](https://substack.com). It is currently compatible with Firefix and Chrome, though some pure CSS fixes can be applied to Safari.
 
 ## How to get
 [Firefox extension](https://addons.mozilla.org/en-US/firefox/addon/acx-tweaks/).
 
 [Chrome extension](https://chrome.google.com/webstore/detail/acx-tweaks/jdpghojhfigbpoeiadalafcmohaekglf). Works for anything that can use extension from the Chrome Web Store, including Opera and Brave.
 
-## Other
-Under [releases](https://github.com/Pycea/ACX-tweaks/releases), you can get the source from the `chrome_src.zip` file under the latest release. You may be able to do something with this.
-
+### Other platforms
 If you're using Safari, you can get some of the pure CSS fixes [here](https://gist.github.com/Pycea/73eeee25ff4f697b76c0d3d36035c749). See the page for how to load them.
+
+Under [releases](https://github.com/Pycea/ACX-tweaks/releases), you can get the source from the `chrome_src.zip` file under the latest release. You may be able to do something with this.
 
 ## Features
 - When collapsing a thread, scrolls to the parent comment
@@ -17,7 +17,7 @@ If you're using Safari, you can get some of the pure CSS fixes [here](https://gi
     - Configurable keys for scrolling to the previous or next unread comment
 - User configurable options
     - Keeps the header above the post, so it doesn't keep appearing whenever you scroll up a little.
-    - Hides reactions (hearts). However, the note that the author liked a given comment is not removed.
+    - Hides reactions (hearts).
     - Shows the full time that a comment was posted, instead of just the day.
     - Adds a button to scroll to the parent comment, or the top of the comment section for top level comments.
     - Applies basic styling to comments, including italics, blockquotes, and Markdown style links.
@@ -26,9 +26,9 @@ If you're using Safari, you can get some of the pure CSS fixes [here](https://gi
     - Loads all comments at once, instead of having to keep clicking the "Load more" button.
     - Hides the notification that there are new comments.
 
-To change options, click the extension icon.
-
 For a full list with explanations, see [here](https://github.com/Pycea/ACX-tweaks/wiki/Options).
+
+To change options, click the extension icon.
 
 ## Custom styling
 If you want to do custom styling, including things that take advantage of the extension, you can check out [this page](https://github.com/Pycea/ACX-tweaks/wiki/Customization).
