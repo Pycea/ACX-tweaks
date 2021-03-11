@@ -98,18 +98,6 @@ let hideSubOnlyPostsOption = {
     },
 }
 
-let hideHeartsOption = {
-    key: "hideHearts",
-    default: true,
-    hovertext: "Hide reactions to comments",
-    onStart: function() {
-        addStyle(this.key);
-    },
-    onValueChange: function(value) {
-        $(`#${this.key}-css`).prop("disabled", !value);
-    },
-}
-
 let showFullDateOption = {
     key: "showFullDate",
     default: true,
@@ -519,7 +507,6 @@ let optionArray = [
     fixHeaderOption,
     useOldStylingOption,
     hideSubOnlyPostsOption,
-    hideHeartsOption,
     showFullDateOption,
     use24HourOption,
     highlightNewOption,

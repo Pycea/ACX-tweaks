@@ -24,16 +24,6 @@ const STYLES = {
                 display: none;
             }`,
     },
-    "hideHearts": {
-        "css": `
-            .comment-actions span:first-child {
-                display: none;
-            }
-
-            .comment-actions span:nth-child(2) {
-                margin-left: 0 !important;
-            }`,
-    },
     "showFullDate": {
         "css": `
             .comment-meta span:nth-child(2) a.worse-date {
