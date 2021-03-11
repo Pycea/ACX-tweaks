@@ -77,6 +77,16 @@
             width: 30px;
         }
 
+        #known-issues {
+            margin-left: 4px;
+            margin-top: 3px;
+            margin-bottom: 2px;
+        }
+
+        #known-issues a, #known-issues a:visited {
+            color: blue;
+        }
+
         .help-icon {
             width: 14px;
             vertical-align: middle;
@@ -220,8 +230,12 @@
 
         <div class="spacer"></div>
 
-        <!-- keyboard shortcuts -->
+        <!-- Help -->
         <div class="heading">If you're having issues</div>
+        <div id="known-issues">
+            <a href="https://github.com/Pycea/ACX-tweaks/wiki/Known-Issues">Check for solutions to known issues here</a>
+        </div>
+
         <div id="dynamicLoad" class="option">
             <input type="checkbox" id="dynamicLoadCheck" class="trigger check">
             <label for="dynamicLoadCheck">Load new pages dynamically</label>
