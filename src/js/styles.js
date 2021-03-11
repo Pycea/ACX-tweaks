@@ -46,7 +46,7 @@ const STYLES = {
     },
     "addParentLinks": {
         "css": `
-            .comment-actions > span:nth-child(2):after {
+            .comment-actions > span:nth-child(1):after {
                 display: none !important;
             }`,
     },

@@ -243,7 +243,7 @@ let addParentLinksOption = {
     onStart: function() {
         addStyle(this.key);
 
-        $("#entry").on("click", ".comment-actions > span:nth-child(2)", function() {
+        $("#entry").on("click", ".comment-actions > span:nth-child(1)", function() {
             let comment = $(this).closest(".comment");
             let parentComment = $(comment).parent().closest(".comment");
             let scrollElement;

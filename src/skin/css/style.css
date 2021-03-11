@@ -1,16 +1,16 @@
 /* Adds permalink text */
 
-.comment-actions > span:nth-child(2) > a {
+.comment-actions > span:nth-child(1) > a {
     margin-right: 12px;
 }
 
-.comment-list-container > .comment-list > .comment-list-items > .comment > .comment-content .comment-actions > span:nth-child(2):after {
+.comment-list-container > .comment-list > .comment-list-items > .comment > .comment-content .comment-actions > span:nth-child(1):after {
     content: "Top";
     cursor: pointer;
     color: #888;
 }
 
-.comment-list-container .comment .comment .comment-actions > span:nth-child(2):after {
+.comment-list-container .comment .comment .comment-actions > span:nth-child(1):after {
     content: "Parent" !important;
     cursor: pointer;
     color: #888;
