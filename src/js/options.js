@@ -100,7 +100,7 @@ let hideSubOnlyPostsOption = {
 
 let darkModeOption = {
     key: "darkMode",
-    default: false,
+    default: window.matchMedia("(prefers-color-scheme: dark)").matches,
     hovertext: "Make this popup dark mode (does not apply to page). To make the page dark, try an extension like Dark Reader.",
 }
 
