@@ -280,6 +280,19 @@ function addDependencies() {
         chrome.tabs.create({url: $(this).attr("href")});
         return false;
    });
+
+    // dark mode option
+    $("#darkModeCheck").change(function() {
+        if (this.checked) {
+            $("body").addClass("dark");
+        } else {
+            $("body").removeClass("dark");
+        }
+    });
+
+    if (!($("#darkModeCheck").prop("checked"))) {
+        $("body").removeClass("dark");
+    }
 }
 
 function addDebugChecker() {

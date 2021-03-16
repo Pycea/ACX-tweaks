@@ -98,6 +98,12 @@ let hideSubOnlyPostsOption = {
     },
 }
 
+let darkModeOption = {
+    key: "darkMode",
+    default: false,
+    hovertext: "Make this popup dark mode (does not apply to page). To make the page dark, try an extension like Dark Reader.",
+}
+
 let showFullDateOption = {
     key: "showFullDate",
     default: true,
@@ -507,6 +513,7 @@ let optionArray = [
     fixHeaderOption,
     useOldStylingOption,
     hideSubOnlyPostsOption,
+    darkModeOption,
     showFullDateOption,
     use24HourOption,
     highlightNewOption,

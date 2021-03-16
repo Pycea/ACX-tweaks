@@ -125,6 +125,25 @@
             display: none;
         }
 
+        /* Dark mode */
+
+        body.dark {
+            background-color: #292A2D;
+            color: #9aa0a6;
+        }
+
+        .dark .heading {
+            color: #f4f4f4;
+        }
+
+        .dark .help-icon {
+            filter: invert(70%) sepia(12%) saturate(157%) hue-rotate(169deg) brightness(89%) contrast(89%);;
+        }
+
+        .dark #known-issues a, .dark #known-issues a:visited {
+            color: #9aa0a6;
+        }
+
     </style>
 
     <script type="text/javascript" src="../lib/jquery-3.5.1.min.js"></script>
@@ -133,7 +152,7 @@
     <script type="text/javascript" src="../js/popup.js"></script>
 </head>
 
-<body>
+<body class="dark">
     <div id="wrapper">
         <!-- General settings -->
         <div class="heading">General</div>
@@ -148,6 +167,10 @@
         <div id="hideSubOnlyPosts" class="option">
             <input type="checkbox" id="hideSubOnlyPostsCheck" class="trigger check">
             <label for="hideSubOnlyPostsCheck">Hide subscriber only posts</label>
+        </div>
+        <div id="darkMode" class="option">
+            <input type="checkbox" id="darkModeCheck"  class="trigger check">
+            <label for="darkModeCheck">Dark mode</label>
         </div>
 
         <div class="spacer"></div>
