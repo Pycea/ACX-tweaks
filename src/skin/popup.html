@@ -128,7 +128,7 @@
         /* Dark mode */
 
         body.dark {
-            background-color: #292A2D;
+            background-color: #292a2d;
             color: #9aa0a6;
         }
 
@@ -142,6 +142,37 @@
 
         .dark #known-issues a, .dark #known-issues a:visited {
             color: #9aa0a6;
+        }
+
+        .dark input[type="checkbox"] {
+            background-color: #3b3b3b;
+        }
+
+        .dark input[type="text"], .dark input[type="number"] {
+            background-color: #3b3b3b;
+            color: white;
+            padding: 2px 3px;
+            border-width: 1px;
+            border-radius: 2px;
+            border-color: #858585;
+            border-style: solid;
+        }
+
+        .dark select {
+            background-color: #3b3b3b;
+            color: white;
+            border-radius: 2px;
+        }
+
+        .dark input[type="text"]:focus, .dark input[type="number"]:focus, .dark select:focus {
+            outline: none;
+            border-color: white;
+        }
+
+        .dark input[type="text"]:disabled {
+            background-color: #3b3b3b50;
+            color: #aaaaaa;
+            border-color: #85858550;
         }
 
     </style>
