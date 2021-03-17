@@ -28,7 +28,7 @@ function getUrl(url, data={}) {
     let getPromise = new Promise(function(resolve, reject) {
         $.get(url, data, function(items) {
             resolve(items);
-        });
+        }).fail(reject);
     });
     return getPromise;
 }
@@ -45,6 +45,16 @@ async function getPostComments() {
     let url = `https://astralcodexten.substack.com/api/v1/post/${postId}/comments?token=&all_comments=true`;
     let data = await getUrl(url);
     return JSON.parse(data).comments;
+}
+
+async function getVersionInfo() {
+    let url = "https://gist.githubusercontent.com/Pycea/a647f861e7ad2b2ae28b512cd68864cc/raw";
+    try {
+        let data = await getUrl(url);
+        return JSON.parse(data);
+    } catch {
+        return {};
+    }
 }
 
 function getLocalState(storageId) {
