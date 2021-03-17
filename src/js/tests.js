@@ -89,9 +89,76 @@ function testCommentStyling() {
     testLink();
 }
 
+function testVersionValidate() {
+    let testCases = {
+        "5": true,
+        "1.2": true,
+        "9.8.7": true,
+        "3.1.4.5.9": true,
+        "10.0": true,
+        "0.16": true,
+        "0": true,
+        "0.0.0": true,
+        "123.0.3213213": true,
+        "02.1.4": true,
+        "3.01": true,
+        "3.00": true,
+        "": false,
+        ".1": false,
+        "5.": false,
+        "4.5.8.": false,
+        ".1.2": false,
+        "4.2..3": false,
+        ".": false,
+        undefined: false,
+    }
+
+    for (let testCase in testCases) {
+        let expected = testCases[testCase];
+        let actual = validateVersion(testCase);
+        assertEqual(expected, actual);
+    }
+}
+
+function testVersonCompare() {
+    let testCases = [
+        ["1", "1", 0],
+        ["2.1", "2.1", 0],
+        ["3.1.4", "3.1.4", 0],
+        ["2", "1", 1],
+        ["4.2", "4.1", 1],
+        ["2.1.6", "2.1.3", 1],
+        ["8", "9", -1],
+        ["0.3", "0.4", -1],
+        ["3.5.1", "3.5.2", -1],
+        ["3.10.1", "3.9.2", 1],
+        ["10.5.1", "9.6.2", 1],
+        ["3.5.9", "3.5.10", -1],
+        ["2.1", "2", 1],
+        ["3", "3.1", -1],
+        ["5", "4.5", 1],
+        ["0.0.0", "0.0.1", -1],
+        ["2.02.1", "2.2.1", 0],
+        ["1.3.6", "1.4.6", -1],
+        ["3.1.4", "2.1.4", 1],
+        ["4", "4.0", -1],
+        [undefined, undefined, 0],
+        [undefined, "0", -1],
+        ["0", undefined, 1],
+    ];
+
+    for (let testCase of testCases) {
+        let expected = testCase[2];
+        let actual = compareVersion(testCase[0], testCase[1]);
+        assertEqual(expected, actual);
+    }
+}
+
 function doTests() {
     console.log("Running tests");
     testCommentStyling();
+    testVersionValidate();
+    testVersonCompare();
 }
 
 // doTests();

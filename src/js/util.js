@@ -57,6 +57,33 @@ async function getVersionInfo() {
     }
 }
 
+function validateVersion(version) {
+    if (!version) return false;
+    let match = version.match(/^\d+(.\d+)*$/);
+    return !!match;
+}
+
+function compareVersion(versionA, versionB) {
+    if (versionA === versionB) return 0;
+    if (!versionB) return 1;
+    if (!versionA) return -1;
+
+    let splitA = versionA.split(".");
+    let splitB = versionB.split(".");
+    for (let i = 0; i < Math.max(splitA.length, splitB.length); i++) {
+        let na = Number(splitA[i]);
+        let nb = Number(splitB[i]);
+
+        if (!isNaN(na) && isNaN(nb)) return 1;
+        if (isNaN(na) && !isNaN(nb)) return -1;
+
+        if (na > nb) return 1;
+        if (na < nb) return -1;
+    }
+
+    return 0;
+}
+
 function getLocalState(storageId) {
     let storagePromise = new Promise(function(resolve, reject) {
         webExtension.storage.local.get(storageId, function(items) {
