@@ -4,7 +4,8 @@
     "description": "Quality of life improvements for the Astral Codex Ten blog on Substack.",
     "version": "0.16",
     "permissions": [
-        "storage"
+        "storage",
+        "*://gist.githubusercontent.com/*"
     ],
     "icons": {
         "128": "icons/acx-128.png"
@@ -19,7 +20,7 @@
             "run_at": "document_start"
         }
     ],
-    "web_accessible_resources": ["icons/question-circle-regular.svg"],
+    "web_accessible_resources": ["icons/*.svg"],
     "browser_action": {
         "default_popup": "skin/popup.html",
         "default_title": "ACX Tweaks"

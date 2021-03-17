@@ -277,7 +277,7 @@ function addDependencies() {
     });
 
     $("body").on("click", "a", function() {
-        chrome.tabs.create({url: $(this).attr("href")});
+        webExtension.tabs.create({url: $(this).attr("href")});
         return false;
    });
 

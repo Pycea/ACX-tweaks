@@ -25,12 +25,7 @@ function mod(a, b) {
 }
 
 function getUrl(url, data={}) {
-    let getPromise = new Promise(function(resolve, reject) {
-        $.get(url, data, function(items) {
-            resolve(items);
-        }).fail(reject);
-    });
-    return getPromise;
+    return $.get(url, data);
 }
 
 async function getPostData() {
@@ -52,7 +47,8 @@ async function getVersionInfo() {
     try {
         let data = await getUrl(url);
         return JSON.parse(data);
-    } catch {
+    } catch (error) {
+        console.error(error);
         return {};
     }
 }

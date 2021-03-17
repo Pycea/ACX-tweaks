@@ -85,6 +85,11 @@ function getPostName() {
 
 // Dealing with option changes
 
+function setOption(key, value) {
+    optionShadow[key] = value;
+    webExtension.storage.local.set({[OPTION_KEY]: optionShadow});
+}
+
 // calls the option handling function for the given option value
 function doOptionChange(key, value) {
     if (key in OPTIONS && OPTIONS[key].onValueChange) {
@@ -525,6 +530,171 @@ function addKeyListener() {
     });
 }
 
+async function checkForUpdates() {
+    if (optionShadow.hideUpdateNotice) {
+        return;
+    }
+
+    let manifest = webExtension.runtime.getManifest();
+    let currentVersion = manifest.version;
+    let updateData = await getVersionInfo();
+    let latestRequiredVersion = updateData.latest_required;
+
+    if (!validateVersion(currentVersion)) {
+        console.error(`Bad current version found: ${currentVersion}`);
+        return;
+    }
+
+    if (!validateVersion(latestRequiredVersion)) {
+        console.error(`Bad required version found: ${latestRequiredVersion}`);
+        return;
+    }
+
+    if (compareVersion(currentVersion, latestRequiredVersion) >= 0) {
+        return;
+    }
+
+    let updateUrl;
+    if (typeof browser !== "undefined") {
+        updateUrl = "https://addons.mozilla.org/en-US/firefox/addon/acx-tweaks/";
+    } else if (typeof chrome !== "undefined"){
+        updateUrl = "https://chrome.google.com/webstore/detail/acx-tweaks/jdpghojhfigbpoeiadalafcmohaekglf";
+    } else {
+        console.error("Can't get update url.");
+    }
+
+    let iconSvg = webExtension.extension.getURL("icons/caret-right-solid.svg");
+
+    let moreText = `You are on version ${currentVersion}. Without the latest version, ${latestRequiredVersion}, some stuff on the page might break.`;
+    if (updateData.reasons[latestRequiredVersion]) {
+        moreText += `<br><br>Reason: ${updateData.reasons[latestRequiredVersion]}`
+    }
+
+    let popupHtml = `
+        <div id="update-popup">
+            <div id="update-content">
+                New ACX Tweaks version available.<br>
+                ${updateUrl ? `Update <a href="${updateUrl}" id="update-url" target="_blank">here</a>.` : ""}
+
+                <div id="update-more-info">
+                    <img src="${iconSvg}" id="update-caret-icon">
+                    More info
+                </div>
+
+                <div id="update-more" class="closed">
+                    ${moreText}
+                </div>
+
+                <div id="update-checkbox">
+                    <input type="checkbox" id="update-dont-show-again">
+                    <label id="update-checkbox-label" for="update-dont-show-again">Don't show again</label>
+                </div>
+
+                <button id="update-close">Close</button>
+            </div>
+        </div>
+    `;
+
+    let popupStyling = `
+        <style id="update-css">
+            #update-popup {
+                position: fixed;
+                bottom: 10px;
+                right: 10px;
+                width: 250px;
+                border: 1px solid white;
+                border-radius: 10px;
+                padding: 15px;
+                background: #3b3b3b;
+                color: white;
+                font: 14px Verdana, sans-serif;
+            }
+
+            #update-caret-icon {
+                filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(157deg) brightness(102%) contrast(101%);
+                width: 11px;
+                height: 11px;
+                display: inline-block;
+                transition: .1s ease-in;
+            }
+
+            #update-url {
+                color: white;
+            }
+
+            #update-more-info {
+                margin-top: 10px;
+                font: 12px Verdana, sans-serif;
+                cursor: pointer;
+            }
+
+            #update-more {
+                font: 12px Verdana, sans-serif;
+                border: 1px solid #888;
+                margin-top: 5px;
+                margin-bottom: 5px;
+                padding: 5px;
+                max-height: 100px;
+                overflow: scroll;
+                overflow-x: hidden;
+                transition: max-height .1s ease-in;
+            }
+
+            #update-more.closed {
+                max-height: 0;
+                padding: 0;
+                border: none;
+            }
+
+            #update-checkbox {
+                margin-bottom: 5px;
+            }
+
+            #update-dont-show-again {
+                margin-left: 0;
+                vertical-align: middle;
+                cursor: pointer;
+            }
+
+            #update-checkbox-label {
+                vertical-align: middle;
+                user-select: none;
+                font: 12px Verdana, sans-serif;
+                cursor: pointer;
+            }
+
+            #update-close {
+                cursor: pointer;
+            }
+        </style>
+    `;
+
+    $("body").append(popupHtml);
+    $(document.documentElement).append(popupStyling);
+
+    $("#update-more-info").click(function() {
+        if ($(this).hasClass("open")) {
+            $(this).removeClass("open");
+            $("#update-caret-icon").css("transform", "rotate(0deg)");
+            $("#update-more").addClass("closed");
+        } else {
+            $(this).addClass("open");
+            $("#update-caret-icon").css("transform", "rotate(90deg)");
+            $("#update-more").removeClass("closed");
+        }
+    });
+
+    $("#update-close").click(function() {
+        if ($("#update-dont-show-again").prop("checked")) {
+            setOption("hideUpdateNotice", true);
+            saveLocalStorage();
+        }
+
+        $("#update-popup").remove();
+        $("#update-css").remove();
+    });
+}
+
 // called when the DOM is loaded
 async function setup() {
     if (getPageType() === PageTypeEnum.post) {
@@ -534,6 +704,7 @@ async function setup() {
 
     addDomObserver();
     addKeyListener();
+    setTimeout(checkForUpdates, 5000);
 }
 
 

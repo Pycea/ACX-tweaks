@@ -506,7 +506,12 @@ let resetDataOption = {
             optionShadow.resetData = false;
             webExtension.storage.local.set({[OPTION_KEY]: optionShadow});
         }
-    }
+    },
+}
+
+let hideUpdateNoticeOption = {
+    key: "hideUpdateNotice",
+    default: false,
 }
 
 let optionArray = [
@@ -532,6 +537,7 @@ let optionArray = [
     parentKeyOption,
     dynamicLoadOption,
     resetDataOption,
+    hideUpdateNoticeOption,
 ]
 
 // Script loaded:
