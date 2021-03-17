@@ -275,35 +275,13 @@ let applyCommentStylingOption = {
         addStyle(this.key);
     },
     onCommentChange: function(comment) {
-        function processCommentParagraph(innerHtml) {
-            let italicRegex = /(^|\s|\(|\[|\{|\*)\*((?=[^*\s]).*?(?<=[^*\s]))\*/g;
-            let blockQuoteRegex = /^(>|&gt;)\s*(.*)$/;
-            // yes I'm parsing html with a regex. deal with it
-            let linkRegex = /\[(.+?)\]\(<a href="(.*?)".*?<\/a>\)/g;
-
-            function processBlockquotes(text) {
-                let reMatch = text.match(blockQuoteRegex);
-                if (reMatch) {
-                    return `<blockquote>${processBlockquotes(reMatch[2])}</blockquote>`;
-                } else {
-                    return text;
-                }
-            }
-
-            let newHtml = innerHtml;
-            newHtml = newHtml.replace(italicRegex, "$1<i>$2</i>");
-            newHtml = processBlockquotes(newHtml);
-            newHtml = newHtml.replace(linkRegex, `<a href="$2" target="_blank" rel="noreferrer noopener">$1</a>`);
-
-            return newHtml;
-        }
-
         let commentBody = $(comment).find("> .comment-content .comment-body");
+        let that = this;
         $(commentBody).find("p span").each(function() {
             // only process the text once
             if ($(this).siblings().length === 0) {
                 $(this).addClass("old-style");
-                let newText = processCommentParagraph($(this).html());
+                let newText = that.processCommentParagraph($(this).html());
                 let newSpan = `<span class="new-style">${newText}</span>`;
                 $(this).parent().append(newSpan);
             }
@@ -314,6 +292,28 @@ let applyCommentStylingOption = {
         if (value && !isInitial) {
             processAllComments();
         }
+    },
+    processCommentParagraph: function(innerHtml) {
+        let italicRegex = /(^|\s|\(|\[|\{|\*)\*((?=[^*\s]).*?(?<=[^*\s]))\*/g;
+        let blockQuoteRegex = /^(>|&gt;)\s*(.*)$/;
+        // yes I'm parsing html with a regex. deal with it
+        let linkRegex = /\[(.+?)\]\(<a href="(.*?)".*?<\/a>\)/g;
+
+        function processBlockquotes(text) {
+            let reMatch = text.match(blockQuoteRegex);
+            if (reMatch) {
+                return `<blockquote>${processBlockquotes(reMatch[2])}</blockquote>`;
+            } else {
+                return text;
+            }
+        }
+
+        let newHtml = innerHtml;
+        newHtml = newHtml.replace(italicRegex, "$1<i>$2</i>");
+        newHtml = processBlockquotes(newHtml);
+        newHtml = newHtml.replace(linkRegex, `<a href="$2" target="_blank" rel="noreferrer noopener">$1</a>`);
+
+        return newHtml;
     },
 }
 
