@@ -162,6 +162,7 @@
             background-color: #3b3b3b;
             color: white;
             border-radius: 2px;
+            border-color: #767676;
         }
 
         .dark input[type="text"]:focus, .dark input[type="number"]:focus, .dark select:focus {
@@ -170,6 +171,12 @@
         }
 
         .dark input[type="text"]:disabled {
+            background-color: #3b3b3b50;
+            color: #aaaaaa;
+            border-color: #85858550;
+        }
+
+        .dark input[type="number"]:disabled {
             background-color: #3b3b3b50;
             color: #aaaaaa;
             border-color: #85858550;
@@ -201,7 +208,7 @@
         </div>
         <div id="darkMode" class="option">
             <input type="checkbox" id="darkModeCheck"  class="trigger check">
-            <label for="darkModeCheck">Dark mode</label>
+            <label for="darkModeCheck">Popup dark mode</label>
         </div>
 
         <div class="spacer"></div>

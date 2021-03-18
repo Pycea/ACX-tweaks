@@ -687,7 +687,6 @@ async function checkForUpdates() {
     $("#update-close").click(function() {
         if ($("#update-dont-show-again").prop("checked")) {
             setOption("hideUpdateNotice", true);
-            saveLocalStorage();
         }
 
         $("#update-popup").remove();
