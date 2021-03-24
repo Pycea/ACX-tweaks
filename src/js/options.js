@@ -50,6 +50,18 @@ let useOldStylingOption = {
     },
 }
 
+let hideBadgeOption = {
+    key: "hideBadge",
+    default: true,
+    hovertext: "Hide the blue circles next to profile pictures",
+    onStart: function() {
+        addStyle(this.key);
+    },
+    onValueChange: function(value) {
+        $(`#${this.key}-css`).prop("disabled", !value);
+    },
+}
+
 let hideSubOnlyPostsOption = {
     key: "hideSubOnlyPosts",
     default: false,
@@ -517,6 +529,7 @@ let hideUpdateNoticeOption = {
 let optionArray = [
     fixHeaderOption,
     useOldStylingOption,
+    hideBadgeOption,
     hideSubOnlyPostsOption,
     darkModeOption,
     showFullDateOption,

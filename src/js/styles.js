@@ -18,6 +18,13 @@ const STYLES = {
                 top: 0 !important;
             }`,
     },
+    "hideBadge": {
+        "css": `
+            .profile-img-badge {
+                display: none;
+            }
+        `,
+    },
     "hideSubOnlyPosts": {
         "css": `
             .sub-post {
