@@ -97,7 +97,7 @@ function getPostName() {
 // Dealing with option changes
 
 function setOption(key, value) {
-    debug("optionSet", `Changing option ${key}, ${optionShadow[key]} -> ${value}`);
+    debug("optionSet", `Changing option ${key}, `, optionShadow[key], "->", value);
     optionShadow[key] = value;
     webExtension.storage.local.set({[OPTION_KEY]: optionShadow});
 }
@@ -123,7 +123,7 @@ function processStorageChange(changes, namespace) {
                 let oldValueString = JSON.stringify(optionShadow[key]);
 
                 if (newValueString !== oldValueString) {
-                    debug("optionGet", `Got change for ${key}, ${JSON.stringify(changes.options.oldValue[key])} -> ${JSON.stringify(changes.options.newValue[key])}`);
+                    debug("optionGet", `Got change for ${key}`, changes.options.oldValue[key], "->", changes.options.newValue[key]);
                     optionShadow[key] = changes.options.newValue[key];
                     changedKeys.push(key);
                 }
@@ -328,9 +328,9 @@ async function loadInitialOptionValues() {
             // the option hasn't been set in local storage, set it to the default
             value = OPTIONS[key].default;
             optionShadow[key] = value;
-            debug("optionInitial", `${key} not found, setting to ${value}`);
+            debug("optionInitial", `${key} not found, setting to`, value);
         } else {
-            debug("optionInitial", `${key} initial value is ${value}`);
+            debug("optionInitial", `${key} initial value is`, value);
         }
 
         if (OPTIONS[key].onStart) {

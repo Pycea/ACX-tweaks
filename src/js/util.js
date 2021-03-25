@@ -21,7 +21,12 @@ function debug(category, ...debugStrings) {
         return;
     }
 
-    let debugRegex = "(" + optionShadow.showDebug.replace(/(?<!\.)\*/g, ".*").replace(",", "|") + ")";
+    let debugRegex = "(" +
+        optionShadow.showDebug
+            .replace(/ /g, "")
+            .replace(/(?<!\.)\*/g, ".*")
+            .replace(/,/g, "|")
+             + ")";
     if (category.match(debugRegex)) {
         console.log(`${category}:`, ...debugStrings);
     }

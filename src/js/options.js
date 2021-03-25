@@ -522,7 +522,7 @@ let customCssOption = {
 let showDebugOption = {
     key: "showDebug",
     default: "",
-    hovertext: "Show matching debugging output in the console ('*' for all)",
+    hovertext: "Show matching debugging output in the console (use &ldquo;*&rdquo; for all)",
 }
 
 let dynamicLoadOption = {
