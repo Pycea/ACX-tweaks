@@ -30,12 +30,18 @@
             cursor: pointer;
         }
 
-        input[type="text"] {
+        input[type="text"].key {
             width: 80px;
+            cursor: pointer;
+        }
+
+        input[type="text"] {
+            width: 180px;
             cursor: text;
         }
 
         textarea {
+            width: 180px;
             resize: none;
         }
 
@@ -95,7 +101,10 @@
 
         #hideUsers,
         #showDebug,
-        #customCss {
+        #customCss,
+        #jsOnStart,
+        #jsOnPageChange,
+        #jsOnLoad {
             margin-left: 4px;
         }
 
@@ -401,8 +410,20 @@
 
         <div id="advancedHolder" class="closed">
             <div id="customCss" class="option textarea-center">
-                <textarea id="customCssText" class="trigger text" rows="1" cols="20"></textarea>
+                <textarea id="customCssText" class="trigger text" rows="1"></textarea>
                 <label for="customCssText">Custom CSS</label>
+            </div>
+            <div id="jsOnStart" class="option textarea-center">
+                <textarea id="jsOnStartText" class="trigger text" rows="1"></textarea>
+                <label for="jsOnStartText">Custom onStart JS</label>
+            </div>
+            <div id="jsOnPageChange" class="option textarea-center">
+                <textarea id="jsOnPageChangeText" class="trigger text" rows="1"></textarea>
+                <label for="jsOnPageChangeText">Custom onPageChange JS</label>
+            </div>
+            <div id="jsOnLoad" class="option textarea-center">
+                <textarea id="jsOnLoadText" class="trigger text" rows="1"></textarea>
+                <label for="jsOnLoadText">Custom onLoad JS</label>
             </div>
             <div id="showDebug" class="option">
                 <input type="text" id="showDebugText" class="trigger text">

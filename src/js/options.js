@@ -569,6 +569,45 @@ let customCssOption = {
     },
 }
 
+let jsOnStartOption = {
+    key: "jsOnStart",
+    default: "",
+    hovertext: "Run custom JS when the page is first loaded",
+    onStart: function() {
+        try {
+            eval(optionShadow[this.key]);
+        } catch(e) {
+            console.error("onStart error:", e);
+        }
+    },
+}
+
+let jsOnPageChangeOption = {
+    key: "jsOnPageChange",
+    default: "",
+    hovertext: "Run custom JS when a new page is visited",
+    onPageChange: function() {
+        try {
+            eval(optionShadow[this.key]);
+        } catch(e) {
+            console.error("onPageChange error:", e);
+        }
+    },
+}
+
+let jsOnLoadOption = {
+    key: "jsOnLoad",
+    default: "",
+    hovertext: "Run custom JS when the DOM is loaded",
+    onLoad: function() {
+        try {
+            eval(optionShadow[this.key]);
+        } catch(e) {
+            console.error("onLoad error:", e);
+        }
+    },
+}
+
 let showDebugOption = {
     key: "showDebug",
     default: "",
@@ -625,6 +664,9 @@ let optionArray = [
     nextUnreadKeyOption,
     parentKeyOption,
     customCssOption,
+    jsOnStartOption,
+    jsOnPageChangeOption,
+    jsOnLoadOption,
     showDebugOption,
     dynamicLoadOption,
     resetDataOption,
