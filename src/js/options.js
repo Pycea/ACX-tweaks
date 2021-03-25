@@ -17,13 +17,35 @@ function addStyle(key) {
 //     default: <value>,
 //     hovertext: <string>,
 //     onStart: function() { ... },
+//     onPageChange: function() { ... },
 //     onLoad: function() { ... },
 //     onCommentChange: function(comment) { ... },
 //     onMutation: function(mutation) { ... },
 //     onValueChange: function(value, isInitial) { ... },
 // }
 //
-// onCommentChange should be idempotent
+//  first load   +-----------+  onStart() finishes   +----------------+
+// ------------> | onStart() | --------------------> | onPageChange() |
+//               +-----------+                       +----------------+
+//                                                         |    ^
+//                                                     DOM |    |
+//                                                   loads |    | on dynamic
+//                                                         |    | page load
+//                                                         v    |
+//                                                 +--------------------+
+//                                                 |      onLoad()      | ------------>
+//                                                 | (end of page load) |  leave page
+//                                                 +--------------------+
+//
+// function        | run condition                            | args                    | idempotent
+// ----------------+------------------------------------------+-------------------------+-----------
+// onStart         | once, when the extension is first loaded | none                    | n/a
+// onPageChange    | on each page/post change                 | none                    | n/a
+// onLoad          | on each page once the DOM is loaded      | none                    | n/a
+//                 |                                          |                         |
+// onCommentChange | when a new comment is added              | the new comment         | yes
+// onMutation      | when a mutation happens on the page      | the mutation            | no
+// onValueChange   | when the value of the option changes     | new value, if first run | yes
 
 let fixHeaderOption = {
     key: "fixHeader",
@@ -201,17 +223,40 @@ let highlightNewOption = {
     key: "highlightNew",
     default: true,
     hovertext: "Highlight comments that you haven't seen yet",
+    ensureSeenComments: function() {
+        ensurePostEntry();
+        let postName = getPostName();
+        if (!("seenComments" in localStorageData[postName])) {
+            localStorageData[postName].seenComments = [];
+        }
+        startSaveTimer();
+    },
     onStart: function() {
         // the delta is in milliseconds
         let newCommentDelta = optionShadow.newTime;
         let newCommentDate = new Date(new Date().getTime() - newCommentDelta);
 
         this.newCommentDate = newCommentDate;
+        this.alwaysProcessComments = true;
+        this.doCleanup = false;
+    },
+    onPageChange: function() {
+        this.ensureSeenComments();
+        let postName = getPostName();
+        this.seenCommentsSet = new Set(localStorageData[postName].seenComments);
     },
     onCommentChange: function(comment) {
         let commentId = getCommentIdNumber(comment);
         let commentDate = new Date(commentIdToDate[commentId]);
-        let commentSeen = seenCommentsSet.has(commentId);
+        let commentSeen = this.seenCommentsSet.has(commentId);
+
+        let postName = getPostName();
+        localStorageData[postName].seenComments.push(commentId);
+        startSaveTimer();
+
+        if (!optionShadow[this.key] && !this.doCleanup) {
+            return;
+        }
 
         if ((!commentSeen || commentDate > this.newCommentDate) && optionShadow[this.key]) {
             if (!$(comment).hasClass("new-comment")) {
@@ -233,7 +278,7 @@ let highlightNewOption = {
         if (value) {
             $(document.documentElement).addClass("highlight-new");
         } else {
-            this.alwaysProcessComments = true;
+            this.doCleanup = true;
             $(document.documentElement).removeClass("highlight-new");
         }
 
@@ -241,7 +286,7 @@ let highlightNewOption = {
             processAllComments();
         }
 
-        this.alwaysProcessComments = false;
+        this.doCleanup = false;
     },
 }
 

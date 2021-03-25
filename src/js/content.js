@@ -53,14 +53,10 @@ let optionShadow;
 // {
 //     "<post name>": {
 //         "lastViewedDate": "<date>",
-//         "seenComments": [<comment id>, ...],
 //     },
 //     ...
 // }
 let localStorageData;
-
-// a set of the seen comments, for optimized lookup
-let seenCommentsSet;
 
 // cache of comment ids to exact comment time
 let commentIdToDate;
@@ -153,16 +149,8 @@ function ensurePostEntry() {
     if (!(postName in localStorageData)) {
         localStorageData[postName] = {
             "lastViewedDate": new Date().toISOString(),
-            "seenComments": [],
         }
     }
-}
-
-function addNewSeenComment(commentId) {
-    logFuncCall(true);
-    ensurePostEntry();
-    let postName = getPostName();
-    localStorageData[postName]["seenComments"].push(commentId);
 }
 
 // update the local storage with our cached version
@@ -239,10 +227,6 @@ function processChildComments(node) {
             for (let object of commentHandlerObjects) {
                 object.onCommentChange(this);
             }
-
-            let commentId = getCommentIdNumber(this);
-            addNewSeenComment(commentId);
-            startSaveTimer();
         });
     }
 
@@ -281,6 +265,7 @@ function processMutation(mutation) {
 
         if (optionShadow.dynamicLoad) {
             pageSetup();
+            runOnLoadHandlers();
         } else {
             // don't react to any more updates
             observeChanges = false;
@@ -321,20 +306,13 @@ function processMutation(mutation) {
 
 
 
-// Setup before page load
+// Setup before page load, run once
 
 async function loadInitialOptionValues() {
     optionShadow = await getLocalState(OPTION_KEY);
     if (!optionShadow) {
         optionShadow = {};
     }
-}
-
-function populateSeenCommentsSet() {
-    logFuncCall();
-    let postName = getPostName();
-    seenCommentsSet = new Set(
-        localStorageData[postName] ? localStorageData[postName]["seenComments"] : []);
 }
 
 function loadLocalStorage() {
@@ -344,7 +322,6 @@ function loadLocalStorage() {
         dataString = "{}";
     }
     localStorageData = JSON.parse(dataString);
-    populateSeenCommentsSet();
 }
 
 // load the initial values of the options and do any necessary config for them
@@ -374,16 +351,38 @@ async function processInitialOptionValues() {
     webExtension.storage.local.set({[OPTION_KEY]: optionShadow});
 }
 
+// called when the extension is first loaded
+async function onStart() {
+    await loadInitialOptionValues();
+    logFuncCall();
+    debug("pageLoad", "running onStart()");
+    loadLocalStorage();
+    await processInitialOptionValues();
+    webExtension.storage.onChanged.addListener(processStorageChange);
+}
+
+
+
+// Setup for each page, run on every page change
+
 function updatePostReadDate() {
     logFuncCall();
     let postName = getPostName();
     ensurePostEntry(postName);
-    localStorageData[postName]["lastViewedDate"] = new Date().toISOString();
+    localStorageData[postName].lastViewedDate = new Date().toISOString();
     startSaveTimer();
 }
 
+function runOnPageChangeHandlers() {
+    for (let key in OPTIONS) {
+        if (OPTIONS[key].onPageChange) {
+            OPTIONS[key].onPageChange();
+        }
+    }
+}
+
 // create cache of comment id -> date
-async function createPreloadCache() {
+async function createCommentDateCache() {
     logFuncCall();
 
     function getDateRecursive(comment) {
@@ -404,46 +403,21 @@ async function createPreloadCache() {
     }
 }
 
-async function processPreloads() {
-    logFuncCall();
-    await createPreloadCache();
-    processAllComments();
-}
-
 async function pageSetup() {
     logFuncCall();
     debug("pageLoad", `Loading new page: ${getPostName()}`);
 
-    for (let key in OPTIONS) {
-        if (OPTIONS[key].onLoad) {
-            $(document).ready(function() {
-                OPTIONS[key].onLoad();
-            });
-        }
-    }
-
-    populateSeenCommentsSet();
-
     if (getPageType() === PageTypeEnum.post) {
         updatePostReadDate();
+        runOnPageChangeHandlers();
+        await createCommentDateCache();
+        processAllComments();
     }
-
-    await processPreloads();
-}
-
-// called when the extension is first loaded
-async function onStart() {
-    await loadInitialOptionValues();
-    logFuncCall();
-    debug("pageLoad", "running onStart()");
-    loadLocalStorage();
-    await processInitialOptionValues();
-    webExtension.storage.onChanged.addListener(processStorageChange);
 }
 
 
 
-// Initial setup on first page load
+// Setup once the DOM is loaded
 
 function addDomObserver() {
     logFuncCall();
@@ -760,12 +734,21 @@ async function checkForUpdates() {
     });
 }
 
+function runOnLoadHandlers() {
+    for (let key in OPTIONS) {
+        if (OPTIONS[key].onLoad) {
+            OPTIONS[key].onLoad();
+        }
+    }
+}
+
 // called when the DOM is loaded
 async function onLoad() {
     logFuncCall();
     debug("pageLoad", "running onLoad()");
     addDomObserver();
     addKeyListener();
+    runOnLoadHandlers();
     setTimeout(checkForUpdates, 5000);
 }
 
