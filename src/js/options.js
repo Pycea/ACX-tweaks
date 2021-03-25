@@ -502,6 +502,23 @@ let parentKeyOption = {
     hovertext: "Key/key combo to jump to the parent of the current comment (click the box to set)",
 }
 
+let customCssOption = {
+    key: "customCss",
+    default: "",
+    hovertext: "Apply custom css to the page",
+    onStart: function() {
+        let style = $("<style>", {
+            "id": `${this.key}-css`,
+            "html": optionShadow[this.key],
+        });
+
+        $(document.documentElement).append(style);
+    },
+    onValueChange: function(value) {
+        $(`#${this.key}-css`).html(value);
+    },
+}
+
 let showDebugOption = {
     key: "showDebug",
     default: "",
@@ -557,6 +574,7 @@ let optionArray = [
     prevUnreadKeyOption,
     nextUnreadKeyOption,
     parentKeyOption,
+    customCssOption,
     showDebugOption,
     dynamicLoadOption,
     resetDataOption,
