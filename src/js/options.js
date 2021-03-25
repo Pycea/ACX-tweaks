@@ -310,7 +310,7 @@ let addParentLinksOption = {
     onStart: function() {
         addStyle(this.key);
 
-        $("#entry").on("click", ".comment-actions > span:nth-child(1)", function() {
+        $(document).on("click", ".comment-actions > span:nth-child(1)", function() {
             let comment = $(this).closest(".comment");
             let parentComment = $(comment).parent().closest(".comment");
             let scrollElement;
@@ -384,7 +384,7 @@ let loadAllOption = {
     hovertext: "Load all comments preemptively",
     onLoad: function() {
         let valueChange = this.onValueChange;
-        for (let timeout of [0, 500, 1000, 2000, 5000, 10000, 30000]) {
+        for (let timeout of [0, 500, 1000, 2000]) {
             setTimeout(function() {
                 valueChange(optionShadow.loadAll);
             }, timeout);
