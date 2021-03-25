@@ -58,9 +58,6 @@ let localStorageData;
 // a set of the seen comments, for optimized lookup
 let seenCommentsSet;
 
-// bunch of metadata
-let preloads;
-
 // cache of comment ids to exact comment time
 let commentIdToDate = {};
 
@@ -376,54 +373,27 @@ async function preloadSetup() {
 
 // Initial setup on first page load
 
-// get data stored in window._preloads
-function getPreloads() {
-    // hacky self-message-sending as content scripts can't access the same window variable as the
-    // embedding page
-
-    // unique handshake to ensure we only talk to ourselves
-    let handshake = Math.random().toString();
-    let inject = $("<script>", {
-        html: `window.postMessage({ handshake: "${handshake}", preloads: window._preloads }, "*");`,
-    });
-    $("head").append(inject);
-    inject.remove();
-
-    return new Promise(function(resolve, reject) {
-        window.addEventListener("message", function(event) {
-            if (event.source === window && event.data.handshake === handshake) {
-                preloads = event.data.preloads;
-                resolve();
-            }
-        }, false);
-    });
-}
-
 // create cache of comment id -> date
-function createPreloadCache() {
+async function createPreloadCache() {
     function getDateRecursive(comment) {
         let id = comment.id;
         let date = comment.date;
         commentIdToDate[id] = date;
 
-        for (let i = 0; i < comment.children.length; i++) {
-            getDateRecursive(comment.children[i]);
+        for (let childComment of comment.children) {
+            getDateRecursive(childComment);
         }
     }
 
-    if (!preloads.comments) {
-        console.log("Could not find _preloads.comments");
-        return;
-    }
+    let comments = await getPostComments();
 
-    for (let i = 0; i < preloads.comments.length; i++) {
-        getDateRecursive(preloads.comments[i]);
+    for (let comment of comments) {
+        getDateRecursive(comment);
     }
 }
 
 async function processPreloads() {
-    await getPreloads();
-    createPreloadCache();
+    await createPreloadCache();
     processAllComments();
 }
 

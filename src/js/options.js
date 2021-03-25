@@ -26,6 +26,12 @@ function addStyle(key) {
 // onCommentChange should be idempotent
 
 
+let showDebugOption = {
+    key: "showDebug",
+    default: "",
+    hovertext: "Show matching debugging output in the console ('*' for all)",
+}
+
 let fixHeaderOption = {
     key: "fixHeader",
     default: true,
@@ -114,12 +120,6 @@ let darkModeOption = {
     key: "darkMode",
     default: window.matchMedia("(prefers-color-scheme: dark)").matches,
     hovertext: "Make this popup dark mode (does not apply to page). To make the page dark, try an extension like Dark Reader.",
-}
-
-let showDebugOption = {
-    key: "showDebug",
-    default: "",
-    hovertext: "Show matching debugging output in the console ('*' for all)",
 }
 
 let showFullDateOption = {
@@ -537,12 +537,12 @@ let hideUpdateNoticeOption = {
 }
 
 let optionArray = [
+    showDebugOption,
     fixHeaderOption,
     useOldStylingOption,
     hideBadgeOption,
     hideSubOnlyPostsOption,
     darkModeOption,
-    showDebugOption,
     showFullDateOption,
     use24HourOption,
     highlightNewOption,

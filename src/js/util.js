@@ -1,3 +1,8 @@
+// DEBUG handles
+// ajax*
+//     ajaxCall: the url requested
+//     ajaxResponse: the response given
+
 // the local storage key of the options
 const OPTION_KEY = "options";
 
@@ -27,29 +32,39 @@ function mod(a, b) {
     return ((a % b) + b) % b;
 }
 
-function getUrl(url, data={}) {
-    return $.get(url, data);
+function getUrl(url, data={}, dataType="text json") {
+    return $.ajax({
+        url: url,
+        data: data,
+        dataType: dataType,
+    });
 }
 
 async function getPostData() {
     let url = `https://astralcodexten.substack.com/api/v1/posts/${getPostName()}`;
+    debug("ajaxCall", url);
     let data = await getUrl(url);
-    return JSON.parse(data);
+    debug("ajaxResponse", data);
+    return data;
 }
 
 async function getPostComments() {
     let postData = await getPostData();
     let postId = postData.id;
     let url = `https://astralcodexten.substack.com/api/v1/post/${postId}/comments?token=&all_comments=true`;
+    debug("ajaxCall", url);
     let data = await getUrl(url);
-    return JSON.parse(data).comments;
+    debug("ajaxResponse", data);
+    return data.comments;
 }
 
 async function getVersionInfo() {
     let url = "https://gist.githubusercontent.com/Pycea/a647f861e7ad2b2ae28b512cd68864cc/raw";
+    debug("ajaxCall", url);
     try {
         let data = await getUrl(url);
-        return JSON.parse(data);
+        debug("ajaxResponse", data);
+        return data;
     } catch (error) {
         console.error(error);
         return {};
