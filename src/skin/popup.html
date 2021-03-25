@@ -7,6 +7,14 @@
             font-family: sans-serif;
             font-size: .75em;
             user-select: none;
+            width: 325px;
+            overflow-x: hidden;
+            scrollbar-width: none;
+        }
+
+        body::-webkit-scrollbar {
+            width: 0;
+            height: 0;
         }
 
         #wrapper div {
@@ -35,13 +43,19 @@
             cursor: pointer;
         }
 
-        input[type="text"] {
-            width: 180px;
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: 120px;
+            padding: 2px 3px;
+            border-width: 1px;
+            border-style: solid;
+            border-radius: 2px;
             cursor: text;
         }
 
         textarea {
-            width: 180px;
+            height: 15px;
             resize: none;
         }
 
@@ -235,11 +249,7 @@
         .dark textarea {
             background-color: #3b3b3b;
             color: white;
-            padding: 2px 3px;
-            border-width: 1px;
-            border-radius: 2px;
             border-color: #858585;
-            border-style: solid;
         }
 
         .dark select {
@@ -414,7 +424,7 @@
                 <label for="customCssText">Custom CSS</label>
             </div>
             <div id="jsOnStart" class="option textarea-center">
-                <textarea id="jsOnStartText" class="trigger text" rows="1"></textarea>
+                <textarea id="jsOnStartText" class="trigger text"></textarea>
                 <label for="jsOnStartText">Custom onStart JS</label>
             </div>
             <div id="jsOnPageChange" class="option textarea-center">
