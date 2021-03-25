@@ -115,6 +115,25 @@
             max-height: 0;
         }
 
+        #advancedToggle {
+            margin-top: 4px;
+            margin-bottom: 0px;
+            cursor: pointer;
+        }
+
+        #advancedToggle.open {
+            margin-bottom: 3px;
+        }
+
+        #advancedHolder {
+            max-height: 120px;
+            overflow: hidden;
+        }
+
+        #advancedHolder.closed {
+            max-height: 0;
+        }
+
         .help-icon {
             width: 14px;
             vertical-align: middle;
@@ -225,14 +244,6 @@
 <body class="dark">
     <div id="wrapper">
 
-        <div class="heading debug">Debug</div>
-        <div id="showDebug" class="option debug">
-            <input type="text" id="showDebugText" class="trigger text">
-            <label for="showDebugText">Show debug</label>
-        </div>
-
-        <div class="spacer debug"></div>
-
         <!-- General settings -->
         <div class="heading">General</div>
         <div id="fixHeader" class="option">
@@ -341,6 +352,25 @@
             <div id="parentKey" class="option">
                 <input type="text" size="10" id="parentKeyText" class="trigger key">
                 <label for="parentKeyText">Jump to parent comment</label>
+            </div>
+        </div>
+
+        <div class="spacer"></div>
+
+        <!-- advanced options -->
+        <div class="heading">Advanced</div>
+
+        <div id="advancedToggle">
+            <img src="../icons/caret-right-solid.svg" id="advancedToggleCaret" class="caret-icon">
+            <span id="advancedToggleText">
+                Show options
+            </span>
+        </div>
+
+        <div id="advancedHolder" class="closed">
+            <div id="showDebug" class="option">
+                <input type="text" id="showDebugText" class="trigger text">
+                <label for="showDebugText">Show debug</label>
             </div>
         </div>
 

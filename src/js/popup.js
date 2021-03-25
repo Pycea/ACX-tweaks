@@ -307,6 +307,20 @@ function addDependencies() {
             $("#shortcutToggleText").text("Hide shortcuts");
         }
     });
+
+    $("#advancedToggle").click(function() {
+        if ($(this).hasClass("open")) {
+            $("#advancedHolder").addClass("closed");
+            $(this).removeClass("open");
+            $("#advancedToggleCaret").css("transform", "rotate(0deg)");
+            $("#advancedToggleText").text("Show options");
+        } else {
+            $("#advancedHolder").removeClass("closed");
+            $(this).addClass("open");
+            $("#advancedToggleCaret").css("transform", "rotate(90deg)");
+            $("#advancedToggleText").text("Hide options");
+        }
+    });
 }
 
 function addDebugChecker() {

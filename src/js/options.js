@@ -25,13 +25,6 @@ function addStyle(key) {
 //
 // onCommentChange should be idempotent
 
-
-let showDebugOption = {
-    key: "showDebug",
-    default: "",
-    hovertext: "Show matching debugging output in the console ('*' for all)",
-}
-
 let fixHeaderOption = {
     key: "fixHeader",
     default: true,
@@ -509,6 +502,12 @@ let parentKeyOption = {
     hovertext: "Key/key combo to jump to the parent of the current comment (click the box to set)",
 }
 
+let showDebugOption = {
+    key: "showDebug",
+    default: "",
+    hovertext: "Show matching debugging output in the console ('*' for all)",
+}
+
 let dynamicLoadOption = {
     key: "dynamicLoad",
     default: false,
@@ -537,7 +536,6 @@ let hideUpdateNoticeOption = {
 }
 
 let optionArray = [
-    showDebugOption,
     fixHeaderOption,
     useOldStylingOption,
     hideBadgeOption,
@@ -559,6 +557,7 @@ let optionArray = [
     prevUnreadKeyOption,
     nextUnreadKeyOption,
     parentKeyOption,
+    showDebugOption,
     dynamicLoadOption,
     resetDataOption,
     hideUpdateNoticeOption,
