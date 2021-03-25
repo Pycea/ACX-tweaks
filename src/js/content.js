@@ -24,6 +24,9 @@ if (typeof browser !== "undefined") {
 //     keyPressBinary: binary search internals
 // updateCheck: related to update checks
 // pageLoad: related to page loading events
+// func*
+//     func_<func_name>: function calls that are called a lot and probably not too useful
+//     funcs_<func_name>: other function calls
 
 // OPTIONS loaded from options.js
 // STYLES loaded from styles.js
@@ -98,6 +101,7 @@ function getPostName() {
 // Dealing with option changes
 
 function setOption(key, value) {
+    logFuncCall();
     debug("optionSet", `Changing option ${key}, `, optionShadow[key], "->", value);
     optionShadow[key] = value;
     webExtension.storage.local.set({[OPTION_KEY]: optionShadow});
@@ -105,6 +109,7 @@ function setOption(key, value) {
 
 // calls the option handling function for the given option value
 function doOptionChange(key, value) {
+    logFuncCall();
     if (key in OPTIONS && OPTIONS[key].onValueChange) {
         debug("optionGet", `Processing option change for ${key}`);
         OPTIONS[key].onValueChange(value, false);
@@ -114,6 +119,7 @@ function doOptionChange(key, value) {
 // processes local storage changes, and calls the appropriate option handling function if an option
 // was changed
 function processStorageChange(changes, namespace) {
+    logFuncCall();
     if (namespace === "local") {
         if (changes.options) {
             let changedKeys = [];
@@ -142,6 +148,7 @@ function processStorageChange(changes, namespace) {
 // Individual comment processing
 
 function ensurePostEntry() {
+    logFuncCall(true);
     let postName = getPostName();
     if (!(postName in localStorageData)) {
         localStorageData[postName] = {
@@ -152,6 +159,7 @@ function ensurePostEntry() {
 }
 
 function addNewSeenComment(commentId) {
+    logFuncCall(true);
     ensurePostEntry();
     let postName = getPostName();
     localStorageData[postName]["seenComments"].push(commentId);
@@ -159,6 +167,7 @@ function addNewSeenComment(commentId) {
 
 // update the local storage with our cached version
 function saveLocalStorage() {
+    logFuncCall();
     window.localStorage.setItem(LOCAL_DATA_KEY, JSON.stringify(localStorageData));
     localStorageTimer = null;
 }
@@ -166,6 +175,7 @@ function saveLocalStorage() {
 // starts or resets a timer that saves any new local storage data when it expires
 // needed so that we don't have to save on every single comment load
 function startSaveTimer() {
+    logFuncCall(true);
     if (localStorageTimer) {
         clearTimeout(localStorageTimer);
     }
@@ -174,6 +184,7 @@ function startSaveTimer() {
 }
 
 function addCustomCollapser(collapser) {
+    logFuncCall(true);
     collapser = $(collapser);
 
     if (collapser.parent().children(".custom-collapser").length > 0) {
@@ -205,11 +216,13 @@ function addCustomCollapser(collapser) {
 }
 
 function processAllComments() {
+    logFuncCall();
     processChildComments($("#main"));
 }
 
 // processes to apply to all comments and children in a given dom element
 function processChildComments(node) {
+    logFuncCall(true);
     let commentHandlerObjects = [];
 
     for (let option in OPTIONS) {
@@ -243,6 +256,7 @@ function processChildComments(node) {
 // Processing page mutations
 
 function processMutation(mutation) {
+    logFuncCall(true);
     if (!observeChanges) {
         return;
     }
@@ -266,7 +280,7 @@ function processMutation(mutation) {
         debug("pageLoad", "Loading new page");
 
         if (optionShadow.dynamicLoad) {
-            doPageLoad();
+            pageSetup();
         } else {
             // don't react to any more updates
             observeChanges = false;
@@ -309,12 +323,33 @@ function processMutation(mutation) {
 
 // Setup before page load
 
-// load the initial values of the options and do any necessary config for them
 async function loadInitialOptionValues() {
     optionShadow = await getLocalState(OPTION_KEY);
     if (!optionShadow) {
         optionShadow = {};
     }
+}
+
+function populateSeenCommentsSet() {
+    logFuncCall();
+    let postName = getPostName();
+    seenCommentsSet = new Set(
+        localStorageData[postName] ? localStorageData[postName]["seenComments"] : []);
+}
+
+function loadLocalStorage() {
+    logFuncCall();
+    let dataString = window.localStorage.getItem(LOCAL_DATA_KEY);
+    if (!dataString) {
+        dataString = "{}";
+    }
+    localStorageData = JSON.parse(dataString);
+    populateSeenCommentsSet();
+}
+
+// load the initial values of the options and do any necessary config for them
+async function processInitialOptionValues() {
+    logFuncCall();
 
     for (let key in OPTIONS) {
         let value = optionShadow[key];
@@ -339,22 +374,8 @@ async function loadInitialOptionValues() {
     webExtension.storage.local.set({[OPTION_KEY]: optionShadow});
 }
 
-function populateSeenCommentsSet() {
-    let postName = getPostName();
-    seenCommentsSet = new Set(
-        localStorageData[postName] ? localStorageData[postName]["seenComments"] : []);
-}
-
-function loadLocalStorage() {
-    let dataString = window.localStorage.getItem(LOCAL_DATA_KEY);
-    if (!dataString) {
-        dataString = "{}";
-    }
-    localStorageData = JSON.parse(dataString);
-    populateSeenCommentsSet();
-}
-
 function updatePostReadDate() {
+    logFuncCall();
     let postName = getPostName();
     ensurePostEntry(postName);
     localStorageData[postName]["lastViewedDate"] = new Date().toISOString();
@@ -363,6 +384,8 @@ function updatePostReadDate() {
 
 // create cache of comment id -> date
 async function createPreloadCache() {
+    logFuncCall();
+
     function getDateRecursive(comment) {
         let id = comment.id;
         let date = comment.date;
@@ -382,11 +405,13 @@ async function createPreloadCache() {
 }
 
 async function processPreloads() {
+    logFuncCall();
     await createPreloadCache();
     processAllComments();
 }
 
-async function doPageLoad() {
+async function pageSetup() {
+    logFuncCall();
     debug("pageLoad", `Loading new page: ${getPostName()}`);
 
     for (let key in OPTIONS) {
@@ -407,11 +432,13 @@ async function doPageLoad() {
 }
 
 // called when the extension is first loaded
-async function preloadSetup() {
+async function onStart() {
     await loadInitialOptionValues();
-    webExtension.storage.onChanged.addListener(processStorageChange);
+    logFuncCall();
+    debug("pageLoad", "running onStart()");
     loadLocalStorage();
-    await doPageLoad();
+    await processInitialOptionValues();
+    webExtension.storage.onChanged.addListener(processStorageChange);
 }
 
 
@@ -419,6 +446,7 @@ async function preloadSetup() {
 // Initial setup on first page load
 
 function addDomObserver() {
+    logFuncCall();
     let observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
             for (let i = 0; i < mutation.addedNodes.length; i++) {
@@ -433,13 +461,18 @@ function addDomObserver() {
 
 // reacts to key presses
 function addKeyListener() {
+    logFuncCall();
+
     document.addEventListener("keydown", function(event) {
         let source = event.target;
         let exclude = ["input", "textarea"];
 
         // don't trigger if people are writing comments
         if (exclude.indexOf(source.tagName.toLowerCase()) !== -1) {
+            debug("func_onKeydown", "onKeydown(", event, ")");
             return;
+        } else {
+            debug("funcs_onKeydown", "onKeydown(", event, ")");
         }
 
         if (!optionShadow.allowKeyboardShortcuts) {
@@ -555,6 +588,8 @@ function addKeyListener() {
 }
 
 async function checkForUpdates() {
+    logFuncCall();
+
     if (optionShadow.hideUpdateNotice) {
         return;
     }
@@ -726,7 +761,9 @@ async function checkForUpdates() {
 }
 
 // called when the DOM is loaded
-async function setup() {
+async function onLoad() {
+    logFuncCall();
+    debug("pageLoad", "running onLoad()");
     addDomObserver();
     addKeyListener();
     setTimeout(checkForUpdates, 5000);
@@ -737,8 +774,9 @@ async function setup() {
 // actually do the things
 
 async function doAllSetup() {
-    await preloadSetup();
-    $(document).ready(setup);
+    await onStart();
+    await pageSetup();
+    $(document).ready(onLoad);
 }
 
 doAllSetup();

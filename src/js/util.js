@@ -32,6 +32,21 @@ function debug(category, ...debugStrings) {
     }
 }
 
+function logFuncCall(verbose=false) {
+    let errorStack = new Error().stack;
+    let funcLine = errorStack.split("\n")[2].trim();
+    let funcNameMatch = funcLine.match(/at (\w+)/);
+    if (!funcNameMatch) {
+        console.error(`Bad stack found: ${errorStack}`);
+        return;
+    }
+
+    let funcName = funcNameMatch[1];
+    let logHandle = (verbose ? "func" : "funcs") + "_" + funcName;
+
+    debug(logHandle, funcName + "()");
+}
+
 // why is js so terrible?
 function mod(a, b) {
     return ((a % b) + b) % b;
