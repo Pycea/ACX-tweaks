@@ -23,6 +23,7 @@ if (typeof browser !== "undefined") {
 //     keyPress: each key press
 //     keyPressBinary: binary search internals
 // updateCheck: related to update checks
+// pageLoad: related to page loading events
 
 // OPTIONS loaded from options.js
 // STYLES loaded from styles.js
@@ -59,7 +60,7 @@ let localStorageData;
 let seenCommentsSet;
 
 // cache of comment ids to exact comment time
-let commentIdToDate = {};
+let commentIdToDate;
 
 // timer for writing new seen comments to local storage
 let localStorageTimer = null;
@@ -262,17 +263,10 @@ function processMutation(mutation) {
             mutation.addedNodes[0].tagName.toLowerCase() === "article") {
         // we switched to a different page with pushState
         debug("mutationType", "page type change", mutation);
+        debug("pageLoad", "Loading new page");
 
         if (optionShadow.dynamicLoad) {
-            for (let key in OPTIONS) {
-                if (OPTIONS[key].onLoad) {
-                    $(document).ready(function() {
-                        OPTIONS[key].onLoad();
-                    });
-                }
-
-                processAllComments();
-            }
+            doPageLoad();
         } else {
             // don't react to any more updates
             observeChanges = false;
@@ -340,15 +334,15 @@ async function loadInitialOptionValues() {
         if (OPTIONS[key].onValueChange) {
             OPTIONS[key].onValueChange(value, true);
         }
-
-        if (OPTIONS[key].onLoad) {
-            $(document).ready(function() {
-                OPTIONS[key].onLoad();
-            });
-        }
     }
 
     webExtension.storage.local.set({[OPTION_KEY]: optionShadow});
+}
+
+function populateSeenCommentsSet() {
+    let postName = getPostName();
+    seenCommentsSet = new Set(
+        localStorageData[postName] ? localStorageData[postName]["seenComments"] : []);
 }
 
 function loadLocalStorage() {
@@ -357,21 +351,15 @@ function loadLocalStorage() {
         dataString = "{}";
     }
     localStorageData = JSON.parse(dataString);
+    populateSeenCommentsSet();
+}
+
+function updatePostReadDate() {
     let postName = getPostName();
-    seenCommentsSet = new Set(
-        localStorageData[postName] ? localStorageData[postName]["seenComments"] : []);
+    ensurePostEntry(postName);
+    localStorageData[postName]["lastViewedDate"] = new Date().toISOString();
+    startSaveTimer();
 }
-
-// called when the extension is first loaded
-async function preloadSetup() {
-    await loadInitialOptionValues();
-    await loadLocalStorage();
-    webExtension.storage.onChanged.addListener(processStorageChange);
-}
-
-
-
-// Initial setup on first page load
 
 // create cache of comment id -> date
 async function createPreloadCache() {
@@ -387,6 +375,7 @@ async function createPreloadCache() {
 
     let comments = await getPostComments();
 
+    commentIdToDate = {};
     for (let comment of comments) {
         getDateRecursive(comment);
     }
@@ -397,12 +386,37 @@ async function processPreloads() {
     processAllComments();
 }
 
-function updatePostReadDate() {
-    let postName = getPostName();
-    ensurePostEntry(postName);
-    localStorageData[postName]["lastViewedDate"] = new Date().toISOString();
-    startSaveTimer();
+async function doPageLoad() {
+    debug("pageLoad", `Loading new page: ${getPostName()}`);
+
+    for (let key in OPTIONS) {
+        if (OPTIONS[key].onLoad) {
+            $(document).ready(function() {
+                OPTIONS[key].onLoad();
+            });
+        }
+    }
+
+    populateSeenCommentsSet();
+
+    if (getPageType() === PageTypeEnum.post) {
+        updatePostReadDate();
+    }
+
+    await processPreloads();
 }
+
+// called when the extension is first loaded
+async function preloadSetup() {
+    await loadInitialOptionValues();
+    webExtension.storage.onChanged.addListener(processStorageChange);
+    loadLocalStorage();
+    await doPageLoad();
+}
+
+
+
+// Initial setup on first page load
 
 function addDomObserver() {
     let observer = new MutationObserver(function(mutations) {
@@ -713,11 +727,6 @@ async function checkForUpdates() {
 
 // called when the DOM is loaded
 async function setup() {
-    if (getPageType() === PageTypeEnum.post) {
-        await processPreloads();
-        updatePostReadDate();
-    }
-
     addDomObserver();
     addKeyListener();
     setTimeout(checkForUpdates, 5000);

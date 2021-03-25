@@ -158,20 +158,23 @@ let showFullDateOption = {
         let dateSpan = $(comment).find("> .comment-content .comment-meta > span:nth-child(2)");
 
         // don't add if the new date element already exists
-        if (dateSpan.find(".better-date").length !== 0) {
+        if (dateSpan.find(".better-date:not(.incomplete)").length !== 0) {
             return;
         }
 
         let origDate = dateSpan.children(":first");
         origDate.addClass("worse-date");
-        let newDateDisplay = origDate.clone();
-        newDateDisplay.addClass("better-date");
+
+        let newDateIncomplete = dateSpan.find(".better-date.incomplete");
+        let newDateDisplay = newDateIncomplete.length > 0 ? newDateIncomplete : origDate.clone();
+        newDateDisplay.addClass("better-date incomplete");
         origDate.after(newDateDisplay);
 
         if (commentId in commentIdToDate) {
             let utcTime = commentIdToDate[commentId];
             let date = new Date(utcTime);
             newDateDisplay.html(getLocalDateString(date));
+            newDateDisplay.removeClass("incomplete");
         }
     },
     onValueChange: function(value, isInitial) {
@@ -336,9 +339,11 @@ let loadAllOption = {
     hovertext: "Load all comments preemptively",
     onLoad: function() {
         let valueChange = this.onValueChange;
-        setTimeout(function() {
-            valueChange(optionShadow.loadAll);
-        }, 2000);
+        for (let timeout of [0, 500, 1000, 2000, 5000, 10000, 30000]) {
+            setTimeout(function() {
+                valueChange(optionShadow.loadAll);
+            }, timeout);
+        }
     },
     onValueChange: function(value) {
         // this is ugliness incarnate, but what else are ya gonna do with substack?
