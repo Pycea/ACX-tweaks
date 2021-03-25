@@ -18,7 +18,8 @@
             font-weight: bold;
         }
 
-        label, button {
+        label,
+        button {
             display: inline-block;
             vertical-align: middle;
             cursor: pointer;
@@ -32,6 +33,19 @@
         input[type="text"] {
             width: 80px;
             cursor: text;
+        }
+
+        textarea {
+            resize: none;
+        }
+
+        .textarea-center {
+            display: flex;
+            align-items: center;
+        }
+
+        .textarea-center textarea {
+            margin-right: 3px;
         }
 
         .caret-icon {
@@ -65,15 +79,23 @@
             height: 10px;
         }
 
-        #use24Hour, #smoothScroll {
+        #use24Hour,
+        #smoothScroll {
             margin-left: 22px;
         }
 
-        #newTime, #nextCommentKey, #prevCommentKey, #nextUnreadKey, #prevUnreadKey, #parentKey {
+        #newTime,
+        #nextCommentKey,
+        #prevCommentKey,
+        #nextUnreadKey,
+        #prevUnreadKey,
+        #parentKey {
             margin-left: 48px;
         }
 
-        #hideUsers, #showDebug, #customCss {
+        #hideUsers,
+        #showDebug,
+        #customCss {
             margin-left: 4px;
         }
 
@@ -91,11 +113,13 @@
             margin-bottom: 2px;
         }
 
-        #known-issues a, #known-issues a:visited {
+        #known-issues a,
+        #known-issues a:visited {
             color: blue;
         }
 
         #shortcutToggle {
+            display: inline-block;
             margin-top: 4px;
             margin-bottom: 0px;
             margin-left: 26px;
@@ -107,7 +131,7 @@
         }
 
         #shortcutHolder {
-            max-height: 120px;
+            max-height: auto;
             overflow: hidden;
         }
 
@@ -116,6 +140,7 @@
         }
 
         #advancedToggle {
+            display: inline-block;
             margin-top: 4px;
             margin-bottom: 0px;
             cursor: pointer;
@@ -126,7 +151,7 @@
         }
 
         #advancedHolder {
-            max-height: 120px;
+            max-height: auto;
             overflow: hidden;
         }
 
@@ -187,7 +212,8 @@
             filter: invert(70%) sepia(12%) saturate(157%) hue-rotate(169deg) brightness(89%) contrast(89%);
         }
 
-        .dark #known-issues a, .dark #known-issues a:visited {
+        .dark #known-issues a,
+        .dark #known-issues a:visited {
             color: #9aa0a6;
         }
 
@@ -195,7 +221,9 @@
             background-color: #3b3b3b;
         }
 
-        .dark input[type="text"], .dark input[type="number"] {
+        .dark input[type="text"],
+        .dark input[type="number"],
+        .dark textarea {
             background-color: #3b3b3b;
             color: white;
             padding: 2px 3px;
@@ -212,12 +240,16 @@
             border-color: #767676;
         }
 
-        .dark input[type="text"]:focus, .dark input[type="number"]:focus, .dark select:focus {
+        .dark input[type="text"]:focus,
+        .dark input[type="number"]:focus,
+        .dark select:focus,
+        .dark textarea:focus {
             outline: none;
             border-color: white;
         }
 
-        .dark input[type="text"]:disabled {
+        .dark input[type="text"]:disabled,
+        .dark textarea:disabled {
             background-color: #3b3b3b50;
             color: #aaaaaa;
             border-color: #85858550;
@@ -368,8 +400,8 @@
         </div>
 
         <div id="advancedHolder" class="closed">
-            <div id="customCss" class="option">
-                <input type="text" id="customCssText" class="trigger text">
+            <div id="customCss" class="option textarea-center">
+                <textarea id="customCssText" class="trigger text" rows="1" cols="20"></textarea>
                 <label for="customCssText">Custom CSS</label>
             </div>
             <div id="showDebug" class="option">
