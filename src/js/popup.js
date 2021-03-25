@@ -293,6 +293,18 @@ function addDependencies() {
     if (!($("#darkModeCheck").prop("checked"))) {
         $("body").removeClass("dark");
     }
+
+    $("#shortcutToggle").click(function() {
+        if ($(this).hasClass("open")) {
+            $("#shortcutHolder").addClass("closed");
+            $(this).removeClass("open");
+            $("#shortcutToggleCaret").css("transform", "rotate(0deg)");
+        } else {
+            $("#shortcutHolder").removeClass("closed");
+            $(this).addClass("open");
+            $("#shortcutToggleCaret").css("transform", "rotate(90deg)");
+        }
+    });
 }
 
 function addDebugChecker() {

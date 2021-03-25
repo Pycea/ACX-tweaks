@@ -6,6 +6,7 @@
         body {
             font-family: sans-serif;
             font-size: .75em;
+            user-select: none;
         }
 
         #wrapper div {
@@ -18,7 +19,6 @@
         }
 
         label, button {
-            user-select: none;
             display: inline-block;
             vertical-align: middle;
             cursor: pointer;
@@ -32,6 +32,13 @@
         input[type="text"] {
             width: 120px;
             cursor: text;
+        }
+
+        .caret-icon {
+            width: 11px;
+            height: 11px;
+            display: inline-block;
+            transition: transform .1s ease-in;
         }
 
         #resetData {
@@ -86,6 +93,20 @@
 
         #known-issues a, #known-issues a:visited {
             color: blue;
+        }
+
+        #shortcutToggle {
+            margin-left: 26px;
+            cursor: pointer;
+        }
+
+        #shortcutHolder {
+            max-height: 120px;
+            overflow: hidden;
+        }
+
+        #shortcutHolder.closed {
+            max-height: 0;
         }
 
         .help-icon {
@@ -181,6 +202,10 @@
             background-color: #3b3b3b50;
             color: #aaaaaa;
             border-color: #85858550;
+        }
+
+        .dark .caret-icon {
+            filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(157deg) brightness(102%) contrast(101%);
         }
 
     </style>
@@ -282,25 +307,33 @@
             <input type="checkbox" id="smoothScrollCheck" class="trigger check">
             <label for="smoothScrollCheck">Smooth scroll</label>
         </div>
-        <div id="prevCommentKey" class="option">
-            <input type="text" size="10" id="prevCommentKeyText" class="trigger key">
-            <label for="prevCommentKeyText">Jump to previous comment</label>
+
+        <div id="shortcutToggle">
+            <img src="../icons/caret-right-solid.svg" id="shortcutToggleCaret" class="caret-icon">
+            Show all shortcuts
         </div>
-        <div id="nextCommentKey" class="option">
-            <input type="text" size="10" id="nextCommentKeyText" class="trigger key">
-            <label for="nextCommentKeyText">Jump to next comment</label>
-        </div>
-        <div id="prevUnreadKey" class="option">
-            <input type="text" size="10" id="prevUnreadKeyText" class="trigger key">
-            <label for="prevUnreadKeyText">Jump to previous unread</label>
-        </div>
-        <div id="nextUnreadKey" class="option">
-            <input type="text" size="10" id="nextUnreadKeyText" class="trigger key">
-            <label for="nextUnreadKeyText">Jump to next unread</label>
-        </div>
-        <div id="parentKey" class="option">
-            <input type="text" size="10" id="parentKeyText" class="trigger key">
-            <label for="parentKeyText">Jump to parent comment</label>
+
+        <div id="shortcutHolder" class="closed">
+            <div id="prevCommentKey" class="option">
+                <input type="text" size="10" id="prevCommentKeyText" class="trigger key">
+                <label for="prevCommentKeyText">Jump to previous comment</label>
+            </div>
+            <div id="nextCommentKey" class="option">
+                <input type="text" size="10" id="nextCommentKeyText" class="trigger key">
+                <label for="nextCommentKeyText">Jump to next comment</label>
+            </div>
+            <div id="prevUnreadKey" class="option">
+                <input type="text" size="10" id="prevUnreadKeyText" class="trigger key">
+                <label for="prevUnreadKeyText">Jump to previous unread</label>
+            </div>
+            <div id="nextUnreadKey" class="option">
+                <input type="text" size="10" id="nextUnreadKeyText" class="trigger key">
+                <label for="nextUnreadKeyText">Jump to next unread</label>
+            </div>
+            <div id="parentKey" class="option">
+                <input type="text" size="10" id="parentKeyText" class="trigger key">
+                <label for="parentKeyText">Jump to parent comment</label>
+            </div>
         </div>
 
         <div class="spacer"></div>
