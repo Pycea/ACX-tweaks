@@ -10,6 +10,20 @@ if (typeof browser !== "undefined") {
     console.error("What kind of browser do you have anyway? (can't get WebExtension handle)");
 }
 
+// DEBUG handles
+// option*
+//     optionInitial: initial option values
+//     optionGet: receive option change
+//     optionSet: setting option value
+// processComment: each comment processed
+// mutation*
+//     mutationType: known types of mutation
+//     mutationOther: other mutations
+// keyPress*
+//     keyPress: each key press
+//     keyPressBinary: binary search internals
+// updateCheck: related to update checks
+
 // OPTIONS loaded from options.js
 // STYLES loaded from styles.js
 
@@ -86,6 +100,7 @@ function getPostName() {
 // Dealing with option changes
 
 function setOption(key, value) {
+    debug("optionSet", `Changing option ${key}, ${optionShadow[key]} -> ${value}`);
     optionShadow[key] = value;
     webExtension.storage.local.set({[OPTION_KEY]: optionShadow});
 }
@@ -93,7 +108,7 @@ function setOption(key, value) {
 // calls the option handling function for the given option value
 function doOptionChange(key, value) {
     if (key in OPTIONS && OPTIONS[key].onValueChange) {
-        debug(`Processing option change for ${key}`);
+        debug("optionGet", `Processing option change for ${key}`);
         OPTIONS[key].onValueChange(value, false);
     }
 }
@@ -111,7 +126,7 @@ function processStorageChange(changes, namespace) {
                 let oldValueString = JSON.stringify(optionShadow[key]);
 
                 if (newValueString !== oldValueString) {
-                    debug(`Got change for ${key}, ${JSON.stringify(changes.options.oldValue[key])} -> ${JSON.stringify(changes.options.newValue[key])}`);
+                    debug("optionGet", `Got change for ${key}, ${JSON.stringify(changes.options.oldValue[key])} -> ${JSON.stringify(changes.options.newValue[key])}`);
                     optionShadow[key] = changes.options.newValue[key];
                     changedKeys.push(key);
                 }
@@ -200,13 +215,16 @@ function processChildComments(node) {
     let commentHandlerObjects = [];
 
     for (let option in OPTIONS) {
-        if (OPTIONS[option].onCommentChange && (optionShadow[option]) || OPTIONS[option].alwaysProcessComments) {
+        // alwaysProcessComments is used if processing is needed when turning an option off
+        if (OPTIONS[option].onCommentChange && (optionShadow[option] || OPTIONS[option].alwaysProcessComments)) {
             commentHandlerObjects.push(OPTIONS[option]);
         }
     }
 
     if (commentHandlerObjects.length > 0) {
         $(node).find("div.comment").addBack("div.comment").each(function() {
+            debug("processComment", this);
+
             for (let object of commentHandlerObjects) {
                 object.onCommentChange(this);
             }
@@ -246,6 +264,8 @@ function processMutation(mutation) {
             mutation.target.classList.contains("single-post") &&
             mutation.addedNodes[0].tagName.toLowerCase() === "article") {
         // we switched to a different page with pushState
+        debug("mutationType", "page type change", mutation);
+
         if (optionShadow.dynamicLoad) {
             for (let key in OPTIONS) {
                 if (OPTIONS[key].onLoad) {
@@ -264,6 +284,8 @@ function processMutation(mutation) {
             window.location.href = window.location.href;
         }
     } else if (nodeHasClass(mutation.target, ["comment", "comment-list", "comment-list-items", "container"])) {
+        debug("mutationType", "possible comment add", mutation);
+
         // check for comments
         for (let i = 0; i < mutation.addedNodes.length; i++) {
             let node = mutation.addedNodes[i];
@@ -273,6 +295,7 @@ function processMutation(mutation) {
         }
     } else {
         // do nothing
+        debug("mutationOther", "other mutation", mutation);
     }
 
     // call mutation handlers
@@ -308,6 +331,9 @@ async function loadInitialOptionValues() {
             // the option hasn't been set in local storage, set it to the default
             value = OPTIONS[key].default;
             optionShadow[key] = value;
+            debug("optionInitial", `${key} not found, setting to ${value}`);
+        } else {
+            debug("optionInitial", `${key} initial value is ${value}`);
         }
 
         if (OPTIONS[key].onStart) {
@@ -436,6 +462,8 @@ function addKeyListener() {
             return;
         }
 
+        debug("keyPress", event);
+
         function getKeyCommand(event) {
             if (isMatchingKeyEvent(optionShadow.prevCommentKey, event)) {
                 return KeyCommandEnum.prevComment;
@@ -485,36 +513,46 @@ function addKeyListener() {
 
             while (max - min > 1) {
                 let mid = Math.floor((min + max) / 2);
+                debug("keyPressBinary", `${min} ${mid} ${max}`);
                 if (inView(comments[mid])) {
                     max = mid;
                 } else {
                     min = mid;
                 }
+                debug("keyPressBinary", `    mid is now ${mid}`);
             }
 
             let index;
             if (command === KeyCommandEnum.prevComment || command === KeyCommandEnum.prevUnread) {
                 index = min;
                 index = mod(index, comments.length);
+                debug("keyPressBinary", `gong backwards, index is min, now ${index}`);
                 if (atEntry(comments[index])) {
                     index--;
+                    debug("keyPressBinary", `At entry, decrementing to ${index}`);
                 }
             } else if (command === KeyCommandEnum.nextComment || command === KeyCommandEnum.nextUnread) {
                 index = max;
                 index = mod(index, comments.length);
+                debug("keyPressBinary", `going forwards, index is max, now ${index}`);
                 if (atEntry(comments[index])) {
                     index++;
+                    debug("keyPressBinary", `At entry, incrementing to ${index}`);
                 }
             } else if (command === KeyCommandEnum.parent) {
                 index = max;
+                debug("keyPressBinary", `getting parent, index is max, now ${index}`);
                 if (index < 0 || index >= comments.length) {
                     return;
                 }
 
                 let parent = $(comments[index]).parent().parent().closest(".comment");
                 if (parent.length === 0) {
+                    debug("keyPressBinary", "already at top level comment");
                     return;
                 }
+
+                debug("keyPressBinary", "found parent comment");
 
                 let scrollBehavior = optionShadow.smoothScroll ? "smooth" : "auto";
                 parent[0].scrollIntoView({"behavior": scrollBehavior});
@@ -523,6 +561,8 @@ function addKeyListener() {
 
             // wrap around at the top and bottom
             index = mod(index, comments.length);
+
+            debug("keyPressBinary", `index is ${index}`);
 
             let scrollBehavior = optionShadow.smoothScroll ? "smooth" : "auto";
             comments[index].scrollIntoView({"behavior": scrollBehavior});
@@ -550,24 +590,31 @@ async function checkForUpdates() {
         return;
     }
 
+    debug("updateCheck", `current version is ${currentVersion}`);
+    debug("updateCheck", `lastest required version is ${latestRequiredVersion}`);
+
     if (compareVersion(currentVersion, latestRequiredVersion) >= 0) {
+        debug("updateCheck", "no update required");
         return;
     }
 
     let updateUrl;
     if (typeof browser !== "undefined") {
         updateUrl = "https://addons.mozilla.org/en-US/firefox/addon/acx-tweaks/";
+        debug("updateCheck", "update required, Firefox");
     } else if (typeof chrome !== "undefined"){
         updateUrl = "https://chrome.google.com/webstore/detail/acx-tweaks/jdpghojhfigbpoeiadalafcmohaekglf";
+        debug("updateCheck", "update required, Chrome");
     } else {
         console.error("Can't get update url.");
+        debug("updateCheck", "update required, unknown browser");
     }
 
     let iconSvg = webExtension.extension.getURL("icons/caret-right-solid.svg");
 
     let moreText = `You are on version ${currentVersion}. Without the latest version, ${latestRequiredVersion}, some stuff on the page might break.`;
     if (updateData.reasons[latestRequiredVersion]) {
-        moreText += `<br><br>Reason: ${updateData.reasons[latestRequiredVersion]}`
+        moreText += `<br><br>Reason: ${updateData.reasons[latestRequiredVersion]}`;
     }
 
     let popupHtml = `

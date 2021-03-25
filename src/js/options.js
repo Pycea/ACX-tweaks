@@ -116,6 +116,12 @@ let darkModeOption = {
     hovertext: "Make this popup dark mode (does not apply to page). To make the page dark, try an extension like Dark Reader.",
 }
 
+let showDebugOption = {
+    key: "showDebug",
+    default: "",
+    hovertext: "Show matching debugging output in the console ('*' for all)",
+}
+
 let showFullDateOption = {
     key: "showFullDate",
     default: true,
@@ -229,15 +235,17 @@ let highlightNewOption = {
     },
     onValueChange: function(value, isInitial) {
         if (value) {
-            this.alwaysProcessComments = true;
             $(document.documentElement).addClass("highlight-new");
         } else {
+            this.alwaysProcessComments = true;
             $(document.documentElement).removeClass("highlight-new");
         }
 
         if (!isInitial) {
             processAllComments();
         }
+
+        this.alwaysProcessComments = false;
     },
 }
 
@@ -417,13 +425,15 @@ let hideUsersOption = {
     onValueChange: function(value, isInitial) {
         this.hiddenSet = new Set(optionShadow[this.key].split(",").map(x => x.trim()).filter(x => x));
 
-        if (value) {
+        if (!value) {
             this.alwaysProcessComments = true;
         }
 
         if (!isInitial) {
             processAllComments();
         }
+
+        this.alwaysProcessComments = false;
     },
 }
 
@@ -532,6 +542,7 @@ let optionArray = [
     hideBadgeOption,
     hideSubOnlyPostsOption,
     darkModeOption,
+    showDebugOption,
     showFullDateOption,
     use24HourOption,
     highlightNewOption,
@@ -551,7 +562,7 @@ let optionArray = [
     dynamicLoadOption,
     resetDataOption,
     hideUpdateNoticeOption,
-]
+];
 
 // Script loaded:
 //     run onStart

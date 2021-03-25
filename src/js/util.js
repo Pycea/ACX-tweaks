@@ -11,11 +11,14 @@ const OPTION_KEY = "options";
 // }
 const LOCAL_DATA_KEY = "acx-local-data";
 
-DEBUG = false;
+function debug(category, ...debugStrings) {
+    if (!optionShadow.showDebug) {
+        return;
+    }
 
-function debug(string) {
-    if (DEBUG) {
-        console.log(string);
+    let debugRegex = "(" + optionShadow.showDebug.replace(/(?<!\.)\*/g, ".*").replace(",", "|") + ")";
+    if (category.match(debugRegex)) {
+        console.log(`${category}:`, ...debugStrings);
     }
 }
 

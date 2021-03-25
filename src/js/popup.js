@@ -305,7 +305,7 @@ function addDebugChecker() {
 
         let checkPassed = debugChecker.nextInput(event.key);
         if (checkPassed) {
-            $(".hidden").removeClass("hidden");
+            $(".debug").removeClass("debug");
         }
     });
 }

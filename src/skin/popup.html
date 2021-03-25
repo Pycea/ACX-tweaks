@@ -29,6 +29,11 @@
             cursor: pointer;
         }
 
+        input[type="text"] {
+            width: 120px;
+            cursor: text;
+        }
+
         #resetData {
             text-align: center;
         }
@@ -61,12 +66,8 @@
             margin-left: 26px;
         }
 
-        #hideUsers {
+        #hideUsers, #showDebug {
             margin-left: 4px;
-        }
-
-        #hideUsersText {
-            width: 120px;
         }
 
         #newTime * {
@@ -121,7 +122,7 @@
             bottom: 8px;
         }
 
-        .hidden {
+        .debug {
             display: none;
         }
 
@@ -192,6 +193,15 @@
 
 <body class="dark">
     <div id="wrapper">
+
+        <div class="heading debug">Debug</div>
+        <div id="showDebug" class="option debug">
+            <input type="text" id="showDebugText" class="trigger text">
+            <label for="showDebugText">Show debug</label>
+        </div>
+
+        <div class="spacer debug"></div>
+
         <!-- General settings -->
         <div class="heading">General</div>
         <div id="fixHeader" class="option">
@@ -255,7 +265,7 @@
             <input type="checkbox" id="hideNewCheck" class="trigger check">
             <label for="hideNewCheck">Hide new comment button</label>
         </div>
-        <div id="hideUsers" class="option hidden">
+        <div id="hideUsers" class="option debug">
             <input type="text" id="hideUsersText" class="trigger text">
             <label for="hideUsersText">Hide user comments</label>
         </div>
