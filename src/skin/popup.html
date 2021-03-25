@@ -30,7 +30,7 @@
         }
 
         input[type="text"] {
-            width: 120px;
+            width: 80px;
             cursor: text;
         }
 
@@ -70,7 +70,7 @@
         }
 
         #newTime, #nextCommentKey, #prevCommentKey, #nextUnreadKey, #prevUnreadKey, #parentKey {
-            margin-left: 26px;
+            margin-left: 48px;
         }
 
         #hideUsers, #showDebug {
@@ -96,8 +96,14 @@
         }
 
         #shortcutToggle {
+            margin-top: 4px;
+            margin-bottom: 0px;
             margin-left: 26px;
             cursor: pointer;
+        }
+
+        #shortcutToggle.open {
+            margin-bottom: 3px;
         }
 
         #shortcutHolder {
@@ -310,7 +316,9 @@
 
         <div id="shortcutToggle">
             <img src="../icons/caret-right-solid.svg" id="shortcutToggleCaret" class="caret-icon">
-            Show all shortcuts
+            <span id="shortcutToggleText">
+                Show shortcuts
+            </span>
         </div>
 
         <div id="shortcutHolder" class="closed">

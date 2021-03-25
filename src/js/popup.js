@@ -299,10 +299,12 @@ function addDependencies() {
             $("#shortcutHolder").addClass("closed");
             $(this).removeClass("open");
             $("#shortcutToggleCaret").css("transform", "rotate(0deg)");
+            $("#shortcutToggleText").text("Show shortcuts");
         } else {
             $("#shortcutHolder").removeClass("closed");
             $(this).addClass("open");
             $("#shortcutToggleCaret").css("transform", "rotate(90deg)");
+            $("#shortcutToggleText").text("Hide shortcuts");
         }
     });
 }
