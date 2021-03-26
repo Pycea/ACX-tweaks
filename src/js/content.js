@@ -258,24 +258,7 @@ function processMutation(mutation) {
     }
 
     // is this a hack? even the wisest cannot tell
-    if (mutation.target.id === "main" ||
-            mutation.target.classList.contains("single-post") &&
-            mutation.addedNodes[0].tagName.toLowerCase() === "article") {
-        // we switched to a different page with pushState
-        debug("mutationType", "page type change", mutation);
-        debug("pageLoad", "Loading new page");
-
-        if (optionShadow.dynamicLoad) {
-            pageSetup();
-            runOnLoadHandlers();
-        } else {
-            // don't react to any more updates
-            observeChanges = false;
-
-            // force refresh
-            window.location.href = window.location.href;
-        }
-    } else if (nodeHasClass(mutation.target, ["comment", "comment-list", "comment-list-items", "container"])) {
+    if (nodeHasClass(mutation.target, ["comment", "comment-list", "comment-list-items", "container"])) {
         debug("mutationType", "possible comment add", mutation);
 
         // check for comments
@@ -356,6 +339,39 @@ async function processInitialOptionValues() {
     webExtension.storage.local.set({[OPTION_KEY]: optionShadow});
 }
 
+function createPushStateHandler() {
+    logFuncCall();
+
+    let handshake = Math.random().toString();
+    let inject = $("<script>", {
+        html: `
+            let pushState = window.history.pushState.bind(window.history);
+            window.history.pushState = function(state, title, url) {
+                window.postMessage({ handshake: "${handshake}", url: url }, "*");
+                pushState(state, title, url);
+            };
+        `,
+    });
+    $("head").append(inject);
+
+    window.addEventListener("message", function(event) {
+        if (event.source === window && event.data.handshake === handshake) {
+            debug("pageLoad", "Loading new page");
+
+            if (optionShadow.dynamicLoad) {
+                pageSetup();
+                runOnLoadHandlers();
+            } else {
+                // don't react to any more updates
+                observeChanges = false;
+
+                // force refresh
+                window.location.href = window.location.href;
+            }
+        }
+    }, false);
+}
+
 // called when the extension is first loaded
 async function onStart() {
     await loadInitialOptionValues();
@@ -364,6 +380,7 @@ async function onStart() {
     loadLocalStorage();
     await processInitialOptionValues();
     webExtension.storage.onChanged.addListener(processStorageChange);
+    createPushStateHandler();
 }
 
 
@@ -559,7 +576,7 @@ function addKeyListener() {
             // wrap around at the top and bottom
             index = mod(index, comments.length);
 
-            debug("keyPressBinary", `index is ${index}`);
+            debug("keyPressBinary", `index is ${index}`, comments[index]);
 
             let scrollBehavior = optionShadow.smoothScroll ? "smooth" : "auto";
             comments[index].scrollIntoView({"behavior": scrollBehavior});
@@ -741,6 +758,7 @@ async function checkForUpdates() {
 }
 
 function runOnLoadHandlers() {
+    logFuncCall();
     for (let key in OPTIONS) {
         if (OPTIONS[key].onLoad) {
             debug("funcs_" + key + ".onLoad", key + ".onLoad()");
