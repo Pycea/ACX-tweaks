@@ -158,18 +158,6 @@ function ensurePostEntry() {
 function saveLocalStorage() {
     logFuncCall();
     window.localStorage.setItem(LOCAL_DATA_KEY, JSON.stringify(localStorageData));
-    localStorageTimer = null;
-}
-
-// starts or resets a timer that saves any new local storage data when it expires
-// needed so that we don't have to save on every single comment load
-function startSaveTimer() {
-    logFuncCall(true);
-    if (localStorageTimer) {
-        clearTimeout(localStorageTimer);
-    }
-
-    localStorageTimer = setTimeout(saveLocalStorage, 500);
 }
 
 function addCustomCollapser(collapser) {
@@ -392,7 +380,7 @@ function updatePostReadDate() {
     let postName = getPostName();
     ensurePostEntry(postName);
     localStorageData[postName].lastViewedDate = new Date().toISOString();
-    startSaveTimer();
+    saveLocalStorage();
 }
 
 function runOnPageChangeHandlers() {

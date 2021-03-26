@@ -223,13 +223,25 @@ let highlightNewOption = {
     key: "highlightNew",
     default: true,
     hovertext: "Highlight comments that you haven't seen yet",
+    startSaveTimer: function() {
+        if (this.localStorageTimer) {
+            clearTimeout(this.localStorageTimer);
+        }
+
+        let that = this;
+        this.localStorageTimer = setTimeout(function() {
+            let postName = getPostName();
+            localStorageData[postName].seenComments = Array.from(that.seenCommentsSet);
+            saveLocalStorage();
+        }, 500);
+    },
     ensureSeenComments: function() {
         ensurePostEntry();
         let postName = getPostName();
         if (!("seenComments" in localStorageData[postName])) {
             localStorageData[postName].seenComments = [];
         }
-        startSaveTimer();
+        this.startSaveTimer();
     },
     onStart: function() {
         // the delta is in milliseconds
@@ -244,15 +256,15 @@ let highlightNewOption = {
         this.ensureSeenComments();
         let postName = getPostName();
         this.seenCommentsSet = new Set(localStorageData[postName].seenComments);
+        this.localStorageTimer = null;
     },
     onCommentChange: function(comment) {
         let commentId = getCommentIdNumber(comment);
         let commentDate = new Date(commentIdToDate[commentId]);
         let commentSeen = this.seenCommentsSet.has(commentId);
 
-        let postName = getPostName();
-        localStorageData[postName].seenComments.push(commentId);
-        startSaveTimer();
+        this.seenCommentsSet.add(commentId);
+        this.startSaveTimer();
 
         if (!optionShadow[this.key] && !this.doCleanup) {
             return;
