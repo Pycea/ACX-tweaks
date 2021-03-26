@@ -108,6 +108,7 @@ function doOptionChange(key, value) {
     logFuncCall();
     if (key in OPTIONS && OPTIONS[key].onValueChange) {
         debug("optionGet", `Processing option change for ${key}`);
+        debug("funcs_" + key + ".onValueChange", key + ".onValueChange()");
         OPTIONS[key].onValueChange(value, false);
     }
 }
@@ -225,6 +226,7 @@ function processChildComments(node) {
             debug("processComment", this);
 
             for (let object of commentHandlerObjects) {
+                debug("func_" + object.key + ".onCommentChange", object.key + ".onCommentChange()");
                 object.onCommentChange(this);
             }
         });
@@ -299,6 +301,7 @@ function processMutation(mutation) {
 
     if (mutationHandlerObjects.length > 0) {
         for (let object of mutationHandlerObjects) {
+            debug("func_" + object.key + ".onMutation", object.key + ".onMutation()");
             object.onMutation(mutation);
         }
     }
@@ -340,10 +343,12 @@ async function processInitialOptionValues() {
         }
 
         if (OPTIONS[key].onStart) {
+            debug("funcs_" + key + ".onStart", key + ".onStart()");
             OPTIONS[key].onStart();
         }
 
         if (OPTIONS[key].onValueChange) {
+            debug("funcs_" + key + ".onValueChange", key + ".onValueChange()");
             OPTIONS[key].onValueChange(value, true);
         }
     }
@@ -376,6 +381,7 @@ function updatePostReadDate() {
 function runOnPageChangeHandlers() {
     for (let key in OPTIONS) {
         if (OPTIONS[key].onPageChange) {
+            debug("funcs_" + key + ".onPageChange", key + ".onPageChange()");
             OPTIONS[key].onPageChange();
         }
     }
@@ -737,6 +743,7 @@ async function checkForUpdates() {
 function runOnLoadHandlers() {
     for (let key in OPTIONS) {
         if (OPTIONS[key].onLoad) {
+            debug("funcs_" + key + ".onLoad", key + ".onLoad()");
             OPTIONS[key].onLoad();
         }
     }

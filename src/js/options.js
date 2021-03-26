@@ -123,9 +123,9 @@ let hideSubOnlyPostsOption = {
     onValueChange: function(value, isInitial) {
         $(`#${this.key}-css`).prop("disabled", !value);
         if (value && !isInitial) {
-            let processFunc = this.processPost;
+            let that = this;
             $("#main").find(".post-preview").each(function() {
-                processFunc(this);
+                that.processPost(this);
             });
         }
     },
@@ -311,6 +311,7 @@ let addParentLinksOption = {
         addStyle(this.key);
 
         $(document).on("click", ".comment-actions > span:nth-child(1)", function() {
+            debug("funcs_addParentLinks.onClick", "addParentLinks.onClick()");
             let comment = $(this).closest(".comment");
             let parentComment = $(comment).parent().closest(".comment");
             let scrollElement;
