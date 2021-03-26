@@ -310,7 +310,7 @@ let addParentLinksOption = {
     onStart: function() {
         addStyle(this.key);
 
-        $(document).on("click", ".comment-actions > span:nth-child(1)", function() {
+        $(document.body).on("click", ".comment-actions > span:nth-child(1)", function() {
             debug("funcs_addParentLinks.onClick", "addParentLinks.onClick()");
             let comment = $(this).closest(".comment");
             let parentComment = $(comment).parent().closest(".comment");
