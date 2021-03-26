@@ -368,7 +368,8 @@ let applyCommentStylingOption = {
         }
     },
     processCommentParagraph: function(innerHtml) {
-        let italicRegex = /(^|\s|\(|\[|\{|\*)\*((?=[^*\s]).*?(?<=[^*\s]))\*/g;
+        let italicRegexStar = /(^|\s|\(|\[|\{|\*)\*((?=[^*\s]).*?(?<=[^*\s]))\*/g;
+        let italicRegexUnderscore = /(^|\s|\(|\[|\{|_)_((?=[^_\s]).*?(?<=[^_\s]))_/g;
         let blockQuoteRegex = /^(>|&gt;)\s*(.*)$/;
         // yes I'm parsing html with a regex. deal with it
         let linkRegex = /\[(.+?)\]\(<a href="(.*?)".*?<\/a>\)/g;
@@ -383,7 +384,8 @@ let applyCommentStylingOption = {
         }
 
         let newHtml = innerHtml;
-        newHtml = newHtml.replace(italicRegex, "$1<i>$2</i>");
+        newHtml = newHtml.replace(italicRegexStar, "$1<i>$2</i>");
+        newHtml = newHtml.replace(italicRegexUnderscore, "$1<i>$2</i>");
         newHtml = processBlockquotes(newHtml);
         newHtml = newHtml.replace(linkRegex, `<a href="$2" target="_blank" rel="noreferrer noopener">$1</a>`);
 

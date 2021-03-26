@@ -39,6 +39,13 @@ function testCommentStyling() {
             let actual = applyCommentStylingOption.processCommentParagraph(testCase);
             assertEqual(expected, actual);
         }
+
+        for (let testCase in testCases) {
+            let expected = testCases[testCase].replace(/\*/g, "_");
+            let newTestCase = testCase.replace(/\*/g, "_");
+            let actual = applyCommentStylingOption.processCommentParagraph(newTestCase);
+            assertEqual(expected, actual);
+        }
     }
 
     function testBlockquotes() {
