@@ -71,18 +71,6 @@ let useOldStylingOption = {
     },
 }
 
-let hideBadgeOption = {
-    key: "hideBadge",
-    default: true,
-    hovertext: "Hide the blue circles next to profile pictures",
-    onStart: function() {
-        addStyle(this.key);
-    },
-    onValueChange: function(value) {
-        $(`#${this.key}-css`).prop("disabled", !value);
-    },
-}
-
 let hideSubOnlyPostsOption = {
     key: "hideSubOnlyPosts",
     default: false,
@@ -134,7 +122,7 @@ let hideSubOnlyPostsOption = {
 let darkModeOption = {
     key: "darkMode",
     default: window.matchMedia("(prefers-color-scheme: dark)").matches,
-    hovertext: "Make this popup dark mode (does not apply to page). To make the page dark, try an extension like Dark Reader.",
+    hovertext: "Make this popup dark mode (does not apply to page). To make the page dark, use an extension like Dark Reader.",
 }
 
 let showFullDateOption = {
@@ -315,32 +303,6 @@ let newTimeOption = {
     },
 }
 
-let addParentLinksOption = {
-    key: "addParentLinks",
-    default: true,
-    hovertext: "Add links to scroll to the parent comment, or the top of the comments page for top level comments",
-    onStart: function() {
-        addStyle(this.key);
-
-        $(document.body).on("click", ".comment-actions > span:nth-child(1)", function() {
-            debug("funcs_addParentLinks.onClick", "addParentLinks.onClick()");
-            let comment = $(this).closest(".comment");
-            let parentComment = $(comment).parent().closest(".comment");
-            let scrollElement;
-            if (parentComment.length === 0) {
-                // already at top level comment
-                scrollElement = $(".comments-page");
-            } else {
-                scrollElement = parentComment.find("> .comment-anchor:first-child");
-            }
-            scrollElement[0].scrollIntoView({ "behavior": "smooth" });
-        });
-    },
-    onValueChange: function(value) {
-        $(`#${this.key}-css`).prop("disabled", value);
-    },
-}
-
 let applyCommentStylingOption = {
     key: "applyCommentStyling",
     default: true,
@@ -390,6 +352,44 @@ let applyCommentStylingOption = {
         newHtml = newHtml.replace(linkRegex, `<a href="$2" target="_blank" rel="noreferrer noopener">$1</a>`);
 
         return newHtml;
+    },
+}
+
+let addParentLinksOption = {
+    key: "addParentLinks",
+    default: true,
+    hovertext: "Add links to scroll to the parent comment, or the top of the comments page for top level comments",
+    onStart: function() {
+        addStyle(this.key);
+
+        $(document.body).on("click", ".comment-actions > span:nth-child(1)", function() {
+            debug("funcs_addParentLinks.onClick", "addParentLinks.onClick()");
+            let comment = $(this).closest(".comment");
+            let parentComment = $(comment).parent().closest(".comment");
+            let scrollElement;
+            if (parentComment.length === 0) {
+                // already at top level comment
+                scrollElement = $(".comments-page");
+            } else {
+                scrollElement = parentComment.find("> .comment-anchor:first-child");
+            }
+            scrollElement[0].scrollIntoView({ "behavior": "smooth" });
+        });
+    },
+    onValueChange: function(value) {
+        $(`#${this.key}-css`).prop("disabled", value);
+    },
+}
+
+let hideBadgeOption = {
+    key: "hideBadge",
+    default: true,
+    hovertext: "Hide the blue circles next to profile pictures",
+    onStart: function() {
+        addStyle(this.key);
+    },
+    onValueChange: function(value) {
+        $(`#${this.key}-css`).prop("disabled", !value);
     },
 }
 
@@ -659,15 +659,15 @@ let hideUpdateNoticeOption = {
 let optionArray = [
     fixHeaderOption,
     useOldStylingOption,
-    hideBadgeOption,
     hideSubOnlyPostsOption,
     darkModeOption,
     showFullDateOption,
     use24HourOption,
     highlightNewOption,
     newTimeOption,
-    addParentLinksOption,
     applyCommentStylingOption,
+    addParentLinksOption,
+    hideBadgeOption,
     loadAllOption,
     hideNewOption,
     hideUsersOption,
