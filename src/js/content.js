@@ -51,15 +51,24 @@ let optionShadow;
 
 // data from local storage
 // {
-//     "<post name>": {
-//         "lastViewedDate": "<date>",
+//     <post name>: {
+//         "lastViewedDate": <date>,
 //     },
 //     ...
 // }
 let localStorageData;
 
-// cache of comment ids to exact comment time
-let commentIdToDate;
+// cache of comment ids comment info
+// {
+//     <comment id>: {
+//         "date": <date>,
+//         "hearts": <num>,
+//         "userReact": <user liked comment>,
+//         "deleted": <deleted>,
+//     },
+//     ...
+// }
+let commentIdToInfo;
 
 // timer for writing new seen comments to local storage
 let localStorageTimer = null;
@@ -399,7 +408,15 @@ async function createCommentDateCache() {
     function getDateRecursive(comment) {
         let id = comment.id;
         let date = comment.date;
-        commentIdToDate[id] = date;
+        let hearts = comment.reactions?.["❤"];
+        let userReact = comment.reaction;
+        let deleted = comment.deleted;
+        commentIdToInfo[id] = {
+            "date": date,
+            "hearts": hearts,
+            "userReact": userReact,
+            "deleted": deleted,
+        };
 
         for (let childComment of comment.children) {
             getDateRecursive(childComment);
@@ -408,7 +425,7 @@ async function createCommentDateCache() {
 
     let comments = await getPostComments();
 
-    commentIdToDate = {};
+    commentIdToInfo = {};
     for (let comment of comments) {
         getDateRecursive(comment);
     }

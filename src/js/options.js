@@ -125,6 +125,92 @@ let darkModeOption = {
     hovertext: "Make this popup dark mode (does not apply to page). To make the page dark, use an extension like Dark Reader.",
 }
 
+let showHeartsOption = {
+    key: "showHearts",
+    default: false,
+    hovertext: "Add hearts back to comments. Only people using this extension will be able to heart comments or see them, so they won't have the activity they did before.",
+    heartHtml: function(hearts, userReact) {
+        return `
+            <span class="comment-heart">
+                <a href="javascript:void(0)" class="like-button ${userReact ? "liked" : ""}">
+                    <svg role="img" width="15" height="20" viewBox="0 0 15 20" fill="none" stroke-width="1" stroke="#000" xmlns="http://www.w3.org/2000/svg">
+                        <g>
+                            <title></title>
+                            <path d="M1.73624 5.1145C2.43974 4.37137 3.37095 4 4.3036 4C5.23626 4 6.16745 4.37137 6.87097 5.1145L7.49949 5.77892L8.1227
+                            5.11986C9.52973 3.63357 11.8557 3.6336 13.2627 5.11986C14.6698 6.60612 14.6698 8.98642 13.2627 10.4727C11.4639 12.3728 9.66583
+                            14.2737 7.86703 16.1738C7.81927 16.2242 7.76183 16.2643 7.6982 16.2918C7.63456 16.3192 7.56606 16.3333 7.49683 16.3333C7.42761
+                            16.3333 7.3591 16.3192 7.29547 16.2918C7.23184 16.2643 7.1744 16.2242 7.12664 16.1738L5.77904 14.7472L3.08384 11.8939L1.73624
+                            10.4673C0.331003 8.98011 0.329213 6.60074 1.73624 5.1145Z" stroke="#999999"></path>
+                        </g>
+                    </svg>
+                    <span class="heart-count">
+                        ${hearts > 0 ? hearts : ""}
+                    </span>
+                </a>
+            </span>
+        `;
+    },
+    onStart: function() {
+        $(document.body).on("click", ".like-button", function() {
+            debug("funcs_showHearts.onClick", "showHearts.onClick()");
+            let comment = $(this).closest(".comment");
+            let commentId = getCommentIdNumber(comment);
+
+            let hearts = commentIdToInfo[commentId]?.hearts;
+            hearts = hearts ? hearts : 0;
+            let userReact = !!commentIdToInfo[commentId]?.userReact;
+
+            let method;
+            if (!userReact) {
+                method = "POST";
+                hearts++;
+            } else {
+                method = "DELETE";
+                hearts--;
+            }
+
+            $(this).toggleClass("liked");
+            userReact = !userReact;
+
+            comment.find("> .comment-content .heart-count").text(hearts ? hearts : "");
+            if (commentIdToInfo[commentId]) {
+                commentIdToInfo[commentId].hearts = hearts;
+                commentIdToInfo[commentId].userReact = userReact;
+            }
+
+            let url = `https://astralcodexten.substack.com/api/v1/comment/${commentId}/reaction`;
+            let data = {reaction: "❤"};
+            ajaxRequest(url, data, method, "text");
+        });
+    },
+    onCommentChange: function(comment) {
+        let commentId = getCommentIdNumber(comment);
+        let hearts = commentIdToInfo[commentId]?.hearts;
+        let userReact = commentIdToInfo[commentId]?.userReact;
+        let deleted = commentIdToInfo[commentId]?.deleted;
+
+        if (!deleted) {
+            let actions = $(comment).find("> .comment-content .comment-actions");
+            let existingHeart = actions.find(".comment-heart");
+            if (existingHeart.length === 0) {
+                actions.prepend(this.heartHtml(hearts, userReact));
+            }
+        }
+    },
+    onMutation: function(mutation) {
+        if (mutation.target.nodeName.toLowerCase() !== "td") {
+            return;
+        }
+
+        for (let i = 0; i < mutation.addedNodes.length; i++) {
+            let node = mutation.addedNodes[i];
+            if (node.classList.contains("comment-actions")) {
+                this.onCommentChange($(node).closest(".comment"));
+            }
+        }
+    },
+}
+
 let showFullDateOption = {
     key: "showFullDate",
     default: true,
@@ -180,8 +266,8 @@ let showFullDateOption = {
         newDateDisplay.addClass("better-date incomplete");
         origDate.after(newDateDisplay);
 
-        if (commentId in commentIdToDate) {
-            let utcTime = commentIdToDate[commentId];
+        if (commentId in commentIdToInfo) {
+            let utcTime = commentIdToInfo[commentId].date;
             let date = new Date(utcTime);
             newDateDisplay.html(getLocalDateString(date));
             newDateDisplay.removeClass("incomplete");
@@ -248,7 +334,7 @@ let highlightNewOption = {
     },
     onCommentChange: function(comment) {
         let commentId = getCommentIdNumber(comment);
-        let commentDate = new Date(commentIdToDate[commentId]);
+        let commentDate = new Date(commentIdToInfo[commentId]?.date);
         let commentSeen = this.seenCommentsSet.has(commentId);
 
         this.seenCommentsSet.add(commentId);
@@ -362,7 +448,7 @@ let addParentLinksOption = {
     onStart: function() {
         addStyle(this.key);
 
-        $(document.body).on("click", ".comment-actions > span:nth-child(1)", function() {
+        $(document.body).on("click", ".comment-actions > span:last-child", function() {
             debug("funcs_addParentLinks.onClick", "addParentLinks.onClick()");
             let comment = $(this).closest(".comment");
             let parentComment = $(comment).parent().closest(".comment");
@@ -427,13 +513,13 @@ let hideNewOption = {
     key: "hideNew",
     default: false,
     hovertext: "Hide the button that shows when new comments have been added",
-    onStart: function() {
-        addStyle(this.key);
-    },
     processButton: function(button) {
         if ($(button).text().includes("new")) {
             $(button).addClass("new-comments");
         }
+    },
+    onStart: function() {
+        addStyle(this.key);
     },
     onMutation: function(mutation) {
         if (!mutation.target.classList.contains("collapsed")) {
@@ -661,6 +747,7 @@ let optionArray = [
     useOldStylingOption,
     hideSubOnlyPostsOption,
     darkModeOption,
+    showHeartsOption,
     showFullDateOption,
     use24HourOption,
     highlightNewOption,
