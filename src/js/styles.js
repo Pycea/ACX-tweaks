@@ -53,7 +53,7 @@ const STYLES = {
     },
     "addParentLinks": {
         "css": `
-            .comment-actions > span:nth-child(1):after {
+            .comment-actions > span:last-child:after {
                 display: none !important;
             }`,
     },
@@ -245,14 +245,14 @@ const STYLES = {
                 padding-top: 10px !important;
             }
 
-            .comment-meta > span:first-child a {
+            .commenter-name {
                 font-family: Verdana, sans-serif !important;
                 font-weight: bold !important;
                 color: black !important;
                 text-decoration: none !important;
             }
 
-            .comment-meta > span:first-child  a:after {
+            .commenter-name a:after {
                 content: " says:" !important;
                 font-weight: normal;
                 font-style: italic;
