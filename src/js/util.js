@@ -1,7 +1,8 @@
 // DEBUG handles
 // ajax*
-//     ajaxCall: the url requested
+//     ajaxCall: the request params
 //     ajaxResponse: the response given
+//     ajaxError: any errors encountered
 
 // the local storage key of the options
 const OPTION_KEY = "options";
@@ -21,12 +22,12 @@ function debug(category, ...debugStrings) {
         return;
     }
 
-    let debugRegex = "(" +
+    let debugRegex = "^(" +
         optionShadow.showDebug
             .replace(/ /g, "")
             .replace(/(?<!\.)\*/g, ".*")
             .replace(/,/g, "|")
-             + ")";
+             + ")$";
     if (category.match(debugRegex)) {
         console.log(`${category}:`, ...debugStrings);
     }
@@ -52,38 +53,44 @@ function mod(a, b) {
     return ((a % b) + b) % b;
 }
 
-function getUrl(url, data={}, dataType="text json") {
+function ajaxRequest(url, data={}, method="GET", dataType="text json") {
+    logFuncCall();
+    debug("ajaxCall", url, data, method, dataType);
     return $.ajax({
         url: url,
         data: data,
         dataType: dataType,
+        method: method,
+        success: function(data, status) {
+            debug("ajaxResponse", data, status);
+        },
+        error: function(jqXHR, error, exception) {
+            debug("ajaxError", error, exception);
+        },
     });
 }
 
 async function getPostData() {
+    logFuncCall();
     let url = `https://astralcodexten.substack.com/api/v1/posts/${getPostName()}`;
-    debug("ajaxCall", url);
-    let data = await getUrl(url);
-    debug("ajaxResponse", data);
+    let data = await ajaxRequest(url);
     return data;
 }
 
 async function getPostComments() {
+    logFuncCall();
     let postData = await getPostData();
     let postId = postData.id;
     let url = `https://astralcodexten.substack.com/api/v1/post/${postId}/comments?token=&all_comments=true`;
-    debug("ajaxCall", url);
-    let data = await getUrl(url);
-    debug("ajaxResponse", data);
+    let data = await ajaxRequest(url);
     return data.comments;
 }
 
 async function getVersionInfo() {
+    logFuncCall();
     let url = "https://gist.githubusercontent.com/Pycea/a647f861e7ad2b2ae28b512cd68864cc/raw";
-    debug("ajaxCall", url);
     try {
-        let data = await getUrl(url);
-        debug("ajaxResponse", data);
+        let data = await ajaxRequest(url);
         return data;
     } catch (error) {
         console.error(error);
@@ -129,6 +136,10 @@ function getLocalState(storageId) {
 }
 
 function getCommentId(comment) {
+    if (comment instanceof jQuery) {
+        comment = comment[0];
+    }
+
     return comment.firstElementChild.id;
 }
 
@@ -258,6 +269,7 @@ function isMatchingKeyEvent(keyDict, event) {
 }
 
 function getKeyPress() {
+    logFuncCall();
     return new Promise(function(resolve, reject) {
         function keyPress(event) {
             if (!["Control", "Alt", "Shift", "Meta"].includes(event.key)) {
