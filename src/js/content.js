@@ -212,8 +212,7 @@ function processChildComments(node) {
     let commentHandlerObjects = [];
 
     for (let option in OPTIONS) {
-        // alwaysProcessComments is used if processing is needed when turning an option off
-        if (OPTIONS[option].onCommentChange && (optionShadow[option] || OPTIONS[option].alwaysProcessComments)) {
+        if (OPTIONS[option].onCommentChange && optionShadow[option]) {
             commentHandlerObjects.push(OPTIONS[option]);
         }
     }

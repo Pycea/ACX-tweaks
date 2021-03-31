@@ -136,11 +136,13 @@ let showHeartsOption = {
                     <svg role="img" width="15" height="20" viewBox="0 0 15 20" fill="none" stroke-width="1" stroke="#000" xmlns="http://www.w3.org/2000/svg">
                         <g>
                             <title></title>
-                            <path d="M1.73624 5.1145C2.43974 4.37137 3.37095 4 4.3036 4C5.23626 4 6.16745 4.37137 6.87097 5.1145L7.49949 5.77892L8.1227
-                            5.11986C9.52973 3.63357 11.8557 3.6336 13.2627 5.11986C14.6698 6.60612 14.6698 8.98642 13.2627 10.4727C11.4639 12.3728 9.66583
-                            14.2737 7.86703 16.1738C7.81927 16.2242 7.76183 16.2643 7.6982 16.2918C7.63456 16.3192 7.56606 16.3333 7.49683 16.3333C7.42761
-                            16.3333 7.3591 16.3192 7.29547 16.2918C7.23184 16.2643 7.1744 16.2242 7.12664 16.1738L5.77904 14.7472L3.08384 11.8939L1.73624
-                            10.4673C0.331003 8.98011 0.329213 6.60074 1.73624 5.1145Z" stroke="#999999"></path>
+                            <path d="M1.73624 5.1145C2.43974 4.37137 3.37095 4 4.3036 4C5.23626 4 6.16745 4.37137
+                            6.87097 5.1145L7.49949 5.77892L8.1227 5.11986C9.52973 3.63357 11.8557 3.6336 13.2627
+                            5.11986C14.6698 6.60612 14.6698 8.98642 13.2627 10.4727C11.4639 12.3728 9.66583 14.2737
+                            7.86703 16.1738C7.81927 16.2242 7.76183 16.2643 7.6982 16.2918C7.63456 16.3192 7.56606
+                            16.3333 7.49683 16.3333C7.42761 16.3333 7.3591 16.3192 7.29547 16.2918C7.23184 16.2643
+                            7.1744 16.2242 7.12664 16.1738L5.77904 14.7472L3.08384 11.8939L1.73624 10.4673C0.331003
+                            8.98011 0.329213 6.60074 1.73624 5.1145Z" stroke="#999999"></path>
                         </g>
                     </svg>
                     <span class="heart-count">
@@ -323,7 +325,6 @@ let highlightNewOption = {
         let newCommentDate = new Date(new Date().getTime() - newCommentDelta);
 
         this.newCommentDate = newCommentDate;
-        this.alwaysProcessComments = true;
         this.doCleanup = false;
     },
     onPageChange: function() {
@@ -549,6 +550,7 @@ let hideUsersOption = {
     default: "",
     hovertext: "Hide comments from the listed users, in a comma separated list",
     onStart: function() {
+        addStyle(this.key);
         this.hiddenSet = new Set(optionShadow[this.key].split(",").map(x => x.trim()).filter(x => x));
     },
     onCommentChange: function(comment) {
@@ -567,17 +569,12 @@ let hideUsersOption = {
         }
     },
     onValueChange: function(value, isInitial) {
-        this.hiddenSet = new Set(optionShadow[this.key].split(",").map(x => x.trim()).filter(x => x));
+        $(`#${this.key}-css`).prop("disabled", !value);
 
-        if (!value) {
-            this.alwaysProcessComments = true;
-        }
-
-        if (!isInitial) {
+        if (value && !isInitial) {
+            this.hiddenSet = new Set(optionShadow[this.key].split(",").map(x => x.trim()).filter(x => x));
             processAllComments();
         }
-
-        this.alwaysProcessComments = false;
     },
 }
 
