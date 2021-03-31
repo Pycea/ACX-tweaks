@@ -69,6 +69,16 @@ blockquote blockquote {
     margin-left: 0 !important;
 }
 
+/* Own comment hearts don't have pointer cursor */
+
+.own-comment {
+    cursor: default;
+}
+
+a.like-button.own-comment:hover:active {
+    opacity: 1;
+}
+
 /* is this a hack? */
 .hidden-post:first-child + .comment, .hidden-post:first-child + .hidden-post + .comment,
 .hidden-post:first-child + .hidden-post + .hidden-post + .comment {

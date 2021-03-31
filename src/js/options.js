@@ -46,6 +46,13 @@ function addStyle(key) {
 // onCommentChange | when a new comment is added              | the new comment         | yes
 // onMutation      | when a mutation happens on the page      | the mutation            | no
 // onValueChange   | when the value of the option changes     | new value, if first run | yes
+//
+// Run order on page load:
+//     onStart() handlers
+//     onPageChange() handlers
+//     processAllComments()
+//         onCommentChange() handlers for any existing comments
+//     onLoad() handlers
 
 let fixHeaderOption = {
     key: "fixHeader",
@@ -89,9 +96,9 @@ let hideSubOnlyPostsOption = {
     },
     onLoad: function() {
         if (optionShadow[this.key]) {
-            let processFunc = this.processPost;
+            let that = this;
             $("#main").find(".post-preview").each(function() {
-                processFunc(this);
+                that.processPost(this);
             });
         }
     },
@@ -132,10 +139,10 @@ let showHeartsOption = {
     key: "showHearts",
     default: false,
     hovertext: "Add hearts back to comments. Only people using this extension will be able to heart comments or see them, so they won't have the activity they did before.",
-    heartHtml: function(hearts, userReact) {
+    heartHtml: function(hearts, userReact, ownComment) {
         return `
             <span class="comment-heart">
-                <a href="javascript:void(0)" class="like-button ${userReact ? "liked" : ""}">
+                <a href="javascript:void(0)" class="like-button ${userReact ? "liked" : ""} ${ownComment ? "own-comment" : ""}">
                     <svg role="img" width="15" height="20" viewBox="0 0 15 20" fill="none" stroke-width="1" stroke="#000" xmlns="http://www.w3.org/2000/svg">
                         <g>
                             <title></title>
@@ -155,14 +162,29 @@ let showHeartsOption = {
             </span>
         `;
     },
+    updateUserId: function() {
+        if (!this.userId) {
+            let userId = $("input[name=user_id]").val();
+            this.userId = userId ? parseInt(userId) : undefined;
+        }
+    },
     onStart: function(value) {
         addStyle(this.key);
-        this.onValueChange(value);
+        $(`#${this.key}-css`).prop("disabled", value);
+        this.updateUserId();
 
+        let that = this;
         $(document.body).on("click", ".like-button", function() {
             debug("funcs_showHearts.onClick", "showHearts.onClick()");
+            that.updateUserId();
             let comment = $(this).closest(".comment");
             let commentId = getCommentIdNumber(comment);
+
+            // no liking your own comments
+            let userId = commentIdToInfo[commentId]?.userId;
+            if (userId === that.userId) {
+                return;
+            }
 
             let hearts = commentIdToInfo[commentId]?.hearts;
             hearts = hearts ? hearts : 0;
@@ -192,16 +214,19 @@ let showHeartsOption = {
         });
     },
     onCommentChange: function(comment) {
+        this.updateUserId();
         let commentId = getCommentIdNumber(comment);
+        let userId = commentIdToInfo[commentId]?.userId;
         let hearts = commentIdToInfo[commentId]?.hearts;
         let userReact = commentIdToInfo[commentId]?.userReact;
         let deleted = commentIdToInfo[commentId]?.deleted;
+        let ownComment = userId === this.userId;
 
         if (!deleted) {
             let actions = $(comment).find("> .comment-content .comment-actions");
             let existingHeart = actions.find(".comment-heart");
             if (existingHeart.length === 0) {
-                actions.prepend(this.heartHtml(hearts, userReact));
+                actions.prepend(this.heartHtml(hearts, userReact, ownComment));
             }
         }
     },
@@ -468,7 +493,7 @@ let addParentLinksOption = {
     hovertext: "Add links to scroll to the parent comment, or the top of the comments page for top level comments",
     onStart: function(value) {
         addStyle(this.key);
-        this.onValueChange(value);
+        $(`#${this.key}-css`).prop("disabled", value);
 
         $(document.body).on("click", ".comment-actions > span:last-child", function() {
             debug("funcs_addParentLinks.onClick", "addParentLinks.onClick()");
@@ -510,10 +535,10 @@ let loadAllOption = {
     default: true,
     hovertext: "Load all comments preemptively",
     onLoad: function() {
-        let valueChange = this.onValueChange;
+        let that = this;
         for (let timeout of [0, 500, 1000, 2000]) {
             setTimeout(function() {
-                valueChange(optionShadow.loadAll);
+                that.onValueChange(optionShadow.loadAll);
             }, timeout);
         }
     },
@@ -563,9 +588,9 @@ let hideNewOption = {
     onValueChange: function(value) {
         $(`#${this.key}-css`).prop("disabled", !value);
         if (value) {
-            let processFunc = this.processButton;
+            let that = this;
             $("#main").find("button.collapsed-reply").each(function() {
-                processFunc(this);
+                that.processButton(this);
             });
         }
     },

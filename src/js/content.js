@@ -401,11 +401,13 @@ async function createCommentDateCache() {
 
     function getDateRecursive(comment) {
         let id = comment.id;
+        let userId = comment.user_id;
         let date = comment.date;
         let hearts = comment.reactions?.["❤"];
         let userReact = comment.reaction;
         let deleted = comment.deleted;
         commentIdToInfo[id] = {
+            "userId": userId,
             "date": date,
             "hearts": hearts,
             "userReact": userReact,
