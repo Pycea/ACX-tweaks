@@ -16,12 +16,12 @@ function addStyle(key) {
 //     key: <key>,
 //     default: <value>,
 //     hovertext: <string>,
-//     onStart: function() { ... },
+//     onStart: function(value) { ... },
 //     onPageChange: function() { ... },
 //     onLoad: function() { ... },
 //     onCommentChange: function(comment) { ... },
 //     onMutation: function(mutation) { ... },
-//     onValueChange: function(value, isInitial) { ... },
+//     onValueChange: function(value) { ... },
 // }
 //
 //  first load   +-----------+  onStart() finishes   +----------------+
@@ -51,8 +51,9 @@ let fixHeaderOption = {
     key: "fixHeader",
     default: true,
     hovertext: "Keep the header fixed, so it doesn't keep appearing when scrolling up",
-    onStart: function() {
+    onStart: function(value) {
         addStyle(this.key);
+        this.onValueChange(value);
     },
     onValueChange: function(value) {
         $(`#${this.key}-css`).prop("disabled", !value);
@@ -63,8 +64,9 @@ let useOldStylingOption = {
     key: "useOldStyling",
     default: false,
     hovertext: "Use styling similar to the old blog",
-    onStart: function() {
+    onStart: function(value) {
         addStyle(this.key);
+        this.onValueChange(value);
     },
     onValueChange: function(value) {
         $(`#${this.key}-css`).prop("disabled", !value);
@@ -81,8 +83,9 @@ let hideSubOnlyPostsOption = {
             $(post).addClass("sub-post");
         }
     },
-    onStart: function() {
+    onStart: function(value) {
         addStyle(this.key);
+        $(`#${this.key}-css`).prop("disabled", !value);
     },
     onLoad: function() {
         if (optionShadow[this.key]) {
@@ -108,9 +111,9 @@ let hideSubOnlyPostsOption = {
             }
         }
     },
-    onValueChange: function(value, isInitial) {
+    onValueChange: function(value) {
         $(`#${this.key}-css`).prop("disabled", !value);
-        if (value && !isInitial) {
+        if (value) {
             let that = this;
             $("#main").find(".post-preview").each(function() {
                 that.processPost(this);
@@ -152,7 +155,10 @@ let showHeartsOption = {
             </span>
         `;
     },
-    onStart: function() {
+    onStart: function(value) {
+        addStyle(this.key);
+        this.onValueChange(value);
+
         $(document.body).on("click", ".like-button", function() {
             debug("funcs_showHearts.onClick", "showHearts.onClick()");
             let comment = $(this).closest(".comment");
@@ -211,14 +217,21 @@ let showHeartsOption = {
             }
         }
     },
+    onValueChange: function(value) {
+        $(`#${this.key}-css`).prop("disabled", value);
+        if (value) {
+            processAllComments();
+        }
+    },
 }
 
 let showFullDateOption = {
     key: "showFullDate",
     default: true,
     hovertext: "Show the full date and time when a comment was posted",
-    onStart: function() {
+    onStart: function(value) {
         addStyle(this.key);
+        $(`#${this.key}-css`).prop("disabled", !value);
     },
     onCommentChange: function(comment) {
         function getLocalDateString(date) {
@@ -275,9 +288,9 @@ let showFullDateOption = {
             newDateDisplay.removeClass("incomplete");
         }
     },
-    onValueChange: function(value, isInitial) {
+    onValueChange: function(value) {
         $(`#${this.key}-css`).prop("disabled", !value);
-        if (value && !isInitial) {
+        if (value) {
             processAllComments();
         }
     },
@@ -287,8 +300,9 @@ let use24HourOption = {
     key: "use24Hour",
     default: false,
     hovertext: "Use 24 hour time for the full date",
-    onStart: function() {
+    onStart: function(value) {
         addStyle(this.key);
+        this.onValueChange(value);
     },
     onValueChange: function(value) {
         $(`#${this.key}-css`).prop("disabled", !value);
@@ -319,13 +333,19 @@ let highlightNewOption = {
         }
         this.startSaveTimer();
     },
-    onStart: function() {
+    updateNewTime: function(value) {
         // the delta is in milliseconds
-        let newCommentDelta = optionShadow.newTime;
+        let newCommentDelta = value;
         let newCommentDate = new Date(new Date().getTime() - newCommentDelta);
 
         this.newCommentDate = newCommentDate;
-        this.doCleanup = false;
+    },
+    onStart: function(value) {
+        if (value) {
+            $(document.documentElement).addClass("highlight-new");
+        } else {
+            $(document.documentElement).removeClass("highlight-new");
+        }
     },
     onPageChange: function() {
         this.ensureSeenComments();
@@ -341,7 +361,7 @@ let highlightNewOption = {
         this.seenCommentsSet.add(commentId);
         this.startSaveTimer();
 
-        if (!optionShadow[this.key] && !this.doCleanup) {
+        if (!optionShadow[this.key]) {
             return;
         }
 
@@ -361,19 +381,14 @@ let highlightNewOption = {
             dateSpan.find(".new-tag-css").remove();
         }
     },
-    onValueChange: function(value, isInitial) {
+    onValueChange: function(value) {
         if (value) {
             $(document.documentElement).addClass("highlight-new");
         } else {
-            this.doCleanup = true;
             $(document.documentElement).removeClass("highlight-new");
         }
 
-        if (!isInitial) {
-            processAllComments();
-        }
-
-        this.doCleanup = false;
+        processAllComments();
     },
 }
 
@@ -381,12 +396,12 @@ let newTimeOption = {
     key: "newTime",
     default: 0,
     hovertext: "Comments posted within this time period will also be marked as new",
-    onValueChange: function(value, isInitial) {
-        OPTIONS.highlightNew.onStart();
-
-        if (!isInitial) {
-            processAllComments();
-        }
+    onStart: function(value) {
+        OPTIONS.highlightNew.updateNewTime(value);
+    },
+    onValueChange: function(value) {
+        OPTIONS.highlightNew.updateNewTime(value);
+        processAllComments();
     },
 }
 
@@ -394,28 +409,6 @@ let applyCommentStylingOption = {
     key: "applyCommentStyling",
     default: true,
     hovertext: "Apply basic styling to comments (italics, block quotes, and Markdown style text links)",
-    onStart: function() {
-        addStyle(this.key);
-    },
-    onCommentChange: function(comment) {
-        let commentBody = $(comment).find("> .comment-content .comment-body");
-        let that = this;
-        $(commentBody).find("p span").each(function() {
-            // only process the text once
-            if ($(this).siblings().length === 0) {
-                $(this).addClass("old-style");
-                let newText = that.processCommentParagraph($(this).html());
-                let newSpan = `<span class="new-style">${newText}</span>`;
-                $(this).parent().append(newSpan);
-            }
-        });
-    },
-    onValueChange: function(value, isInitial) {
-        $(`#${this.key}-css`).prop("disabled", !value);
-        if (value && !isInitial) {
-            processAllComments();
-        }
-    },
     processCommentParagraph: function(innerHtml) {
         let italicRegexStar = /(^|\s|\(|\[|\{|\*)\*((?=[^*\s]).*?(?<=[^*\s]))\*/g;
         let italicRegexUnderscore = /(^|\s|\(|\[|\{|_)_((?=[^_\s]).*?(?<=[^_\s]))_/g;
@@ -440,14 +433,38 @@ let applyCommentStylingOption = {
 
         return newHtml;
     },
+    onStart: function(value) {
+        addStyle(this.key);
+        $(`#${this.key}-css`).prop("disabled", !value);
+    },
+    onCommentChange: function(comment) {
+        let commentBody = $(comment).find("> .comment-content .comment-body");
+        let that = this;
+        $(commentBody).find("p span").each(function() {
+            // only process the text once
+            if ($(this).siblings().length === 0) {
+                $(this).addClass("old-style");
+                let newText = that.processCommentParagraph($(this).html());
+                let newSpan = `<span class="new-style">${newText}</span>`;
+                $(this).parent().append(newSpan);
+            }
+        });
+    },
+    onValueChange: function(value) {
+        $(`#${this.key}-css`).prop("disabled", !value);
+        if (value) {
+            processAllComments();
+        }
+    },
 }
 
 let addParentLinksOption = {
     key: "addParentLinks",
     default: true,
     hovertext: "Add links to scroll to the parent comment, or the top of the comments page for top level comments",
-    onStart: function() {
+    onStart: function(value) {
         addStyle(this.key);
+        this.onValueChange(value);
 
         $(document.body).on("click", ".comment-actions > span:last-child", function() {
             debug("funcs_addParentLinks.onClick", "addParentLinks.onClick()");
@@ -465,6 +482,9 @@ let addParentLinksOption = {
     },
     onValueChange: function(value) {
         $(`#${this.key}-css`).prop("disabled", value);
+        if (value) {
+            processAllComments();
+        }
     },
 }
 
@@ -472,8 +492,9 @@ let hideBadgeOption = {
     key: "hideBadge",
     default: true,
     hovertext: "Hide the blue circles next to profile pictures",
-    onStart: function() {
+    onStart: function(value) {
         addStyle(this.key);
+        this.onValueChange(value);
     },
     onValueChange: function(value) {
         $(`#${this.key}-css`).prop("disabled", !value);
@@ -519,8 +540,9 @@ let hideNewOption = {
             $(button).addClass("new-comments");
         }
     },
-    onStart: function() {
+    onStart: function(value) {
         addStyle(this.key);
+        $(`#${this.key}-css`).prop("disabled", !value);
     },
     onMutation: function(mutation) {
         if (!mutation.target.classList.contains("collapsed")) {
@@ -534,9 +556,9 @@ let hideNewOption = {
             }
         }
     },
-    onValueChange: function(value, isInitial) {
+    onValueChange: function(value) {
         $(`#${this.key}-css`).prop("disabled", !value);
-        if (value && !isInitial) {
+        if (value) {
             let processFunc = this.processButton;
             $("#main").find("button.collapsed-reply").each(function() {
                 processFunc(this);
@@ -549,8 +571,9 @@ let hideUsersOption = {
     key: "hideUsers",
     default: "",
     hovertext: "Hide comments from the listed users, in a comma separated list",
-    onStart: function() {
+    onStart: function(value) {
         addStyle(this.key);
+        $(`#${this.key}-css`).prop("disabled", !value);
         this.hiddenSet = new Set(optionShadow[this.key].split(",").map(x => x.trim()).filter(x => x));
     },
     onCommentChange: function(comment) {
@@ -568,10 +591,10 @@ let hideUsersOption = {
             $(comment).parent().parent().removeClass("hidden-post");
         }
     },
-    onValueChange: function(value, isInitial) {
+    onValueChange: function(value) {
         $(`#${this.key}-css`).prop("disabled", !value);
 
-        if (value && !isInitial) {
+        if (value) {
             this.hiddenSet = new Set(optionShadow[this.key].split(",").map(x => x.trim()).filter(x => x));
             processAllComments();
         }
@@ -654,10 +677,10 @@ let customCssOption = {
     key: "customCss",
     default: "",
     hovertext: "Apply custom css to the page",
-    onStart: function() {
+    onStart: function(value) {
         let style = $("<style>", {
             "id": `${this.key}-css`,
-            "html": optionShadow[this.key],
+            "html": value,
         });
 
         $(document.documentElement).append(style);
@@ -671,9 +694,9 @@ let jsOnStartOption = {
     key: "jsOnStart",
     default: "",
     hovertext: "Run custom JS when the page is first loaded",
-    onStart: function() {
+    onStart: function(value) {
         try {
-            eval(optionShadow[this.key]);
+            eval(value);
         } catch(e) {
             console.error("onStart error:", e);
         }
@@ -722,8 +745,8 @@ let resetDataOption = {
     key: "resetData",
     default: false,
     hovertext: "Reset all extension data. Use if something breaks that refreshing doesn't fix. Will delete data about which comments have been seen.",
-    onStart: function() {
-        optionShadow.resetData = false;
+    onStart: function(value) {
+        this.onValueChange(optionShadow[this.key]);
     },
     onValueChange: function(value) {
         if (value) {
@@ -771,18 +794,6 @@ let optionArray = [
     resetDataOption,
     hideUpdateNoticeOption,
 ];
-
-// Script loaded:
-//     run onStart
-//     run onValueChange with option value
-// Page loaded:
-//     run onLoad
-// When comment added:
-//     run onCommentChange with comment
-// When option change:
-//     run onValueChange with new value
-// On dynamic page load:
-//     run onLoad
 
 let OPTIONS = {};
 

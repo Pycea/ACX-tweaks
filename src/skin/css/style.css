@@ -1,5 +1,10 @@
 /* Adds permalink text */
 
+.comment .comment-actions > span {
+    margin-left: 0 !important;
+    margin-right: 10px;
+}
+
 .comment-actions > span:last-child > a {
     margin-right: 10px;
 }

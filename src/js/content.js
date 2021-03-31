@@ -323,12 +323,7 @@ async function processInitialOptionValues() {
 
         if (OPTIONS[key].onStart) {
             debug("funcs_" + key + ".onStart", key + ".onStart()");
-            OPTIONS[key].onStart();
-        }
-
-        if (OPTIONS[key].onValueChange) {
-            debug("funcs_" + key + ".onValueChange", key + ".onValueChange()");
-            OPTIONS[key].onValueChange(value, true);
+            OPTIONS[key].onStart(value);
         }
     }
 

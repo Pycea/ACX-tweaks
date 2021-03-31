@@ -31,6 +31,13 @@ const STYLES = {
                 display: none;
             }`,
     },
+    "showHearts": {
+        css: `
+            .comment-heart {
+                display: none;
+            }
+        `,
+    },
     "showFullDate": {
         "css": `
             .comment-meta span:nth-child(2) a.worse-date {
