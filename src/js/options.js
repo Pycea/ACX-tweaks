@@ -351,14 +351,18 @@ let highlightNewOption = {
         this.ensureSeenComments();
         let postName = getPostName();
         this.seenCommentsSet = new Set(localStorageData[postName].seenComments);
+        this.pageSeenCommentsSet = new Set();
         this.localStorageTimer = null;
     },
     onCommentChange: function(comment) {
         let commentId = getCommentIdNumber(comment);
         let commentDate = new Date(commentIdToInfo[commentId]?.date);
-        let commentSeen = this.seenCommentsSet.has(commentId);
+        let commentSeen = this.seenCommentsSet.has(commentId) && !this.pageSeenCommentsSet.has(commentId);
 
         this.seenCommentsSet.add(commentId);
+        if (!commentSeen) {
+            this.pageSeenCommentsSet.add(commentId);
+        }
         this.startSaveTimer();
 
         if (!optionShadow[this.key]) {
