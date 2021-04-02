@@ -23,7 +23,7 @@ if (typeof browser !== "undefined") {
 //     keyPress: each key press
 //     keyPressBinary: binary search internals
 // updateCheck: related to update checks
-// pageLoad: related to page loading events
+// pageLoadFsm: related to page loading events
 // func*
 //     func_<func_name>: function calls that are called a lot and probably not too useful
 //     funcs_<func_name>: other function calls
@@ -254,7 +254,22 @@ function processMutation(mutation) {
     }
 
     // is this a hack? even the wisest cannot tell
-    if (nodeHasClass(mutation.target, ["comment", "comment-list", "comment-list-items", "container"])) {
+    if (mutation.target.id === "main" ||
+        mutation.target.classList.contains("single-post") &&
+        mutation.addedNodes[0].tagName.toLowerCase() === "article") {
+        // we switched to a different page with pushState
+        if (optionShadow.dynamicLoad) {
+            debug("pageLoadFsm", "action: dynamic page load");
+            pageSetup();
+            runOnLoadHandlers();
+        } else {
+            // don't react to any more updates
+            observeChanges = false;
+
+            // force refresh
+            window.location.href = window.location.href;
+        }
+    } else if (nodeHasClass(mutation.target, ["comment", "comment-list", "comment-list-items", "container"])) {
         debug("mutationType", "possible comment add", mutation);
 
         // check for comments
@@ -330,48 +345,14 @@ async function processInitialOptionValues() {
     webExtension.storage.local.set({[OPTION_KEY]: optionShadow});
 }
 
-function createPushStateHandler() {
-    logFuncCall();
-
-    let handshake = Math.random().toString();
-    let inject = $("<script>", {
-        html: `
-            let pushState = window.history.pushState.bind(window.history);
-            window.history.pushState = function(state, title, url) {
-                window.postMessage({ handshake: "${handshake}", url: url }, "*");
-                pushState(state, title, url);
-            };
-        `,
-    });
-    $("head").append(inject);
-
-    window.addEventListener("message", function(event) {
-        if (event.source === window && event.data.handshake === handshake) {
-            debug("pageLoad", "Loading new page");
-
-            if (optionShadow.dynamicLoad) {
-                pageSetup();
-                runOnLoadHandlers();
-            } else {
-                // don't react to any more updates
-                observeChanges = false;
-
-                // force refresh
-                window.location.href = window.location.href;
-            }
-        }
-    }, false);
-}
-
 // called when the extension is first loaded
 async function onStart() {
     await loadInitialOptionValues();
     logFuncCall();
-    debug("pageLoad", "running onStart()");
+    debug("pageLoadFsm", "state: onStart");
     loadLocalStorage();
     await processInitialOptionValues();
     webExtension.storage.onChanged.addListener(processStorageChange);
-    createPushStateHandler();
 }
 
 
@@ -387,6 +368,7 @@ function updatePostReadDate() {
 }
 
 function runOnPageChangeHandlers() {
+    logFuncCall();
     for (let key in OPTIONS) {
         if (OPTIONS[key].onPageChange) {
             debug("funcs_" + key + ".onPageChange", key + ".onPageChange()");
@@ -429,7 +411,7 @@ async function createCommentDateCache() {
 
 async function pageSetup() {
     logFuncCall();
-    debug("pageLoad", `Loading new page: ${getPostName()}`);
+    debug("pageLoadFsm", `state: onPageChange, new page '${getPostName()}'`);
 
     if (getPageType() === PageTypeEnum.post) {
         updatePostReadDate();
@@ -771,7 +753,7 @@ function runOnLoadHandlers() {
 // called when the DOM is loaded
 async function onLoad() {
     logFuncCall();
-    debug("pageLoad", "running onLoad()");
+    debug("pageLoadFsm", "state: onLoad");
     addDomObserver();
     addKeyListener();
     runOnLoadHandlers();
