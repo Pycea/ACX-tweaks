@@ -29,7 +29,10 @@ function debug(category, ...debugStrings) {
             .replace(/,/g, "|")
              + ")$";
     if (category.match(debugRegex)) {
-        console.log(`${category}:`, ...debugStrings);
+        let now = Date.now();
+        let time = new Date(now).toLocaleTimeString("en-US", {hour12: false});
+        let ms = (now % 1000).toString().padStart(3, "0");
+        console.log(`${time}.${ms}  ${category}:`, ...debugStrings);
     }
 }
 
