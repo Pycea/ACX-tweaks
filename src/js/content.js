@@ -68,7 +68,7 @@ let localStorageData;
 //     },
 //     ...
 // }
-let commentIdToInfo;
+let commentIdToInfo = {};
 
 // timer for writing new seen comments to local storage
 let localStorageTimer = null;
@@ -322,7 +322,7 @@ function loadLocalStorage() {
 }
 
 // load the initial values of the options and do any necessary config for them
-async function processInitialOptionValues() {
+function processInitialOptionValues() {
     logFuncCall();
 
     for (let key in OPTIONS) {
@@ -345,85 +345,6 @@ async function processInitialOptionValues() {
     webExtension.storage.local.set({[OPTION_KEY]: optionShadow});
 }
 
-// called when the extension is first loaded
-async function onStart() {
-    await loadInitialOptionValues();
-    logFuncCall();
-    debug("pageLoadFsm", "state: onStart");
-    loadLocalStorage();
-    await processInitialOptionValues();
-    webExtension.storage.onChanged.addListener(processStorageChange);
-}
-
-
-
-// Setup for each page, run on every page change
-
-function updatePostReadDate() {
-    logFuncCall();
-    let postName = getPostName();
-    ensurePostEntry(postName);
-    localStorageData[postName].lastViewedDate = new Date().toISOString();
-    saveLocalStorage();
-}
-
-function runOnPageChangeHandlers() {
-    logFuncCall();
-    for (let key in OPTIONS) {
-        if (OPTIONS[key].onPageChange) {
-            debug("funcs_" + key + ".onPageChange", key + ".onPageChange()");
-            OPTIONS[key].onPageChange();
-        }
-    }
-}
-
-// create cache of comment id -> date
-async function createCommentDateCache() {
-    logFuncCall();
-
-    function getDateRecursive(comment) {
-        let id = comment.id;
-        let userId = comment.user_id;
-        let date = comment.date;
-        let hearts = comment.reactions?.["❤"];
-        let userReact = comment.reaction;
-        let deleted = comment.deleted;
-        commentIdToInfo[id] = {
-            "userId": userId,
-            "date": date,
-            "hearts": hearts,
-            "userReact": userReact,
-            "deleted": deleted,
-        };
-
-        for (let childComment of comment.children) {
-            getDateRecursive(childComment);
-        }
-    }
-
-    let comments = await getPostComments();
-
-    commentIdToInfo = {};
-    for (let comment of comments) {
-        getDateRecursive(comment);
-    }
-}
-
-async function pageSetup() {
-    logFuncCall();
-    debug("pageLoadFsm", `state: onPageChange, new page '${getPostName()}'`);
-
-    if (getPageType() === PageTypeEnum.post) {
-        updatePostReadDate();
-        runOnPageChangeHandlers();
-        await createCommentDateCache();
-        processAllComments();
-    }
-}
-
-
-
-// Setup once the DOM is loaded
 
 function addDomObserver() {
     logFuncCall();
@@ -435,8 +356,7 @@ function addDomObserver() {
         });
     });
 
-    let container = $("#entry")[0];
-    observer.observe(container, {childList: true, subtree: true});
+    observer.observe(document, {childList: true, subtree: true});
 }
 
 // reacts to key presses
@@ -566,6 +486,90 @@ function addKeyListener() {
         }
     });
 }
+
+// called when the extension is first loaded, run only once per session
+async function onStart() {
+    await loadInitialOptionValues();
+    logFuncCall();
+    debug("pageLoadFsm", "state: onStart");
+    loadLocalStorage();
+    processInitialOptionValues();
+    webExtension.storage.onChanged.addListener(processStorageChange);
+    processAllComments(); // on the off chance there's already comments loaded
+    addDomObserver();
+    addKeyListener();
+}
+
+
+
+// Setup for each page, run on every page change
+
+function updatePostReadDate() {
+    logFuncCall();
+    let postName = getPostName();
+    ensurePostEntry(postName);
+    localStorageData[postName].lastViewedDate = new Date().toISOString();
+    saveLocalStorage();
+}
+
+function runOnPageChangeHandlers() {
+    logFuncCall();
+    for (let key in OPTIONS) {
+        if (OPTIONS[key].onPageChange) {
+            debug("funcs_" + key + ".onPageChange", key + ".onPageChange()");
+            OPTIONS[key].onPageChange();
+        }
+    }
+}
+
+// create cache of comment id -> date
+async function createCommentDateCache() {
+    logFuncCall();
+
+    function getDateRecursive(comment) {
+        let id = comment.id;
+        let userId = comment.user_id;
+        let date = comment.date;
+        let hearts = comment.reactions?.["❤"];
+        let userReact = comment.reaction;
+        let deleted = comment.deleted;
+        commentIdToInfo[id] = {
+            "userId": userId,
+            "date": date,
+            "hearts": hearts,
+            "userReact": userReact,
+            "deleted": deleted,
+        };
+
+        for (let childComment of comment.children) {
+            getDateRecursive(childComment);
+        }
+    }
+
+    let comments = await getPostComments();
+
+    commentIdToInfo = {};
+    for (let comment of comments) {
+        getDateRecursive(comment);
+    }
+}
+
+// called for each new page in a session
+async function pageSetup() {
+    logFuncCall();
+    debug("pageLoadFsm", `state: onPageChange, new page '${getPostName()}'`);
+
+    if (getPageType() === PageTypeEnum.post) {
+        updatePostReadDate();
+        runOnPageChangeHandlers();
+        await createCommentDateCache();
+        processAllComments();
+    }
+}
+
+
+
+// Setup once the DOM is loaded
 
 async function checkForUpdates() {
     logFuncCall();
@@ -750,12 +754,10 @@ function runOnLoadHandlers() {
     }
 }
 
-// called when the DOM is loaded
+// called when the DOM is loaded, run only once per session
 async function onLoad() {
     logFuncCall();
     debug("pageLoadFsm", "state: onLoad");
-    addDomObserver();
-    addKeyListener();
     runOnLoadHandlers();
     setTimeout(checkForUpdates, 5000);
 }

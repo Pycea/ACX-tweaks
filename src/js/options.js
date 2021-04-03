@@ -24,8 +24,10 @@ function addStyle(key) {
 //     onValueChange: function(value) { ... },
 // }
 //
-//  first load   +-----------+  onStart() finishes   +----------------+
-// ------------> | onStart() | --------------------> | onPageChange() |
+//                                                              +--------+
+//                                                              v        | on dynamic
+//  first load   +-----------+  onStart() finishes   +----------------+  | page load
+// ------------> | onStart() | --------------------> | onPageChange() | -+
 //               +-----------+                       +----------------+
 //                                                         |    ^
 //                                                     DOM |    |
@@ -214,6 +216,10 @@ let showHeartsOption = {
         });
     },
     onCommentChange: function(comment) {
+        if (!commentIdToInfo) {
+            return;
+        }
+
         this.updateUserId();
         let commentId = getCommentIdNumber(comment);
         let userId = commentIdToInfo[commentId]?.userId;
