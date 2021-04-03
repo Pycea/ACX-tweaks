@@ -34,6 +34,10 @@ function debug(category, ...debugStrings) {
 }
 
 function logFuncCall(verbose=false) {
+    if (!optionShadow.showDebug) {
+        return;
+    }
+
     let errorStack = new Error().stack;
     let funcLine = errorStack.split("\n")[2].trim();
     let funcNameMatch = funcLine.match(/at (\w+)/);
