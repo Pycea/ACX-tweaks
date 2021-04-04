@@ -399,6 +399,7 @@ let highlightNewOption = {
         if (!commentSeen) {
             this.pageSeenCommentsSet.add(commentId);
         }
+        this.ensureSeenComments();
         this.startSaveTimer();
 
         if ((!commentSeen || commentDate > this.newCommentDate) && optionShadow[this.key]) {
