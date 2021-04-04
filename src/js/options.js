@@ -447,7 +447,7 @@ let applyCommentStylingOption = {
     processCommentParagraph: function(innerHtml) {
         let italicRegexStar = /(^|\s|\(|\[|\{|\*)\*((?=[^*\s]).*?(?<=[^*\s]))\*/g;
         let italicRegexUnderscore = /(^|\s|\(|\[|\{|_)_((?=[^_\s]).*?(?<=[^_\s]))_/g;
-        let blockQuoteRegex = /^(>|&gt;)\s*(.*)$/;
+        let blockQuoteRegex = /^\s*(>|&gt;)\s*(.*)$/;
         // yes I'm parsing html with a regex. deal with it
         let linkRegex = /\[(.+?)\]\(<a href="(.*?)".*?<\/a>\)/g;
 
