@@ -140,7 +140,7 @@ let darkModeOption = {
 let showHeartsOption = {
     key: "showHearts",
     default: false,
-    hovertext: "Add hearts back to comments. Only people using this extension will be able to heart comments or see them, so they won't have the activity they did before.",
+    hovertext: "Add hearts back to comments. Only people using an extension that adds back hearts will be able to heart comments or see them, so they won't have the activity they did before.",
     heartHtml: function(hearts, userReact, ownComment) {
         return `
             <span class="comment-heart">
@@ -430,7 +430,7 @@ let highlightNewOption = {
 let newTimeOption = {
     key: "newTime",
     default: 0,
-    hovertext: "Comments posted within this time period will also be marked as new",
+    hovertext: "Mark comments posted within this time range as new",
     onStart: function(value) {
         OPTIONS.highlightNew.updateNewTime(value);
     },
@@ -711,7 +711,7 @@ let parentKeyOption = {
 let customCssOption = {
     key: "customCss",
     default: "",
-    hovertext: "Apply custom css to the page",
+    hovertext: "Apply custom css to the page (don't enter anything you don't trust)",
     onStart: function(value) {
         let style = $("<style>", {
             "id": `${this.key}-css`,
@@ -728,7 +728,7 @@ let customCssOption = {
 let jsOnStartOption = {
     key: "jsOnStart",
     default: "",
-    hovertext: "Run custom JS when the page is first loaded",
+    hovertext: "Run custom JS when the page is first loaded (don't enter anything you don't trust)",
     onStart: function(value) {
         try {
             eval(value);
@@ -741,7 +741,7 @@ let jsOnStartOption = {
 let jsOnPageChangeOption = {
     key: "jsOnPageChange",
     default: "",
-    hovertext: "Run custom JS when a new page is visited",
+    hovertext: "Run custom JS when a new page/post is visited (don't enter anything you don't trust)",
     onPageChange: function() {
         try {
             eval(optionShadow[this.key]);
@@ -754,7 +754,7 @@ let jsOnPageChangeOption = {
 let jsOnLoadOption = {
     key: "jsOnLoad",
     default: "",
-    hovertext: "Run custom JS when the DOM is loaded",
+    hovertext: "Run custom JS when the DOM is loaded (don't enter anything you don't trust)",
     onLoad: function() {
         try {
             eval(optionShadow[this.key]);
