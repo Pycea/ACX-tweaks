@@ -776,7 +776,7 @@ let showDebugOption = {
 let dynamicLoadOption = {
     key: "dynamicLoad",
     default: false,
-    hovertext: "Dynamically load content when switching between posts (default Substack behavior). Enabling can decrease load times, but the comments may appear out of order due to an issue with Substack.",
+    hovertext: "Dynamically load content when switching between posts (default Substack behavior). Enabling can decrease load times, but some things may break, and the comments may appear out of order due to an issue with Substack.",
 }
 
 let resetDataOption = {
