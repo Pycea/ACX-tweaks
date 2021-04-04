@@ -232,10 +232,8 @@ let showHeartsOption = {
         if (!deleted) {
             let actions = $(comment).find("> .comment-content .comment-actions");
             let existingHeart = actions.find(".comment-heart");
-            if (existingHeart.length === 0 || existingHeart.find("a").hasClass("own-comment") != ownComment) {
-                existingHeart.remove();
-                actions.prepend(this.heartHtml(hearts, userReact, ownComment));
-            }
+            existingHeart.remove();
+            actions.prepend(this.heartHtml(hearts, userReact, ownComment));
         } else {
             let actions = $(comment).find("> .comment-content .comment-actions");
             actions.find(".comment-heart").remove();
