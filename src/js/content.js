@@ -254,7 +254,7 @@ function processMutation(mutation) {
     }
 
     // is this a hack? even the wisest cannot tell
-    if (mutation.target.id === "main" ||
+    if (mutation.target.id === "main" || mutation.target.tagName.toLowerCase() === "title" ||
         mutation.target.classList.contains("single-post") &&
         mutation.addedNodes[0].tagName.toLowerCase() === "article") {
         // we switched to a different page with pushState
