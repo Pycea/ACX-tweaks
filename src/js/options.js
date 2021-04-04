@@ -784,6 +784,7 @@ let resetDataOption = {
     },
     onValueChange: function(value) {
         if (value) {
+            localStorageData = {};
             window.localStorage.removeItem(LOCAL_DATA_KEY);
             optionShadow.resetData = false;
             webExtension.storage.local.set({[OPTION_KEY]: optionShadow});
