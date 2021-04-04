@@ -166,6 +166,7 @@ let showHeartsOption = {
     },
     updateUserId: function() {
         if (!this.userId) {
+            debug("funcs_showHearts.updateUserId", "showHearts.updateUserId()");
             let userId = $("input[name=user_id]").val();
             this.userId = userId ? parseInt(userId) : undefined;
         }
@@ -396,10 +397,6 @@ let highlightNewOption = {
         }
         this.startSaveTimer();
 
-        if (!optionShadow[this.key]) {
-            return;
-        }
-
         if ((!commentSeen || commentDate > this.newCommentDate) && optionShadow[this.key]) {
             if (!$(comment).hasClass("new-comment")) {
                 $(comment).addClass("new-comment");
@@ -421,9 +418,11 @@ let highlightNewOption = {
             $(document.documentElement).addClass("highlight-new");
         } else {
             $(document.documentElement).removeClass("highlight-new");
+            this.alwaysProcessComments = true;
         }
 
         processAllComments();
+        this.alwaysProcessComments = false;
     },
 }
 

@@ -212,7 +212,7 @@ function processChildComments(node) {
     let commentHandlerObjects = [];
 
     for (let option in OPTIONS) {
-        if (OPTIONS[option].onCommentChange && optionShadow[option]) {
+        if (OPTIONS[option].onCommentChange && (optionShadow[option] || OPTIONS[option].alwaysProcessComments)) {
             commentHandlerObjects.push(OPTIONS[option]);
         }
     }
