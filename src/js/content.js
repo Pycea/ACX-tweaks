@@ -760,7 +760,6 @@ async function onLoad() {
     logFuncCall();
     debug("pageLoadFsm", "state: onLoad");
     runOnLoadHandlers();
-    setTimeout(checkForUpdates, 5000);
 }
 
 
