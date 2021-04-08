@@ -365,11 +365,8 @@ function addKeyListener() {
     logFuncCall();
 
     document.addEventListener("keydown", function(event) {
-        let source = event.target;
-        let exclude = ["input", "textarea"];
-
-        // don't trigger if people are writing comments
-        if (exclude.indexOf(source.tagName.toLowerCase()) !== -1) {
+        // don't trigger when writing
+        if ($(event.target).is("input, textarea, .ProseMirror")) {
             debug("func_onKeydown", "onKeydown(", event, ")");
             return;
         } else {
@@ -403,8 +400,6 @@ function addKeyListener() {
         if ([KeyCommandEnum.prevComment, KeyCommandEnum.nextComment,
                 KeyCommandEnum.prevUnread, KeyCommandEnum.nextUnread,
                 KeyCommandEnum.parent].includes(command)) {
-
-            event.preventDefault();
 
             function inView(element) {
                 return element.getBoundingClientRect().top > -5;
