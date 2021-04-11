@@ -82,8 +82,12 @@ const STYLES = {
                 -webkit-font-smoothing: auto !important;
             }
 
-            article div > p {
+            article div p {
                 color: #333 !important;
+                font: 12px/20px Verdana, sans-serif !important;
+            }
+
+            li {
                 font: 12px/20px Verdana, sans-serif !important;
             }
 
