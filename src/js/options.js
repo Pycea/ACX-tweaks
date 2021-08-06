@@ -309,12 +309,12 @@ let showFullDateOption = {
             return;
         }
 
-        let origDate = dateSpan.children(":first");
+        let origDate = dateSpan.children("a:not(.commenter-publication):first");
         origDate.addClass("worse-date");
 
         let newDateIncomplete = dateSpan.find(".better-date.incomplete");
         let newDateDisplay = newDateIncomplete.length > 0 ? newDateIncomplete : origDate.clone();
-        newDateDisplay.addClass("better-date incomplete");
+        newDateDisplay.removeClass("worse-date").addClass("better-date incomplete");
         origDate.after(newDateDisplay);
 
         if (commentId in commentIdToInfo) {

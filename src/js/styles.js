@@ -281,6 +281,15 @@ const STYLES = {
                 text-decoration: none !important;
             }
 
+            .comment-meta .comment-publication-name-separator {
+                display: none;
+            }
+
+            .comment-meta .commenter-publication {
+                display: block;
+                margin-bottom: -5px;
+            }
+
             .comment-meta > span:nth-child(2) a:before {
                 content: "\\a" !important;
                 white-space: pre !important;
