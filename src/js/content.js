@@ -178,13 +178,13 @@ function addCustomCollapser(collapser) {
     }
 
     collapser.css("display", "none");
-    let commentList = collapser.parent();
+    let comment = collapser.parent();
 
     let newCollapser = $(`
         <div class="comment-list-collapser custom-collapser">
             <div class="comment-list-collapser-line"></div>
         </div>`);
-    $(commentList).prepend(newCollapser);
+    $(comment).append(newCollapser);
 
     newCollapser.click(function() {
         let parentComment = $(this).closest(".comment");

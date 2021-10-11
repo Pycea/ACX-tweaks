@@ -318,10 +318,15 @@ const STYLES = {
 
             .profile-img-wrap img {
                 border-radius: 0px !important;
-                height: 40px !important;
-                width: 40px !important;
+                height: 41px !important;
+                width: 41px !important;
                 position: relative !important;
                 right: 8px !important;
+            }
+
+            .comment > .comment-list-collapser {
+                padding-top: 20px;
+                padding-left: 22px;
             }`,
     },
     "hideNew": {
