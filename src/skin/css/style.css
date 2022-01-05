@@ -1,24 +1,6 @@
-/* Adds permalink text */
-
 .comment .comment-actions > span {
     margin-left: 0 !important;
     margin-right: 10px;
-}
-
-.comment-actions > span:last-child > a {
-    margin-right: 10px;
-}
-
-.comment-list-container > .comment-list > .comment-list-items > .comment > .comment-content .comment-actions > span:last-child:after {
-    content: "Top";
-    cursor: pointer;
-    color: #888;
-}
-
-.comment-list-container .comment .comment .comment-actions > span:last-child:after {
-    content: "Parent" !important;
-    cursor: pointer;
-    color: #888;
 }
 
 /* Hide duplicate timestamp if not using full time option */
@@ -81,6 +63,18 @@ blockquote blockquote {
 
 a.like-button.own-comment:hover:active {
     opacity: 1;
+}
+
+a.like-button:not(.liked) svg.full {
+    display: none;
+}
+
+a.like-button.liked svg.empty {
+    display: none;
+}
+
+.comment-heart {
+    float: left;
 }
 
 /* is this a hack? */
