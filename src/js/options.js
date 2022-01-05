@@ -216,7 +216,7 @@ let showHeartsOption = {
                             ${hearts > 0 ? hearts : ""}
                         </span>
                     </div>
-                </span>
+                </a>
             </span>
         `;
     },
