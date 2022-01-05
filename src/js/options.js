@@ -294,8 +294,6 @@ let showHeartsOption = {
                         $(childAction).addClass("action-reply");
                     } else if (text === "Delete") {
                         $(childAction).addClass("action-delete");
-                    } else {
-                        $(childAction).addClass("action-more");
                     }
                 }
 
@@ -601,18 +599,34 @@ let addParentLinksOption = {
     onStart: function(value) {
         addStyle(this.key);
         $(`#${this.key}-css`).prop("disabled", value);
+    },
+    onCommentChange: function(comment) {
+        let actions = $(comment).find("> .comment-content .comment-actions");
 
-        $(document.body).on("click", ".comment-actions > span:last-child", function() {
-            debug("funcs_addParentLinks.onClick", "addParentLinks.onClick()");
-            let comment = $(this).closest(".comment");
-            let parentComment = $(comment).parent().closest(".comment");
-            let scrollElement;
-            if (parentComment.length === 0) {
-                // already at top level comment
-                scrollElement = $(".comments-page");
-            } else {
-                scrollElement = parentComment.find("> .comment-anchor:first-child");
-            }
+        // don't add link if it already exists
+        if (actions.find(".parent-link").length !== 0) {
+            return;
+        }
+
+        let parentComment = $(comment).parent().closest(".comment");
+        let scrollElement, displayText;
+        if (parentComment.length === 0) {
+            // already at top level comment
+            scrollElement = $(".comments-page");
+            displayText = "Top";
+        } else {
+            scrollElement = parentComment.find("> .comment-anchor:first-child");
+            displayText = "Parent";
+        }
+
+        let parentLink = $(`
+            <span class="parent-link">
+                <a href="javascript:void(0)">${displayText}</a>
+            </span>
+        `);
+        actions.append(parentLink);
+
+        parentLink.click(function() {
             scrollElement[0].scrollIntoView({ "behavior": "smooth" });
         });
     },

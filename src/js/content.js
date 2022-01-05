@@ -524,6 +524,7 @@ async function createCommentDateCache() {
     function getDateRecursive(comment) {
         let id = comment.id;
         let userId = comment.user_id;
+        let ancestorPath = comment.ancestor_path;
         let date = comment.date;
         let editedDate = comment.edited_at;
         let hearts = comment.reactions?.["❤"];
@@ -531,6 +532,7 @@ async function createCommentDateCache() {
         let deleted = comment.deleted;
         commentIdToInfo[id] = {
             "userId": userId,
+            "ancestorPath": ancestorPath,
             "date": date,
             "editedDate": editedDate,
             "hearts": hearts,

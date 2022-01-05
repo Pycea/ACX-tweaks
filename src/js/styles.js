@@ -68,8 +68,8 @@ const STYLES = {
     },
     "addParentLinks": {
         "css": `
-            .comment-actions > span:last-child:after {
-                display: none !important;
+            .parent-link {
+                display: none;
             }`,
     },
     "applyCommentStyling": {
