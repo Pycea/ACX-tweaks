@@ -402,24 +402,12 @@ let showFullDateOption = {
                 return;
             }
 
-            if (commentId === 4212361) {
-                console.log(commentMeta)
-            }
-
             let origEditDate = commentMeta.find(".edited-indicator");
-
-            if (commentId === 4212361) {
-                console.log(origEditDate)
-            }
 
             let newEditDateIncomplete = commentMeta.find(".better-edited-indicator.incomplete");
             let newEditDateDisplay = newEditDateIncomplete.length > 0 ? newEditDateIncomplete : origEditDate.clone();
             newEditDateDisplay.removeClass("edited-indicator").addClass("better-edited-indicator incomplete");
             origEditDate.after(newEditDateDisplay);
-
-            if (commentId === 4212361) {
-                console.log(newEditDateDisplay)
-            }
 
             if (commentId in commentIdToInfo) {
                 let utcTime = commentIdToInfo[commentId].editedDate;
