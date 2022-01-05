@@ -288,7 +288,7 @@ let showHeartsOption = {
         if (!deleted) {
             let actions = $(comment).find("> .comment-content .comment-actions");
             if (actions.html() != "") {
-                for (let childAction of actions.children()) {
+                for (const childAction of actions.children()) {
                     let text = $(childAction).text();
                     if (text === "Reply") {
                         $(childAction).addClass("action-reply");
@@ -657,7 +657,7 @@ let loadAllOption = {
     hovertext: "Load all comments preemptively",
     onLoad: function() {
         let that = this;
-        for (let timeout of [0, 500, 1000, 2000]) {
+        for (const timeout of [0, 500, 1000, 2000]) {
             setTimeout(function() {
                 that.onValueChange(optionShadow.loadAll);
             }, timeout);
@@ -948,6 +948,6 @@ let optionArray = [
 
 let OPTIONS = {};
 
-for (let option of optionArray) {
+for (const option of optionArray) {
     OPTIONS[option.key] = option;
 }

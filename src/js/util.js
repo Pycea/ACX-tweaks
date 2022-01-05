@@ -267,8 +267,8 @@ function getKeyDictFromEvent(event) {
 
 function isMatchingKeyEvent(keyDict, event) {
     let eventDict = getKeyDictFromEvent(event);
-    for (let key in keyDict) {
-        if (keyDict[key] != eventDict[key]) {
+    for (const [key, value] of Object.entries(keyDict)) {
+        if (value != eventDict[key]) {
             return false;
         }
     }

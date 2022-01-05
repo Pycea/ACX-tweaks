@@ -72,9 +72,9 @@ async function loadInitialOptionValues() {
         optionShadow = {};
     }
 
-    for (let key in OPTIONS) {
+    for (const [key, option] of Object.entries(OPTIONS)) {
         if (optionShadow[key] === undefined) {
-            optionShadow[key] = OPTIONS[key].default;
+            optionShadow[key] = option.default;
         }
     }
 }
@@ -191,8 +191,8 @@ function createResetHandler() {
         $(button).removeClass("verify").html("Reset all data");
 
         // reset options to defaults
-        for (let key in OPTIONS) {
-            optionShadow[key] = OPTIONS[key].default;
+        for (const [key, option] of Object.entries(OPTIONS)) {
+            optionShadow[key] = option.default;
         }
 
         optionShadow.resetData = true;
@@ -342,7 +342,7 @@ window.onload = async function() {
     await loadInitialOptionValues();
 
     let promiseArray = [];
-    for (let option of $(".option")) {
+    for (const option of $(".option")) {
         promiseArray.push(processOption(option));
     }
 

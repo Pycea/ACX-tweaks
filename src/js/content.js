@@ -130,19 +130,19 @@ function processStorageChange(changes, namespace) {
         if (changes.options) {
             let changedKeys = [];
 
-            for (let key in changes.options.newValue) {
+            for (const [key, newValue] of Object.entries(changes.options.newValue)) {
                 // ew, but I don't really want to implement isEqual for dicts
-                let newValueString = JSON.stringify(changes.options.newValue[key]);
+                let newValueString = JSON.stringify(newValue);
                 let oldValueString = JSON.stringify(optionShadow[key]);
 
                 if (newValueString !== oldValueString) {
-                    debug("optionGet", `Got change for ${key}`, changes.options.oldValue[key], "->", changes.options.newValue[key]);
-                    optionShadow[key] = changes.options.newValue[key];
+                    debug("optionGet", `Got change for ${key}`, changes.options.oldValue[key], "->", newValue);
+                    optionShadow[key] = newValue;
                     changedKeys.push(key);
                 }
             }
 
-            for (let key of changedKeys) {
+            for (const key of changedKeys) {
                 doOptionChange(key, changes.options.newValue[key]);
             }
         }
@@ -211,9 +211,9 @@ function processChildComments(node) {
     logFuncCall(true);
     let commentHandlerObjects = [];
 
-    for (let option in OPTIONS) {
-        if (OPTIONS[option].onCommentChange && (optionShadow[option] || OPTIONS[option].alwaysProcessComments)) {
-            commentHandlerObjects.push(OPTIONS[option]);
+    for (const [key, option] of Object.entries(OPTIONS)) {
+        if (option.onCommentChange && (optionShadow[key] || option.alwaysProcessComments)) {
+            commentHandlerObjects.push(option);
         }
     }
 
@@ -221,7 +221,7 @@ function processChildComments(node) {
         $(node).find("div.comment").addBack("div.comment").each(function() {
             debug("processComment", this);
 
-            for (let object of commentHandlerObjects) {
+            for (const object of commentHandlerObjects) {
                 debug("func_" + object.key + ".onCommentChange", object.key + ".onCommentChange()");
                 object.onCommentChange(this);
             }
@@ -244,7 +244,7 @@ function processMutation(mutation) {
     }
 
     function nodeHasClass(node, classList) {
-        for (let c of classList) {
+        for (const c of classList) {
             if (node.classList.contains(c)) {
                 return true;
             }
@@ -287,14 +287,14 @@ function processMutation(mutation) {
     // call mutation handlers
     let mutationHandlerObjects = [];
 
-    for (let option in OPTIONS) {
-        if (OPTIONS[option].onMutation && optionShadow[option]) {
-            mutationHandlerObjects.push(OPTIONS[option]);
+    for (const [key, option] of Object.entries(OPTIONS)) {
+        if (option.onMutation && optionShadow[key]) {
+            mutationHandlerObjects.push(option);
         }
     }
 
     if (mutationHandlerObjects.length > 0) {
-        for (let object of mutationHandlerObjects) {
+        for (const object of mutationHandlerObjects) {
             debug("func_" + object.key + ".onMutation", object.key + ".onMutation()");
             object.onMutation(mutation);
         }
@@ -325,20 +325,20 @@ function loadLocalStorage() {
 function processInitialOptionValues() {
     logFuncCall();
 
-    for (let key in OPTIONS) {
+    for (const [key, option] of Object.entries(OPTIONS)) {
         let value = optionShadow[key];
         if (value === undefined) {
             // the option hasn't been set in local storage, set it to the default
-            value = OPTIONS[key].default;
+            value = option.default;
             optionShadow[key] = value;
             debug("optionInitial", `${key} not found, setting to`, value);
         } else {
             debug("optionInitial", `${key} initial value is`, value);
         }
 
-        if (OPTIONS[key].onStart) {
+        if (option.onStart) {
             debug("funcs_" + key + ".onStart", key + ".onStart()");
-            OPTIONS[key].onStart(value);
+            option.onStart(value);
         }
     }
 
@@ -509,10 +509,10 @@ function updatePostReadDate() {
 
 function runOnPageChangeHandlers() {
     logFuncCall();
-    for (let key in OPTIONS) {
-        if (OPTIONS[key].onPageChange) {
+    for (const [key, option] of Object.entries(OPTIONS)) {
+        if (option.onPageChange) {
             debug("funcs_" + key + ".onPageChange", key + ".onPageChange()");
-            OPTIONS[key].onPageChange();
+            option.onPageChange();
         }
     }
 }
@@ -540,7 +540,7 @@ async function createCommentDateCache() {
             "deleted": deleted,
         };
 
-        for (let childComment of comment.children) {
+        for (const childComment of comment.children) {
             getDateRecursive(childComment);
         }
     }
@@ -548,7 +548,7 @@ async function createCommentDateCache() {
     let comments = await getPostComments();
 
     commentIdToInfo = {};
-    for (let comment of comments) {
+    for (const comment of comments) {
         getDateRecursive(comment);
     }
 }
@@ -745,10 +745,10 @@ async function checkForUpdates() {
 
 function runOnLoadHandlers() {
     logFuncCall();
-    for (let key in OPTIONS) {
-        if (OPTIONS[key].onLoad) {
+    for (const [key, option] of Object.entries(OPTIONS)) {
+        if (option.onLoad) {
             debug("funcs_" + key + ".onLoad", key + ".onLoad()");
-            OPTIONS[key].onLoad();
+            option.onLoad();
         }
     }
 }
