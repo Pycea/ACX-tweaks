@@ -271,7 +271,7 @@ const STYLES = {
                 text-decoration: none !important;
             }
 
-            .commenter-name a:after {
+            .comment-meta > .commenter-name > .account-hover-wrapper > a:after {
                 content: " says:" !important;
                 font-weight: normal;
                 font-style: italic;
