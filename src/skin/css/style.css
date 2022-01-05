@@ -57,24 +57,28 @@ blockquote blockquote {
 
 /* Own comment hearts don't have pointer cursor */
 
-.own-comment {
+.like-button {
+    cursor: pointer;
+}
+
+.like-button.own-comment {
     cursor: default;
 }
 
-a.like-button.own-comment:hover:active {
-    opacity: 1;
-}
-
-a.like-button:not(.liked) svg.full {
+.like-button:not(.liked) svg.full {
     display: none;
 }
 
-a.like-button.liked svg.empty {
+.like-button.liked svg.empty {
     display: none;
 }
 
 .comment-heart {
     float: left;
+}
+
+.parent-link a {
+    cursor: pointer;
 }
 
 /* is this a hack? */

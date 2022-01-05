@@ -145,7 +145,7 @@ let showHeartsOption = {
     heartHtml: function(hearts, userReact, ownComment) {
         return `
             <span class="comment-heart">
-                <a href="javascript:void(0)" class="like-button ${userReact ? "liked" : ""} ${ownComment ? "own-comment" : ""}">
+                <a class="like-button ${userReact ? "liked" : ""} ${ownComment ? "own-comment" : ""}">
                     <div class="reaction-container">
                         <svg class="empty" role="img" width="14" height="14" viewBox="0 0 19 19" fill="#757575"
                         stroke-width="1.3571428571428572" stroke="#757575" xmlns="http://www.w3.org/2000/svg"
@@ -621,7 +621,7 @@ let addParentLinksOption = {
 
         let parentLink = $(`
             <span class="parent-link">
-                <a href="javascript:void(0)">${displayText}</a>
+                <a>${displayText}</a>
             </span>
         `);
         actions.append(parentLink);
