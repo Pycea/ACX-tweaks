@@ -39,6 +39,7 @@ function addStyle(key) {
 //                                                 | (end of page load) |  leave page
 //                                                 +--------------------+
 //
+//                 |                                          |                         | should be
 // function        | run condition                            | args                    | idempotent
 // ----------------+------------------------------------------+-------------------------+-----------
 // onStart         | once, when the extension is first loaded | none                    | n/a
@@ -301,28 +302,70 @@ let showFullDateOption = {
             return `${month} ${day}, ${year} at ${hour12Html}${hour24Html}`;
         }
 
-        let commentId = getCommentIdNumber(comment);
-        let dateSpan = $(comment).find("> .comment-content .comment-meta > span:nth-child(2)");
+        function applyBetterDate() {
+            let commentId = getCommentIdNumber(comment);
+            let dateSpan = $(comment).find("> .comment-content .comment-meta > span:nth-child(2)");
 
-        // don't add if the new date element already exists
-        if (dateSpan.find(".better-date:not(.incomplete)").length !== 0) {
-            return;
+            // don't add if the new date element already exists
+            if (dateSpan.find(".better-date:not(.incomplete)").length !== 0) {
+                return;
+            }
+
+            let origDate = dateSpan.children("a:not(.commenter-publication):first");
+            origDate.addClass("worse-date");
+
+            let newDateIncomplete = dateSpan.find(".better-date.incomplete");
+            let newDateDisplay = newDateIncomplete.length > 0 ? newDateIncomplete : origDate.clone();
+            newDateDisplay.removeClass("worse-date").addClass("better-date incomplete");
+            origDate.after(newDateDisplay);
+
+            if (commentId in commentIdToInfo) {
+                let utcTime = commentIdToInfo[commentId].date;
+                let date = new Date(utcTime);
+                newDateDisplay.html(getLocalDateString(date));
+                newDateDisplay.removeClass("incomplete");
+            }
         }
 
-        let origDate = dateSpan.children("a:not(.commenter-publication):first");
-        origDate.addClass("worse-date");
+        function applyBetterEditDate() {
+            let commentId = getCommentIdNumber(comment);
+            let commentMeta = $(comment).find("> .comment-content .comment-meta");
 
-        let newDateIncomplete = dateSpan.find(".better-date.incomplete");
-        let newDateDisplay = newDateIncomplete.length > 0 ? newDateIncomplete : origDate.clone();
-        newDateDisplay.removeClass("worse-date").addClass("better-date incomplete");
-        origDate.after(newDateDisplay);
+            // don't add if the new date element already exists
+            if (commentMeta.find(".better-edited-indicator:not(.incomplete)").length !== 0) {
+                return;
+            }
 
-        if (commentId in commentIdToInfo) {
-            let utcTime = commentIdToInfo[commentId].date;
-            let date = new Date(utcTime);
-            newDateDisplay.html(getLocalDateString(date));
-            newDateDisplay.removeClass("incomplete");
+            if (commentId === 4212361) {
+                console.log(commentMeta)
+            }
+
+            let origEditDate = commentMeta.find(".edited-indicator");
+
+            if (commentId === 4212361) {
+                console.log(origEditDate)
+            }
+
+            let newEditDateIncomplete = commentMeta.find(".better-edited-indicator.incomplete");
+            let newEditDateDisplay = newEditDateIncomplete.length > 0 ? newEditDateIncomplete : origEditDate.clone();
+            newEditDateDisplay.removeClass("edited-indicator").addClass("better-edited-indicator incomplete");
+            origEditDate.after(newEditDateDisplay);
+
+            if (commentId === 4212361) {
+                console.log(newEditDateDisplay)
+            }
+
+            if (commentId in commentIdToInfo) {
+                let utcTime = commentIdToInfo[commentId].editedDate;
+                let editedDate = new Date(utcTime);
+                let editedDateHtml = `<em>edited ${getLocalDateString(editedDate)}</em>`
+                newEditDateDisplay.html(editedDateHtml);
+                newEditDateDisplay.removeClass("incomplete");
+            }
         }
+
+        applyBetterDate();
+        applyBetterEditDate();
     },
     onValueChange: function(value) {
         $(`#${this.key}-css`).prop("disabled", !value);

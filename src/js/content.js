@@ -525,12 +525,14 @@ async function createCommentDateCache() {
         let id = comment.id;
         let userId = comment.user_id;
         let date = comment.date;
+        let editedDate = comment.edited_at;
         let hearts = comment.reactions?.["❤"];
         let userReact = comment.reaction;
         let deleted = comment.deleted;
         commentIdToInfo[id] = {
             "userId": userId,
             "date": date,
+            "editedDate": editedDate,
             "hearts": hearts,
             "userReact": userReact,
             "deleted": deleted,

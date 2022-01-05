@@ -46,6 +46,14 @@ const STYLES = {
 
             .comment-meta span:nth-child(2) a.better-date {
                 display: inline !important;
+            }
+
+            .comment-meta .edited-indicator {
+                display: none !important;
+            }
+
+            .comment-meta .better-edited-indicator {
+                display: inline !important;
             }`,
     },
     "use24Hour": {
@@ -275,7 +283,7 @@ const STYLES = {
                 margin-left: 0 !important;
             }
 
-            .comment-meta > span:nth-child(2) a {
+            .comment-meta > span:nth-child(2) * {
                 font-family: Georgia, "Bitstream Charter", serif !important;
                 color: #888 !important;
                 text-decoration: none !important;
@@ -293,6 +301,10 @@ const STYLES = {
             .comment-meta > span:nth-child(2) a:before {
                 content: "\\a" !important;
                 white-space: pre !important;
+            }
+
+            .comment-meta .edited-indicator, .comment-meta .better-edited-indicator {
+                padding-left: 10px;
             }
 
             .comment-meta .highlight {
@@ -324,9 +336,14 @@ const STYLES = {
                 right: 8px !important;
             }
 
+            .comment {
+                padding-bottom: 0;
+            }
+
             .comment > .comment-list-collapser {
                 padding-top: 20px;
                 padding-left: 22px;
+                height: calc(100% - 67px);
             }`,
     },
     "hideNew": {

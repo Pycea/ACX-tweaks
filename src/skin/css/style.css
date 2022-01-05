@@ -23,7 +23,11 @@
 
 /* Hide duplicate timestamp if not using full time option */
 
-.comment-meta span:nth-child(2) a.better-date {
+.comment-meta span:nth-child(2) .better-date {
+    display: none;
+}
+
+.comment-meta .better-edited-indicator {
     display: none;
 }
 
