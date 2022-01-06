@@ -218,7 +218,7 @@ function processChildComments(node) {
     }
 
     if (commentHandlerObjects.length > 0) {
-        $(node).find("div.comment").addBack("div.comment").each(function() {
+        $(node).find("div.comment:not(.comment-input-wrap)").addBack("div.comment:not(.comment-input-wrap)").each(function() {
             debug("processComment", this);
 
             for (const object of commentHandlerObjects) {
