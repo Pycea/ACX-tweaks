@@ -138,6 +138,19 @@ let darkModeOption = {
     hovertext: "Make this popup dark mode (does not apply to page). To make the page dark, use an extension like Dark Reader.",
 }
 
+let removeCommentsOption = {
+    key: "removeComments",
+    default: false,
+    hovertext: "Hide the comments section on posts",
+    onStart: function(value) {
+        addStyle(this.key);
+        this.onValueChange(value);
+    },
+    onValueChange: function(value) {
+        $(`#${this.key}-css`).prop("disabled", !value);
+    },
+}
+
 let showHeartsOption = {
     key: "showHearts",
     default: false,
@@ -918,6 +931,7 @@ let optionArray = [
     useOldStylingOption,
     hideSubOnlyPostsOption,
     darkModeOption,
+    removeCommentsOption,
     showHeartsOption,
     showFullDateOption,
     use24HourOption,

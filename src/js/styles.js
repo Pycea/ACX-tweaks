@@ -31,6 +31,17 @@ const STYLES = {
                 display: none;
             }`,
     },
+    "removeComments": {
+        css: `
+            .comments-page {
+                display: none;
+            }
+
+            .post-footer > .post-meta tr td:nth-child(2) {
+                display: none;
+            }
+        `,
+    },
     "showHearts": {
         css: `
             .comment-heart {
