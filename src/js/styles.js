@@ -84,31 +84,66 @@ const STYLES = {
     },
     "useOldStyling": {
         "css": `
-            /* I am so sorry */
+
+            /* Global default font */
 
             #entry #main {
                 -webkit-font-smoothing: auto !important;
             }
 
-            article div p {
-                color: #333 !important;
-                font: 12px/20px Verdana, sans-serif !important;
+
+
+            /* Topbar */
+
+            .topbar .container {
+                background: linear-gradient(to bottom, rgba(139,171,232,1) 0%, rgba(79,115,193,1) 100%) !important;
+                text-decoration: none !important;
             }
 
-            li {
-                font: 12px/20px Verdana, sans-serif !important;
+            .main-menu .topbar .container .large-menu-name {
+                font-size: 43px !important;
+                max-height: 100px !important;
+                font-family: 'Raleway', Open Sans, Arial, sans-serif !important;
+                font-weight: normal !important;
+                text-align: center !important;
+                letter-spacing: 2px !important;
+                text-decoration: none !important;
+                -webkit-font-smoothing: auto !important;
             }
 
-            h1.post-title.short.unpublished {
+            .main-menu .topbar .container .large-menu-name .large-menu-home-link {
+                color: white !important;
+            }
+
+            .subscribe-cta.subscribe-btn {
+                display: none !important;
+            }
+
+            .notification-container {
+                transform: scale(.8) !important;
+            }
+
+
+
+            /* Title and post info */
+
+            .post-title {
                 font-size: 16px !important;
                 line-height: 1.3em !important;
                 margin-bottom: 10px !important;
                 text-transform: uppercase !important;
                 letter-spacing: 1px !important;
                 font-family: Georgia, "Bitstream Charter", serif !important;
+                font-weight: normal !important;
+                -webkit-font-smoothing: auto !important;
             }
 
-            td.post-meta-item.post-date {
+            .subtitle {
+                font: 12px/20px Verdana, sans-serif !important;
+                padding-bottom: 8px !important;
+            }
+
+            .post-meta-item.post-date {
                 color: #888 !important;
                 font-size: 10px !important;
                 font-family: Verdana, sans-serif !important;
@@ -121,12 +156,32 @@ const STYLES = {
                 text-shadow: 1px 1px 1px #fff !important;
             }
 
-            td.post-meta-item.post-date:before {
-                content: "Posted " !important;
+            .post-meta-item.post-date:before {
+                content: "Posted on " !important;
             }
 
-            td.post-meta-item.post-date:after {
+            .post-meta-item.post-date:after {
                 content: " by Scott Alexander" !important;
+            }
+
+            .post-meta-item.post-date {
+                margin-right: 16px !important;
+            }
+
+
+
+            /* Post content */
+
+            .single-post-container {
+                background: #f0f0f0 !important;
+                padding: 10px 0px !important;
+            }
+
+            @media screen and (min-width: 800px) {
+                .single-post-container > .container {
+                    margin: 0 auto;
+                    width: 780px;
+                }
             }
 
             .single-post {
@@ -137,18 +192,22 @@ const STYLES = {
                 margin-bottom: 10px !important;
             }
 
-            .single-post-container {
-                background: #f0f0f0 !important;
-                padding: 10px 0px !important;
+            article {
+                padding: 0 !important;
             }
 
-            .single-post a {
+            article .available-content p, article .available-content li {
+                color: #333 !important;
+                font: 12px/20px Verdana, sans-serif !important;
+            }
+
+            figcaption {
+                font: 12px/20px Verdana, sans-serif !important;
+            }
+
+            article .available-content p a, article .available-content blockquote a {
                 color: #0066cc !important;
                 text-decoration: underline !important;
-            }
-
-            .post {
-                padding: 0 !important;
             }
 
             blockquote {
@@ -166,70 +225,47 @@ const STYLES = {
                 color: #333 !important;
             }
 
-            .subtitle {
-                font-size: 12px !important;
-                padding-bottom: 8px !important;
-            }
 
-            .main-menu .topbar .container .headline {
-                text-decoration: none !important;
-            }
 
-            .main-menu .topbar .container .headline .name {
-                font-size: 43px !important;
-                max-height: 100px !important;
-                color: white !important;
-                font-family: 'Raleway', Open Sans, Arial, sans-serif !important;
-                text-align: center !important;
-                letter-spacing: 2px !important;
-                text-decoration: none !important;
-            }
-
-            .topbar {
-                background: linear-gradient(to bottom, rgba(139,171,232,1) 0%, rgba(79,115,193,1) 100%) !important;
-                text-decoration: none !important;
-            }
-
-            button.button.primary.subscribe-cta.subscribe-btn {
-                display: none !important;
-            }
+            /* Comments container */
 
             .full-container-border {
                 display: none !important;
             }
 
+            .comments-page {
+                background: #f0f0f0 !important;
+                padding-top: 10px !important;
+            }
+
             .comments-page > .container {
+                box-sizing: border-box !important;
                 background-color: white !important;
                 justify-content: center !important;
                 border: 1px solid #d5d5d5 !important;
                 border-radius: 10px !important;
-                padding: 25px !important;
+                padding: 17px !important;
             }
 
-            .comments-page .container .comments-heading {
+            .comments-page > .container .comments-heading {
                 margin-top: 0 !important;
             }
 
-            @media screen and (min-width: 768px) {
+            @media screen and (min-width: 800px) {
                 .comments-page > .container {
-                    width: 675px !important;
+                    width: 780px !important;
                 }
-            }
-
-            div.buttons.notification-container {
-                filter: brightness(3) !important;
-                transform: scale(.7) !important;
-            }
-
-            img.logo {
-                margin-right: 30px !important;
             }
 
             button.comments-page-sort-menu-button {
                 background: transparent !important;
             }
 
-            table.comment-content tr td {
+
+
+            /* Comment box form */
+
+            .comment-content .comment-rest {
                 border: 1px solid #ddd !important;
                 padding: 10px !important;
                 border-radius: 10px !important;
@@ -237,32 +273,37 @@ const STYLES = {
                 background: #fafafa !important;
             }
 
-            .highlight-new .comment.new-comment > table.comment-content tr td:not(.comment-head) {
-                 border: 2px solid #5a5 !important;
-            }
-
-            .new-tag-text {
-                color: #c5c5c5 !important;
-            }
-
-            table.comment-content tr td.comment-head {
+            .comment-content .comment-head {
                 border: none !important;
                 flex-grow: 0 !important;
                 background: none !important;
             }
 
-            table tr {
+            .comment-content tr {
                 display: flex !important;
             }
 
-            td.post-meta-item.icon {
-                margin-left: 10px !important;
+            .profile-img-wrap img {
+                border-radius: 0px !important;
+                height: 41px !important;
+                width: 41px !important;
+                position: relative !important;
             }
 
-            .comments-page {
-                background: #f0f0f0 !important;
-                padding-top: 10px !important;
+            .profile-img-wrap div.profile-img-badge {
+                right: -6px !important;
             }
+
+            .comment > .comment-list-collapser {
+                top: 42px !important;
+                padding-top: 18px;
+                padding-left: 20px;
+                height: calc(100% - 67px);
+            }
+
+
+
+            /* Comment meta */
 
             .commenter-name {
                 font-family: Verdana, sans-serif !important;
@@ -271,39 +312,39 @@ const STYLES = {
                 text-decoration: none !important;
             }
 
-            .comment-meta > .commenter-name > .account-hover-wrapper > a:after {
+            .commenter-name > .account-hover-wrapper > a:after {
                 content: " says:" !important;
                 font-weight: normal;
                 font-style: italic;
             }
 
-            .comment-meta > span:nth-child(2) {
+            .comment-meta .meta-details {
                 display: block !important;
                 padding-bottom: 10px !important;
                 margin-left: 0 !important;
             }
 
-            .comment-meta > span:nth-child(2) * {
+            .comment-meta .meta-details * {
                 font-family: Georgia, "Bitstream Charter", serif !important;
                 color: #888 !important;
                 text-decoration: none !important;
             }
 
-            .comment-meta .comment-publication-name-separator {
-                display: none;
-            }
-
-            .comment-meta .commenter-publication {
-                display: block;
-                margin-bottom: -5px;
-            }
-
-            .comment-meta > span:nth-child(2) a:before {
+            .comment-meta .meta-details a:before {
                 content: "\\a" !important;
                 white-space: pre !important;
             }
 
-            .comment-meta .edited-indicator, .comment-meta .better-edited-indicator {
+            .comment-meta .meta-details .commenter-publication {
+                display: block;
+                margin-bottom: -5px;
+            }
+
+            .comment-meta .meta-details .comment-publication-name-separator {
+                display: none;
+            }
+
+            .comment-meta .meta-details .edited-indicator, .comment-meta .meta-details .better-edited-indicator {
                 padding-left: 10px;
             }
 
@@ -311,39 +352,45 @@ const STYLES = {
                 margin-left: 0 !important;
             }
 
+
+
+            /* Comment content */
+
             .comment-body p {
                 font: 12px/20px Verdana, sans-serif !important;
                 color: #333 !important;
             }
 
-            .comment-actions span a {
+
+
+            /* Comment actions */
+
+            .comment-actions {
                 color: #888 !important;
             }
 
-            .comment.selected > .comment-content > tr > td:nth-child(2) {
+
+
+            /* New comments */
+
+            .highlight-new .comment.new-comment > .comment-content .comment-rest {
+                border: 2px solid #5a5 !important;
+            }
+
+            .new-tag-text {
+                color: #c5c5c5 !important;
+            }
+
+
+
+            /* Selected comment */
+
+            .comment.selected > .comment-content .comment-rest {
                 background: #de912d2c !important;
             }
 
             .comment.selected > .comment-content::before {
                 background: inherit !important;
-            }
-
-            .profile-img-wrap img {
-                border-radius: 0px !important;
-                height: 41px !important;
-                width: 41px !important;
-                position: relative !important;
-                right: 8px !important;
-            }
-
-            .comment {
-                padding-bottom: 0;
-            }
-
-            .comment > .comment-list-collapser {
-                padding-top: 20px;
-                padding-left: 22px;
-                height: calc(100% - 67px);
             }`,
     },
     "hideNew": {
