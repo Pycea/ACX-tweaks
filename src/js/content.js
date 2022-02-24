@@ -258,7 +258,7 @@ function processMutation(mutation) {
         mutation.addedNodes[0].tagName.toLowerCase() === "article") {
         debug("mutationType", "switch to new page", mutation);
         // we switched to a different page with pushState
-        if (optionShadow.dynamicLoad) {
+        if (true) {
             debug("pageLoadFsm", "action: dynamic page load");
             pageSetup();
             runOnLoadHandlers();
