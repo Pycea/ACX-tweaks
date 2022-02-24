@@ -898,12 +898,6 @@ let showDebugOption = {
     hovertext: "Show matching debugging output in the console (use &ldquo;*&rdquo; for all)",
 }
 
-let dynamicLoadOption = {
-    key: "dynamicLoad",
-    default: false,
-    hovertext: "Dynamically load content when switching between posts (default Substack behavior). Enabling can decrease load times, but some things may break, and the comments may appear out of order due to an issue with Substack.",
-}
-
 let resetDataOption = {
     key: "resetData",
     default: false,
@@ -955,7 +949,6 @@ let optionArray = [
     jsOnPageChangeOption,
     jsOnLoadOption,
     showDebugOption,
-    dynamicLoadOption,
     resetDataOption,
     hideUpdateNoticeOption,
 ];

@@ -258,17 +258,9 @@ function processMutation(mutation) {
         mutation.addedNodes[0].tagName.toLowerCase() === "article") {
         debug("mutationType", "switch to new page", mutation);
         // we switched to a different page with pushState
-        if (true) {
-            debug("pageLoadFsm", "action: dynamic page load");
-            pageSetup();
-            runOnLoadHandlers();
-        } else {
-            // don't react to any more updates
-            observeChanges = false;
-
-            // force refresh
-            window.location.href = window.location.href;
-        }
+        debug("pageLoadFsm", "action: dynamic page load");
+        pageSetup();
+        runOnLoadHandlers();
     } else if (nodeHasClass(mutation.target, ["comment", "comment-list", "comment-list-items", "container"])) {
         debug("mutationType", "possible comment add", mutation);
 
