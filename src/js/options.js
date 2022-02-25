@@ -607,28 +607,108 @@ let applyCommentStylingOption = {
     default: true,
     hovertext: "Apply basic styling to comments (italics, block quotes, and Markdown style text links)",
     processCommentParagraph: function(innerHtml) {
-        let italicRegexStar = /(^|\s|\(|\[|\{|\*)\*((?=[^*\s]).*?(?<=[^*\s]))\*/g;
-        let italicRegexUnderscore = /(^|\s|\(|\[|\{|_)_((?=[^_\s]).*?(?<=[^_\s]))_/g;
-        let blockQuoteRegex = /^\s*(>|&gt;)\s*(.*)$/;
-        // yes I'm parsing html with a regex. deal with it
-        let linkRegex = /\[(.+?)\]\(<a href="(.*?)".*?<\/a>\)/g;
+        // quick first pass to rule out cases where formatting isn't needed
+        if (!innerHtml.match(/[*_<]|&gt;/)) {
+            let container = document.createElement("span");
+            container.classList.add("new-style");
+            container.innerHTML = innerHtml;
+            return container;
+        }
 
-        function processBlockquotes(text) {
-            let reMatch = text.match(blockQuoteRegex);
-            if (reMatch) {
-                return `<blockquote>${processBlockquotes(reMatch[2])}</blockquote>`;
-            } else {
-                return text;
+        // recursively use regexes to split the string into parts
+        // ["starting *string* with _italics_ *here*"] =>
+        // ["starting ", "<em>string</em>", " with _italics_ ", "<em>here</em>"] =>
+        // ["starting ", "<em>string</em>", " with ", "<em>italics</em>", " ", "<em>here</em>"]
+        function stringToList(regex, matchToTag, string) {
+            let list = [];
+            let match;
+            while(match = string.match(regex)) {
+                let matchLength = match[0].length;
+                let prefix = match[1];
+
+                if (prefix) list.push(prefix);
+                list.push(matchToTag(match));
+
+                string = string.substring(matchLength);
+            }
+
+            if (string) list.push(string);
+
+            return list;
+        }
+
+        function listPass(regex, matchToTag, list) {
+            return list.map(e => typeof e === "string" ? stringToList(regex, matchToTag, e) : e).flat();
+        }
+
+        let italicStarRegex = /(.*?(?:^|\s|\(|\[|\{|\*))\*((?=[^*\s]).*?(?<=[^*\s]))\*/;
+        let italicUnderscoreRegex = /(.*?(?:^|\s|\(|\[|\{|_))_((?=[^_\s]).*?(?<=[^_\s]))_/;
+        function italicToTag(match) {
+            let e = document.createElement("em");
+            let t = document.createTextNode(match[2]);
+            e.appendChild(t);
+            return e;
+        };
+        // yes I'm parsing html with a regex. deal with it
+        let linkRegex = /(.*?)\[(.+?)\]\(<a href="(.*?)".*?<\/a>\)/;
+        function linkToTag(match) {
+            let e = document.createElement("a");
+            e.setAttribute("href", match[3]);
+            e.setAttribute("target", "_blank");
+            e.setAttribute("rel", "noreferrer");
+            e.setAttribute("noopener", "");
+            let t = document.createTextNode(match[2]);
+            e.appendChild(t);
+            return e;
+        }
+        let bareLinkRegex = /(.*?)<a href="(.*?)".*?>(.*?)<\/a>/;
+        function bareLinkToTag(match) {
+            let e = document.createElement("a");
+            e.setAttribute("href", match[2]);
+            e.setAttribute("target", "_blank");
+            e.setAttribute("rel", "noreferrer");
+            e.setAttribute("noopener", "");
+            let t = document.createTextNode(match[3]);
+            e.appendChild(t);
+            return e;
+        }
+
+        let list = [innerHtml];
+        list = listPass(linkRegex, linkToTag, list);
+        list = listPass(bareLinkRegex, bareLinkToTag, list);
+        list = listPass(italicStarRegex, italicToTag, list);
+        list = listPass(italicUnderscoreRegex, italicToTag, list);
+
+        // special case blockquotes
+        let quoteIndent = 0;
+        if (typeof list[0] === "string") {
+            let match;
+            while (match = list[0].match(/^\s*(>|&gt;)\s*/)) {
+                quoteIndent++;
+                list[0] = list[0].substring(match[0].length);
             }
         }
 
-        let newHtml = innerHtml;
-        newHtml = newHtml.replace(italicRegexStar, "$1<i>$2</i>");
-        newHtml = newHtml.replace(italicRegexUnderscore, "$1<i>$2</i>");
-        newHtml = processBlockquotes(newHtml);
-        newHtml = newHtml.replace(linkRegex, `<a href="$2" target="_blank" rel="noreferrer noopener">$1</a>`);
+        let container = document.createElement("span");
+        container.classList.add("new-style");
 
-        return newHtml;
+        let quoteContainer = container;
+        for (let i = 0; i < quoteIndent; i++) {
+            let b = document.createElement("blockquote");
+            quoteContainer.appendChild(b);
+            quoteContainer = b;
+        }
+
+        // build final span
+        for (let entry of list) {
+            if (typeof entry === "string") {
+                quoteContainer.innerHTML += entry;
+            } else {
+                quoteContainer.appendChild(entry);
+            }
+        }
+
+        return container;
     },
     onStart: function(value) {
         addStyle(this.key);
@@ -641,9 +721,8 @@ let applyCommentStylingOption = {
             // only process the text once
             if ($(this).siblings().length === 0) {
                 this.classList.add("old-style");
-                let newText = that.processCommentParagraph(this.innerHTML);
-                let newSpan = $(`<span class="new-style">${newText}</span>`);
-                this.parentElement.appendChild(newSpan[0]);
+                let newSpan = that.processCommentParagraph(this.innerHTML);
+                this.parentElement.appendChild(newSpan);
             }
         });
     },
