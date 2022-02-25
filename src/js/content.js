@@ -180,14 +180,21 @@ function addCustomCollapser(collapser) {
     collapser.css("display", "none");
     let comment = collapser.parent();
 
-    let newCollapser = $(`
-        <div class="comment-list-collapser custom-collapser">
-            <div class="comment-list-collapser-line"></div>
-        </div>`);
-    $(comment).append(newCollapser);
 
-    newCollapser.click(function() {
-        let parentComment = $(this).closest(".comment");
+    // create new collapser
+    // <div class="comment-list-collapser custom-collapser">
+    //     <div class="comment-list-collapser-line"></div>
+    // </div>
+    let newCollapser = document.createElement("div");
+    newCollapser.classList.add("comment-list-collapser", "custom-collapser");
+    let collapserLine = document.createElement("div");
+    collapserLine.classList.add("comment-list-collapser-line");
+    newCollapser.appendChild(collapserLine);
+
+    comment[0].appendChild(newCollapser);
+
+    newCollapser.addEventListener("click", function() {
+        let parentComment = $(newCollapser).closest(".comment");
         let rect = parentComment.find("> .comment-content")[0].getBoundingClientRect();
 
         // if you can't see the bottom of the parent comment, scroll up
@@ -223,7 +230,11 @@ function processChildComments(node) {
 
             for (const object of commentHandlerObjects) {
                 debug("func_" + object.key + ".onCommentChange", object.key + ".onCommentChange()");
-                object.onCommentChange(this);
+                try {
+                    object.onCommentChange(this);
+                } catch (e) {
+                    console.error(e);
+                }
             }
         });
     }
