@@ -427,7 +427,7 @@ let showFullDateOption = {
                 return;
             }
 
-            let dateSpan = $(comment).find("> .comment-content .comment-meta > span:nth-child(2)");
+            let dateSpan = $(comment).find("> .comment-content .comment-meta .meta-details");
 
             // don't add if the new date element already exists
             if (dateSpan.find(".better-date:not(.incomplete)").length !== 0) {
@@ -448,6 +448,11 @@ let showFullDateOption = {
             newDateDisplay.textContent = "";
             newDateDisplay.appendChild(getLocalDateSpan(date));
             newDateDisplay.classList.remove("incomplete");
+
+            // prevents weird issue with float: left
+            let dummySpan = document.createElement("span");
+            dummySpan.innerHTML = "&ZeroWidthSpace;";
+            origDate.parentElement.appendChild(dummySpan);
         }
 
         function applyBetterEditDate() {
@@ -563,15 +568,23 @@ let highlightNewOption = {
         if ((!commentSeen || commentDate > this.newCommentDate) && optionShadow[this.key]) {
             if (!$(comment).hasClass("new-comment")) {
                 $(comment).addClass("new-comment");
-                let dateSpan = $(comment).find("> .comment-content .comment-meta > span:nth-child(2)");
-                let newTagText = ("<span class='new-tag-text'>~new~</span>");
-                let newTagCss = ("<span class='new-tag-css'></span>");
-                dateSpan.append(newTagText);
-                dateSpan.append(newTagCss);
+                let dateSpan = $(comment).find("> .comment-content .comment-meta .meta-details");
+                // let newTagText = ("<span class='new-tag-text'>~new~</span>");
+                // let newTagCss = ("<span class='new-tag-css'></span>");
+                let newTag = document.createElement("span");
+                newTag.classList.add("new-tag-text");
+                newTag.textContent = "~new~";
+                let newTagCss = document.createElement("span");
+                newTagCss.classList.add("new-tag-css");
+
+                // dateSpan.append(newTagText);
+                // dateSpan.append(newTagCss);
+                dateSpan[0].appendChild(newTag);
+                dateSpan[0].appendChild(newTagCss);
             }
         } else {
             $(comment).removeClass("new-comment");
-            let dateSpan = $(comment).find("> .comment-content .comment-meta > span:nth-child(2)");
+            let dateSpan = $(comment).find("> .comment-content .comment-meta .meta-details");
             dateSpan.find(".new-tag-text").remove();
             dateSpan.find(".new-tag-css").remove();
         }

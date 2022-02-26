@@ -57,6 +57,7 @@ const STYLES = {
 
             .comment-meta span:nth-child(2) a.better-date {
                 display: inline !important;
+                float: left !important;
             }
 
             .comment-meta .edited-indicator {
@@ -65,6 +66,7 @@ const STYLES = {
 
             .comment-meta .better-edited-indicator {
                 display: inline !important;
+                float: left !important;
             }`,
     },
     "use24Hour": {
@@ -331,7 +333,7 @@ const STYLES = {
 
             .comment-meta .meta-details {
                 display: block !important;
-                padding-bottom: 10px !important;
+                padding-top: 10px !important;
                 margin-left: 0 !important;
             }
 
@@ -339,11 +341,6 @@ const STYLES = {
                 font-family: Georgia, "Bitstream Charter", serif !important;
                 color: #888 !important;
                 text-decoration: none !important;
-            }
-
-            .comment-meta .meta-details a:before {
-                content: "\\a" !important;
-                white-space: pre !important;
             }
 
             .comment-meta .meta-details .commenter-publication {
