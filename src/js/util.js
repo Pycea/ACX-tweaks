@@ -1,3 +1,5 @@
+"use strict";
+
 // DEBUG handles
 // ajax*
 //     ajaxCall: the request params

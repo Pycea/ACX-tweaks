@@ -621,7 +621,7 @@ let applyCommentStylingOption = {
     hovertext: "Apply basic styling to comments (italics, block quotes, and Markdown style text links)",
     processCommentParagraph: function(innerHtml) {
         // quick first pass to rule out cases where formatting isn't needed
-        if (!innerHtml.match(/[*_<]|&gt;/)) {
+        if (!innerHtml.match(/[*_>]|&gt;/)) {
             let container = document.createElement("span");
             container.classList.add("new-style");
             container.innerHTML = innerHtml;
@@ -658,8 +658,7 @@ let applyCommentStylingOption = {
         let italicUnderscoreRegex = /(.*?(?:^|\s|\(|\[|\{|_))_((?=[^_\s]).*?(?<=[^_\s]))_/;
         function italicToTag(match) {
             let e = document.createElement("em");
-            let t = document.createTextNode(match[2]);
-            e.appendChild(t);
+            e.innerHTML = match[2];
             return e;
         };
         // yes I'm parsing html with a regex. deal with it
@@ -667,22 +666,20 @@ let applyCommentStylingOption = {
         function linkToTag(match) {
             let e = document.createElement("a");
             e.setAttribute("href", match[3]);
+            e.classList.add("linkified");
             e.setAttribute("target", "_blank");
-            e.setAttribute("rel", "noreferrer");
-            e.setAttribute("noopener", "");
-            let t = document.createTextNode(match[2]);
-            e.appendChild(t);
+            e.setAttribute("rel", "nofollow ugc noreferrer");
+            e.innerHTML = match[2];
             return e;
         }
         let bareLinkRegex = /(.*?)<a href="(.*?)".*?>(.*?)<\/a>/;
         function bareLinkToTag(match) {
             let e = document.createElement("a");
             e.setAttribute("href", match[2]);
+            e.classList.add("linkified");
             e.setAttribute("target", "_blank");
-            e.setAttribute("rel", "noreferrer");
-            e.setAttribute("noopener", "");
-            let t = document.createTextNode(match[3]);
-            e.appendChild(t);
+            e.setAttribute("rel", "nofollow ugc noreferrer");
+            e.innerHTML = match[3];
             return e;
         }
 
