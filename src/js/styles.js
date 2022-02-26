@@ -242,6 +242,12 @@ const STYLES = {
 
             /* Comments container */
 
+            .dropdown-menu a {
+                font: 12px/20px Verdana, sans-serif !important;
+                padding-top: 6px !important;
+                padding-bottom: 6px !important;
+            }
+
             .full-container-border {
                 display: none !important;
             }
@@ -370,12 +376,26 @@ const STYLES = {
                 color: #333 !important;
             }
 
+            .comment-body .comment_notice {
+                font: 12px/20px Verdana, sans-serif !important;
+            }
+
+            .comment.one-liner .comment-body {
+                display: block !important;
+                font: 12px/20px Verdana, sans-serif !important;
+            }
+
 
 
             /* Comment actions */
 
             .comment-actions {
                 color: #888 !important;
+            }
+
+            .comment.one-liner .comment-actions {
+                margin-top: 6px !important;
+                margin-left: 0 !important;
             }
 
 

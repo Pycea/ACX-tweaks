@@ -197,8 +197,8 @@ function addCustomCollapser(collapser) {
         let parentComment = $(newCollapser).closest(".comment");
         let rect = parentComment.find("> .comment-content")[0].getBoundingClientRect();
 
-        // if you can't see the bottom of the parent comment, scroll up
-        if (rect.bottom <= 0 || rect.bottom >= window.innerHeight) {
+        // if you can't see the top of the parent comment, scroll up
+        if (rect.top <= 0 || rect.bottom >= window.innerHeight) {
             let anchor = parentComment.children().first();
             anchor[0].scrollIntoView({ "behavior": "smooth" });
         }
@@ -540,7 +540,7 @@ async function createCommentDateCache() {
             "editedDate": editedDate,
             "hearts": hearts,
             "userReact": userReact,
-            "deleted": deleted,
+            "deleted": deleted || !userId,
         };
 
         for (const childComment of comment.children) {
