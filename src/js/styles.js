@@ -242,7 +242,7 @@ const STYLES = {
 
             /* Comments container */
 
-            .dropdown-menu a {
+            .tooltip-portal .dropdown-menu a {
                 font: 12px/20px Verdana, sans-serif !important;
                 padding-top: 6px !important;
                 padding-bottom: 6px !important;
@@ -266,8 +266,16 @@ const STYLES = {
                 padding: 17px !important;
             }
 
-            .comments-page > .container .comments-heading {
+            .comments-page .comments-heading {
                 margin-top: 0 !important;
+            }
+
+            .comments-page .comment-input-head {
+                padding-top: 0 !important;
+            }
+
+            .comments-page .comment-input-right {
+                margin-top: 2px !important;
             }
 
             @media screen and (min-width: 800px) {
