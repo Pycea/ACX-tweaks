@@ -334,6 +334,7 @@ const STYLES = {
             .comment-meta .meta-details {
                 display: block !important;
                 padding-top: 10px !important;
+                padding-bottom: 4px !important;
                 margin-left: 0 !important;
             }
 
@@ -345,7 +346,7 @@ const STYLES = {
 
             .comment-meta .meta-details .commenter-publication {
                 display: block;
-                margin-bottom: -5px;
+                margin-bottom: 10px;
             }
 
             .comment-meta .meta-details .comment-publication-name-separator {
