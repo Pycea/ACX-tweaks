@@ -244,7 +244,11 @@ const STYLES = {
 
             /* Comments container */
 
-            .tooltip-portal .dropdown-menu a {
+            .comments-page-sort-menu-button {
+                background: transparent !important;
+            }
+
+            .comments-page-sort-menu-dropdown a {
                 font: 12px/20px Verdana, sans-serif !important;
                 padding-top: 6px !important;
                 padding-bottom: 6px !important;
@@ -284,10 +288,6 @@ const STYLES = {
                 .comments-page > .container {
                     width: 780px !important;
                 }
-            }
-
-            button.comments-page-sort-menu-button {
-                background: transparent !important;
             }
 
 
@@ -377,6 +377,11 @@ const STYLES = {
                 margin-left: 0 !important;
             }
 
+            .account-hover-card-container {
+                transform-origin: top left !important;
+                transform: scale(.8) !important;
+            }
+
 
 
             /* Comment content */
@@ -395,6 +400,10 @@ const STYLES = {
                 font: 12px/20px Verdana, sans-serif !important;
             }
 
+            .comment-body .show-all-toggle {
+                background: linear-gradient(#fafafa00 0%, #fafafa 75%, #fafafa 100%) !important;
+            }
+
 
 
             /* Comment actions */
@@ -406,6 +415,12 @@ const STYLES = {
             .comment.one-liner .comment-actions {
                 margin-top: 6px !important;
                 margin-left: 0 !important;
+            }
+
+            .tooltip-portal .dropdown-menu a {
+                font: 12px/20px Verdana, sans-serif !important;
+                padding-top: 6px !important;
+                padding-bottom: 6px !important;
             }
 
 
