@@ -410,9 +410,10 @@ const STYLES = {
                 color: #888 !important;
             }
 
-            .comment.one-liner .comment-actions {
-                margin-top: 6px !important;
+            .comment.one-liner > .comment-content .comment-actions {
+                display: block !important;
                 margin-left: 0 !important;
+                margin-top: 6px !important;
             }
 
             .tooltip-portal .dropdown-menu a {
