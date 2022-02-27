@@ -73,7 +73,7 @@ let fixHeaderOption = {
 let useOldStylingOption = {
     key: "useOldStyling",
     default: false,
-    hovertext: "Use styling similar to the old blog",
+    hovertext: "Use styling similar to the old blog Slate Star Codex",
     onStart: function(value) {
         addStyle(this.key);
         this.onValueChange(value);
@@ -141,7 +141,7 @@ let darkModeOption = {
 let removeCommentsOption = {
     key: "removeComments",
     default: false,
-    hovertext: "Hide the comments section on posts",
+    hovertext: "Completely remove the comments section from posts",
     onStart: function(value) {
         addStyle(this.key);
         this.onValueChange(value);
@@ -154,7 +154,7 @@ let removeCommentsOption = {
 let showHeartsOption = {
     key: "showHearts",
     default: false,
-    hovertext: "Add hearts back to comments. Only people using an extension that adds back hearts will be able to heart comments or see them, so they won't have the activity they did before.",
+    hovertext: "Add hearts back to comments. Only people using an extension that adds back hearts will be able to like comments or see them, so they won't have the activity they did before.",
     heartContainer: $(
         `<div class="reaction-container">
             <svg class="empty" role="img" width="14" height="14" viewBox="0 0 19 19" fill="#757575"
@@ -353,7 +353,7 @@ let showHeartsOption = {
 let showFullDateOption = {
     key: "showFullDate",
     default: true,
-    hovertext: "Show the full date and time when a comment was posted",
+    hovertext: "Show the full date and time when a comment was posted and edited",
     onStart: function(value) {
         addStyle(this.key);
         $(`#${this.key}-css`).prop("disabled", !value);
@@ -564,16 +564,12 @@ let highlightNewOption = {
             if (!$(comment).hasClass("new-comment")) {
                 $(comment).addClass("new-comment");
                 let dateSpan = $(comment).find("> .comment-content .comment-meta .meta-details");
-                // let newTagText = ("<span class='new-tag-text'>~new~</span>");
-                // let newTagCss = ("<span class='new-tag-css'></span>");
                 let newTag = document.createElement("span");
                 newTag.classList.add("new-tag-text");
                 newTag.textContent = "~new~";
                 let newTagCss = document.createElement("span");
                 newTagCss.classList.add("new-tag-css");
 
-                // dateSpan.append(newTagText);
-                // dateSpan.append(newTagCss);
                 dateSpan[0].appendChild(newTag);
                 dateSpan[0].appendChild(newTagCss);
             }
@@ -600,7 +596,7 @@ let highlightNewOption = {
 let newTimeOption = {
     key: "newTime",
     default: 0,
-    hovertext: "Mark comments posted within this time range as new",
+    hovertext: "Mark comments posted within the given time range as new",
     onStart: function(value) {
         OPTIONS.highlightNew.updateNewTime(value);
     },
@@ -873,7 +869,7 @@ let hideNewOption = {
 let hideUsersOption = {
     key: "hideUsers",
     default: "",
-    hovertext: "Hide comments from the listed users, in a comma separated list",
+    hovertext: "Hide comments from the listed users, in a comma separated list (if you don't like seeing the names in this box, add spaces at the front until they disappear)",
     onStart: function(value) {
         addStyle(this.key);
         $(`#${this.key}-css`).prop("disabled", !value);
@@ -913,7 +909,7 @@ let allowKeyboardShortcutsOption = {
 let smoothScrollOption = {
     key: "smoothScroll",
     default: true,
-    hovertext: "Smoothly scroll when moving between comments (disable this to jump directly to the next comment)",
+    hovertext: "Smoothly scroll when moving between comments (uncheck this to disable the animation and jump directly to the comment)",
 }
 
 let prevCommentKeyOption = {
@@ -1035,7 +1031,7 @@ let jsOnLoadOption = {
 let showDebugOption = {
     key: "showDebug",
     default: "",
-    hovertext: "Show matching debugging output in the console (use &ldquo;*&rdquo; for all)",
+    hovertext: "Show matching debugging output in the console (use <code>\"*\"</code> for all)",
 }
 
 let resetDataOption = {
