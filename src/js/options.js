@@ -441,18 +441,13 @@ let showFullDateOption = {
             let newDateDisplay = newDateIncomplete.length > 0 ? newDateIncomplete[0] : origDate.cloneNode();
             newDateDisplay.classList.remove("worse-date");
             newDateDisplay.classList.add("better-date", "incomplete");
-            origDate.parentElement.appendChild(newDateDisplay);
+            origDate.after(newDateDisplay);
 
             let utcTime = commentIdToInfo[commentId].date;
             let date = new Date(utcTime);
             newDateDisplay.textContent = "";
             newDateDisplay.appendChild(getLocalDateSpan(date));
             newDateDisplay.classList.remove("incomplete");
-
-            // prevents weird issue with float: left
-            let dummySpan = document.createElement("span");
-            dummySpan.innerHTML = "&ZeroWidthSpace;";
-            origDate.parentElement.appendChild(dummySpan);
         }
 
         function applyBetterEditDate() {
@@ -475,7 +470,7 @@ let showFullDateOption = {
             let newEditDateDisplay = newEditDateIncomplete.length > 0 ? newEditDateIncomplete[0] : origEditDate.cloneNode();
             newEditDateDisplay.classList.remove("edited-indicator");
             newEditDateDisplay.classList.add("better-edited-indicator", "incomplete");
-            origEditDate.parentElement.appendChild(newEditDateDisplay);
+            origEditDate.after(newEditDateDisplay);
 
             let utcTime = commentIdToInfo[commentId].editedDate;
             let editedDate = new Date(utcTime);

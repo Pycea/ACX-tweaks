@@ -59,7 +59,6 @@ const STYLES = {
 
             .comment-meta span:nth-child(2) a.better-date {
                 display: inline !important;
-                float: left !important;
             }
 
             .comment-meta .edited-indicator {
@@ -68,7 +67,6 @@ const STYLES = {
 
             .comment-meta .better-edited-indicator {
                 display: inline !important;
-                float: left !important;
             }`,
     },
     "use24Hour": {
