@@ -218,7 +218,7 @@ const STYLES = {
                 font: 12px/20px Verdana, sans-serif !important;
             }
 
-            article .available-content p a, article .available-content blockquote a {
+            article .available-content p > a {
                 color: #0066cc !important;
                 text-decoration: underline !important;
             }
