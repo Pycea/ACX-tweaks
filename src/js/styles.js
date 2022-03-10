@@ -444,6 +444,14 @@ const STYLES = {
 
             .comment.selected > .comment-content::before {
                 background: inherit !important;
+            }
+
+
+
+            /* Black sorcery */
+
+            body {
+                overflow-y: hidden !important;
             }`,
     },
     "hideNew": {
