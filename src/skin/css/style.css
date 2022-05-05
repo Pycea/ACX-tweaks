@@ -81,6 +81,12 @@ blockquote blockquote {
     cursor: pointer;
 }
 
+/* Fix substack issue where dropdowns have a scrollbar */
+
+.dropdown-menu > .dropdown-menu-wrapper > li > a {
+    width: initial !important;
+}
+
 /* is this a hack? */
 .hidden-post:first-child + .comment, .hidden-post:first-child + .hidden-post + .comment,
 .hidden-post:first-child + .hidden-post + .hidden-post + .comment {
