@@ -385,6 +385,10 @@ const STYLES = {
 
             /* Comment content */
 
+            .comment .comment-body {
+                max-height: 620px;
+            }
+
             .comment-body p {
                 font: 12px/20px Verdana, sans-serif !important;
                 color: #333 !important;
