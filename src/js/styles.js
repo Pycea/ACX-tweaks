@@ -298,6 +298,7 @@ const STYLES = {
                 border-radius: 10px !important;
                 flex-grow: 1 !important;
                 background: #fafafa !important;
+                box-sizing: border-box !important;
             }
 
             .comment-content .comment-head {
