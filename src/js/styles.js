@@ -293,7 +293,7 @@ const STYLES = {
             /* Comment box form */
 
             .comment-content .comment-rest {
-                border: 1px solid #ddd !important;
+                border: 1px solid #ddd;
                 padding: 10px !important;
                 border-radius: 10px !important;
                 flex-grow: 1 !important;
@@ -354,9 +354,9 @@ const STYLES = {
             }
 
             .comment-meta .meta-details * {
-                font-family: Georgia, "Bitstream Charter", serif !important;
-                color: #888 !important;
-                text-decoration: none !important;
+                font-family: Georgia, "Bitstream Charter", serif;
+                color: #888;
+                text-decoration: none;
             }
 
             .comment-meta .meta-details .commenter-publication {
@@ -428,7 +428,7 @@ const STYLES = {
             /* New comments */
 
             .highlight-new .comment.new-comment > .comment-content .comment-rest {
-                border: 2px solid #5a5 !important;
+                border: 2px solid #5a5;
             }
 
             .new-tag-text {
