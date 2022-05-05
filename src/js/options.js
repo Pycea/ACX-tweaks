@@ -135,7 +135,7 @@ let hideSubOnlyPostsOption = {
 let darkModeOption = {
     key: "darkMode",
     default: window.matchMedia("(prefers-color-scheme: dark)").matches,
-    hovertext: "Make this popup dark mode (does not apply to page). To make the page dark, use an extension like Dark Reader.",
+    hovertext: "Make this popup dark mode (does not apply to blog itself). To make the page dark, use an extension like Dark Reader.",
 }
 
 let removeCommentsOption = {
@@ -756,7 +756,7 @@ let hideBadgeOption = {
 let loadAllOption = {
     key: "loadAll",
     default: true,
-    hovertext: "Load all comments preemptively",
+    hovertext: "Load all comments preemptively (may cause increased lag)",
     onLoad: function() {
         let that = this;
         for (const timeout of [0, 500, 1000, 2000]) {
