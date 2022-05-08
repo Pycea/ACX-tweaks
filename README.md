@@ -1,5 +1,36 @@
 # ACX-tweaks
-A browser extension that provides various small improvements to the [Astral Codex Ten](https://astralcodexten.substack.com) blog on [Substack](https://substack.com). It is currently compatible with Firefix and Chrome, though some pure CSS fixes can be applied to Safari.
+A browser extension that provides various small improvements to the [Astral Codex Ten](https://astralcodexten.substack.com) blog on [Substack](https://substack.com).
+
+Get it for [Firefox](https://addons.mozilla.org/en-US/firefox/addon/acx-tweaks/) or [Chrome](https://chrome.google.com/webstore/detail/acx-tweaks/jdpghojhfigbpoeiadalafcmohaekglf).
+
+<p float="left">
+  <img src="/screenshots/post.png" height="400" />
+  <img src="/screenshots/options.png" height="400" /> 
+</p>
+
+<p float="left">
+  <img src="/screenshots/comments.png" height="305" />
+  <img src="/screenshots/comments_new.png" height="305" /> 
+</p>
+
+<p align="center" style="width:500px"><sub>Clockwise from upper left: a post using the old SSC styling; the options menu; comments using the default Substack styling; comments using the old SSC styling</sub></p>
+
+## Key Features
+
+- User configurable options
+    - Ability to make the blog look more like [Slate Star Codex](https://slatestarcodex.com/)
+    - Highlight new comments
+    - Re-add comment likes
+    - Fix the header above the post
+    - Show the exact time and date a comment was posted
+    - Hide posts by certain users
+    - Keyboard shortcuts for comment navigation
+    - Apply basic Markdown styling to comments
+- Scroll to the parent comment when collapsing a thread
+
+For a full list with explanations, see [here](https://github.com/Pycea/ACX-tweaks/wiki/Options).
+
+To change options, click the extension icon.
 
 ## How to get
 [Firefox extension](https://addons.mozilla.org/en-US/firefox/addon/acx-tweaks/).
@@ -10,30 +41,6 @@ A browser extension that provides various small improvements to the [Astral Code
 If you're using Safari, you can get some of the pure CSS fixes [here](https://gist.github.com/Pycea/73eeee25ff4f697b76c0d3d36035c749). See the page for how to load them.
 
 Under [releases](https://github.com/Pycea/ACX-tweaks/releases), you can get the source from the `chrome_src.zip` file under the latest release. You may be able to do something with this.
-
-## Features
-- When collapsing a thread, scrolls to the parent comment
-- Keyboard shortcuts
-    - Configurable keys for scrolling to the previous or next unread comment
-- User configurable options
-    - Re-add heart functionality
-    - Makes the blog look more like the old blog, [Slate Star Codex](https://web.archive.org/web/20200601140029/https://slatestarcodex.com/).
-    - Hide comments by certain users
-    - Hide subscriber only posts
-    - Keeps the header above the post, so it doesn't keep appearing whenever you scroll up a little.
-    - Shows the full time that a comment was posted, instead of just the day.
-    - Adds a button to scroll to the parent comment, or the top of the comment section for top level comments.
-    - Applies basic styling to comments, including italics, blockquotes, and Markdown style links.
-    - Highlights comments that you haven't seen yet.
-    - Loads all comments at once, instead of having to keep clicking the "Load more" button.
-    - Dark mode (only for the popup, for the whole page use something like [Dark Reader](https://darkreader.org/))
-- Advanced options
-    - Add CSS to customize the new comment look, or anything else
-    - Run custom JS on each page change
-
-For a full list with explanations, see [here](https://github.com/Pycea/ACX-tweaks/wiki/Options).
-
-To change options, click the extension icon.
 
 ## Customization
 If you want to do custom styling or run custom JS, including things that take advantage of the extension, you can check out [this page](https://github.com/Pycea/ACX-tweaks/wiki/Customization).
