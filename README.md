@@ -4,13 +4,13 @@ A browser extension that provides various small improvements to the [Astral Code
 Get it for [Firefox](https://addons.mozilla.org/en-US/firefox/addon/acx-tweaks/) or [Chrome](https://chrome.google.com/webstore/detail/acx-tweaks/jdpghojhfigbpoeiadalafcmohaekglf).
 
 <p float="left">
-  <img src="/screenshots/post.png" height="400" />
-  <img src="/screenshots/options.png" height="400" /> 
+  <img src="/screenshots/post.png" height="300" />
+  <img src="/screenshots/options.png" height="300" /> 
 </p>
 
 <p float="left">
-  <img src="/screenshots/comments.png" height="305" />
-  <img src="/screenshots/comments_new.png" height="305" /> 
+  <img src="/screenshots/comments.png" height="229" />
+  <img src="/screenshots/comments_new.png" height="229" /> 
 </p>
 
 <p align="center" style="width:500px"><sub>Clockwise from upper left: a post using the old SSC styling; the options menu; comments using the default Substack styling; comments using the old SSC styling</sub></p>
