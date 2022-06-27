@@ -98,22 +98,34 @@ const STYLES = {
     "useOldStyling": {
         "css": `
 
-            /* Global default font */
+            /* Global default font and look */
+
+            :root {
+                --web_bg_color: #ffffff !important;
+                --background_contrast_1: #f7f7f7 !important;
+                --background_contrast_2: #ededed !important;
+                --background_contrast_3: #d6d6d6 !important;
+            }
+
+            html {
+                background: #f0f0f0 !important;
+            }
 
             #entry #main {
                 -webkit-font-smoothing: auto !important;
+                background-color: #f0f0f0 !important;
             }
 
 
 
             /* Topbar */
 
-            .topbar .container {
+            .main-menu-content .topbar {
                 background: linear-gradient(to bottom, rgba(139,171,232,1) 0%, rgba(79,115,193,1) 100%) !important;
                 text-decoration: none !important;
             }
 
-            .main-menu .topbar .container .large-menu-name {
+            .topbar-content .navbar-title {
                 font-size: 43px !important;
                 max-height: 100px !important;
                 font-family: 'Raleway', Open Sans, Arial, sans-serif !important;
@@ -124,8 +136,12 @@ const STYLES = {
                 -webkit-font-smoothing: auto !important;
             }
 
-            .main-menu .topbar .container .large-menu-name .large-menu-home-link {
+            .topbar-content .navbar-title .navbar-title-link {
                 color: white !important;
+            }
+
+            .topbar-spacer {
+                display: none;
             }
 
             .subscribe-cta.subscribe-btn {
@@ -272,6 +288,11 @@ const STYLES = {
 
             .comments-page .comments-heading {
                 margin-top: 0 !important;
+                font-family: Georgia, "Bitstream Charter", serif !important;
+                font-size: 16px !important;
+                font-weight: normal !important;
+                letter-spacing: 1px !important;
+                text-transform: uppercase;
             }
 
             .comments-page .comment-input-head {
@@ -279,7 +300,7 @@ const STYLES = {
             }
 
             .comments-page .comment-input-right {
-                margin-top: 2px !important;
+                margin-left: 8px !important;
             }
 
             @media screen and (min-width: 800px) {
@@ -324,9 +345,9 @@ const STYLES = {
 
             .comment > .comment-list-collapser {
                 top: 42px !important;
-                padding-top: 18px;
-                padding-left: 20px;
-                height: calc(100% - 67px);
+                padding-top: 18px !important;
+                padding-left: 20px !important;
+                height: calc(100% - 67px) !important;
             }
 
 
