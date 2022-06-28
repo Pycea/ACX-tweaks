@@ -169,45 +169,6 @@ function saveLocalStorage() {
     window.localStorage.setItem(LOCAL_DATA_KEY, JSON.stringify(localStorageData));
 }
 
-function addCustomCollapser(collapser) {
-    logFuncCall(true);
-    collapser = $(collapser);
-
-    if (collapser.parent().children(".custom-collapser").length > 0) {
-        return;
-    }
-
-    collapser.css("display", "none");
-    let comment = collapser.parent();
-
-
-    // create new collapser
-    // <div class="comment-list-collapser custom-collapser">
-    //     <div class="comment-list-collapser-line"></div>
-    // </div>
-    let newCollapser = document.createElement("div");
-    newCollapser.classList.add("comment-list-collapser", "custom-collapser");
-    let collapserLine = document.createElement("div");
-    collapserLine.classList.add("comment-list-collapser-line");
-    newCollapser.appendChild(collapserLine);
-
-    comment[0].appendChild(newCollapser);
-
-    newCollapser.addEventListener("click", function() {
-        let parentComment = $(newCollapser).closest(".comment");
-        let rect = parentComment.find("> .comment-content")[0].getBoundingClientRect();
-
-        // if you can't see the top of the parent comment, scroll up
-        if (rect.top <= 0 || rect.bottom >= window.innerHeight) {
-            let anchor = parentComment.children().first();
-            anchor[0].scrollIntoView({ "behavior": "smooth" });
-        }
-
-        collapser.click();
-        newCollapser.remove();
-    });
-}
-
 function processAllComments() {
     logFuncCall();
     processChildComments($("#main"));
@@ -238,10 +199,6 @@ function processChildComments(node) {
             }
         });
     }
-
-    $(node).find(".comment-list-collapser").addBack(".comment-list-collapser").each(function() {
-        addCustomCollapser(this);
-    });
 }
 
 
