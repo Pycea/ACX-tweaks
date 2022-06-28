@@ -34,7 +34,7 @@ const STYLES = {
             }`,
     },
     "removeComments": {
-        css: `
+        "css": `
             .comments-page {
                 display: none;
             }
@@ -45,7 +45,7 @@ const STYLES = {
         `,
     },
     "showHearts": {
-        css: `
+        "css": `
             .comment-heart {
                 display: none;
             }
@@ -53,12 +53,12 @@ const STYLES = {
     },
     "showFullDate": {
         "css": `
-            .comment-meta span:nth-child(2) a.worse-date {
+            .comment-meta a.worse-date {
                 display: none !important;
             }
 
-            .comment-meta span:nth-child(2) a.better-date {
-                display: inline !important;
+            .comment-meta a.better-date {
+                display: initial !important;
             }
 
             .comment-meta .edited-indicator {
@@ -66,7 +66,7 @@ const STYLES = {
             }
 
             .comment-meta .better-edited-indicator {
-                display: inline !important;
+                display: initial !important;
             }`,
     },
     "use24Hour": {
@@ -354,50 +354,48 @@ const STYLES = {
 
             /* Comment meta */
 
-            .commenter-name {
+            .comment-meta {
+                display: initial !important;
+            }
+
+            .comment-meta > .commenter-name, .comment-meta > .commenter-publication, .comment-meta > .highlight {
+                display: block;
+            }
+
+            .comment-meta .commenter-name {
                 font-family: Verdana, sans-serif !important;
                 font-weight: bold !important;
                 color: black !important;
                 text-decoration: none !important;
             }
 
-            .commenter-name > .account-hover-wrapper > a:after {
+            .comment-meta .commenter-name:after {
                 content: " says:" !important;
-                font-weight: normal;
+                font-weight: normal !important;
                 font-style: italic;
+                color: #333 !important;
             }
 
-            .comment-meta .meta-details {
-                display: block !important;
-                padding-top: 10px !important;
-                padding-bottom: 4px !important;
-                margin-left: 0 !important;
+            .comment-meta > a, .comment-meta > span:not(.commenter-name):not(.highlight) {
+                font-family: Georgia, "Bitstream Charter", serif !important;
+                color: #888 !important;
+                text-decoration: none !important;
+                padding-top: 4px !important;
             }
 
-            .comment-meta .meta-details * {
-                font-family: Georgia, "Bitstream Charter", serif;
-                color: #888;
-                text-decoration: none;
+            .comment-meta .comment-publication-name-separator {
+                display: none !important;
             }
 
-            .comment-meta .meta-details .commenter-publication {
-                display: block;
-                margin-bottom: 10px;
-            }
-
-            .comment-meta .meta-details .comment-publication-name-separator {
-                display: none;
-            }
-
-            .comment-meta .meta-details .edited-indicator, .comment-meta .meta-details .better-edited-indicator {
-                padding-left: 10px;
+            .comment-meta .edited-indicator, .comment-meta .better-edited-indicator {
+                padding-left: 15px;
             }
 
             .comment-meta .highlight {
                 margin-left: 0 !important;
             }
 
-            .account-hover-card-container {
+            .profile-hover-card-container {
                 transform-origin: top left !important;
                 transform: scale(.8) !important;
             }
@@ -408,6 +406,7 @@ const STYLES = {
 
             .comment .comment-body {
                 max-height: 620px;
+                padding-top: 8px;
             }
 
             .comment-body p {

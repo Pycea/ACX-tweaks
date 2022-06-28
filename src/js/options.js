@@ -380,17 +380,17 @@ let showFullDateOption = {
                 return;
             }
 
-            let dateSpan = $(comment).find("> .comment-content .comment-meta .meta-details");
+            let metaDiv = $(comment).find("> .comment-content .comment-meta");
 
             // don't add if the new date element already exists
-            if (dateSpan.find(".better-date:not(.incomplete)").length !== 0) {
+            if (metaDiv.find(".better-date:not(.incomplete)").length !== 0) {
                 return;
             }
 
-            let origDate = dateSpan.children("a:not(.commenter-publication):first")[0];
+            let origDate = metaDiv.children("a:not(.commenter-publication):first")[0];
             origDate.classList.add("worse-date");
 
-            let newDateIncomplete = dateSpan.find(".better-date.incomplete");
+            let newDateIncomplete = metaDiv.find(".better-date.incomplete");
             let newDateDisplay = newDateIncomplete.length > 0 ? newDateIncomplete[0] : origDate.cloneNode();
             newDateDisplay.classList.remove("worse-date");
             newDateDisplay.classList.add("better-date", "incomplete");
