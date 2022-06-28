@@ -516,7 +516,7 @@ let highlightNewOption = {
         if ((!commentSeen || commentDate > this.newCommentDate) && optionShadow[this.key]) {
             if (!$(comment).hasClass("new-comment")) {
                 $(comment).addClass("new-comment");
-                let dateSpan = $(comment).find("> .comment-content .comment-meta .meta-details");
+                let dateSpan = $(comment).find("> .comment-content .comment-meta");
                 let newTag = document.createElement("span");
                 newTag.classList.add("new-tag-text");
                 newTag.textContent = "~new~";
@@ -528,7 +528,7 @@ let highlightNewOption = {
             }
         } else {
             $(comment).removeClass("new-comment");
-            let dateSpan = $(comment).find("> .comment-content .comment-meta .meta-details");
+            let dateSpan = $(comment).find("> .comment-content .comment-meta");
             dateSpan.find(".new-tag-text").remove();
             dateSpan.find(".new-tag-css").remove();
         }

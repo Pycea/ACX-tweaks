@@ -27,11 +27,6 @@
 
 .new-tag-text {
     color: #d35400;
-    margin-left: 6px;
-}
-
-.new-tag-css {
-    margin-left: 6px;
 }
 
 /* Hide new comment styling if not using comment styling option */
@@ -75,6 +70,7 @@ blockquote blockquote {
 
 .comment-heart {
     float: left;
+    order: -1;
 }
 
 .parent-link a {

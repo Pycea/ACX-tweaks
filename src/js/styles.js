@@ -392,7 +392,7 @@ const STYLES = {
             }
 
             .comment-meta .edited-indicator, .comment-meta .better-edited-indicator {
-                padding-left: 15px;
+                margin-left: 10px;
             }
 
             .comment-meta .highlight {
@@ -437,7 +437,7 @@ const STYLES = {
 
             .comment .comment-actions {
                 color: #888 !important;
-                display: block;
+                display: block !important;
             }
 
             .comment.one-liner > .comment-content .comment-actions {
@@ -460,8 +460,12 @@ const STYLES = {
                 border: 2px solid #5a5;
             }
 
-            .new-tag-text {
+            .comment .comment-meta span.new-tag-text {
                 color: #c5c5c5 !important;
+            }
+
+            .new-tag-text, .new-tag-css {
+                margin-left: 10px;
             }
 
 
