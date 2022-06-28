@@ -148,6 +148,10 @@ const STYLES = {
                 display: none !important;
             }
 
+            button.user-indicator.signed-in {
+                background-color: #00000000 !important;
+            }
+
             .notification-container {
                 transform: scale(.8) !important;
             }
@@ -397,6 +401,7 @@ const STYLES = {
 
             .comment-meta .highlight {
                 margin-left: 0 !important;
+                margin-right: 0 !important;
             }
 
             .profile-hover-card-container {
@@ -460,12 +465,12 @@ const STYLES = {
                 border: 2px solid #5a5;
             }
 
-            .comment .comment-meta span.new-tag-text {
-                color: #c5c5c5 !important;
+            .new-tag {
+                margin-left: 10px;
             }
 
-            .new-tag-text, .new-tag-css {
-                margin-left: 10px;
+            .comment .comment-meta span.new-tag-text {
+                color: #c5c5c5 !important;
             }
 
 

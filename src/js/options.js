@@ -423,7 +423,7 @@ let showFullDateOption = {
             let newEditDateDisplay = newEditDateIncomplete.length > 0 ? newEditDateIncomplete[0] : origEditDate.cloneNode();
             newEditDateDisplay.classList.remove("edited-indicator");
             newEditDateDisplay.classList.add("better-edited-indicator", "incomplete");
-            origEditDate.after(newEditDateDisplay);
+            origEditDate.before(newEditDateDisplay);
 
             let utcTime = commentIdToInfo[commentId].editedDate;
             let editedDate = new Date(utcTime);
@@ -516,21 +516,23 @@ let highlightNewOption = {
         if ((!commentSeen || commentDate > this.newCommentDate) && optionShadow[this.key]) {
             if (!$(comment).hasClass("new-comment")) {
                 $(comment).addClass("new-comment");
-                let dateSpan = $(comment).find("> .comment-content .comment-meta");
-                let newTag = document.createElement("span");
-                newTag.classList.add("new-tag-text");
-                newTag.textContent = "~new~";
+                let dateSpan = $(comment).find("> .comment-content .comment-meta > *:not(.highlight)").last();
+                let newTagText = document.createElement("span");
+                newTagText.classList.add("new-tag-text");
+                newTagText.textContent = "~new~";
                 let newTagCss = document.createElement("span");
                 newTagCss.classList.add("new-tag-css");
+                let newTag = document.createElement("span");
+                newTag.classList.add("new-tag");
+                newTag.appendChild(newTagText);
+                newTag.appendChild(newTagCss);
 
-                dateSpan[0].appendChild(newTag);
-                dateSpan[0].appendChild(newTagCss);
+                dateSpan.after(newTag);
             }
         } else {
             $(comment).removeClass("new-comment");
-            let dateSpan = $(comment).find("> .comment-content .comment-meta");
-            dateSpan.find(".new-tag-text").remove();
-            dateSpan.find(".new-tag-css").remove();
+            let metaDiv = $(comment).find("> .comment-content .comment-meta");
+            metaDiv.find(".new-tag").remove();
         }
     },
     onValueChange: function(value) {

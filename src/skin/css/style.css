@@ -3,6 +3,14 @@
     margin-right: 10px;
 }
 
+.comment .comment-meta .highlight {
+    margin-right: 0 !important;
+}
+
+.comment .comment-meta .highlight .highlight-text {
+    top: -2px;
+}
+
 /* Hide duplicate timestamp if not using full time option */
 
 .comment-meta .better-date {
