@@ -172,7 +172,7 @@ const STYLES = {
                 padding-bottom: 8px !important;
             }
 
-            .post-meta-item.post-date {
+            .publish-context > time {
                 color: #888 !important;
                 font-size: 10px !important;
                 font-family: Verdana, sans-serif !important;
@@ -185,15 +185,15 @@ const STYLES = {
                 text-shadow: 1px 1px 1px #fff !important;
             }
 
-            .post-meta-item.post-date:before {
+            .publish-context > time:before {
                 content: "Posted on " !important;
             }
 
-            .post-meta-item.post-date:after {
+            .publish-context > time:after {
                 content: " by Scott Alexander" !important;
             }
 
-            .post-meta-item.post-date {
+            .publish-context > time {
                 margin-right: 16px !important;
             }
 
@@ -348,6 +348,10 @@ const STYLES = {
                 padding-top: 18px !important;
                 padding-left: 20px !important;
                 height: calc(100% - 67px) !important;
+            }
+
+            .comment > .comment-list-collapser:hover .comment-list-collapser-line {
+                box-shadow: inset 1px 0 #aaa !important;
             }
 
 
