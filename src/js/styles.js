@@ -120,7 +120,7 @@ const STYLES = {
 
             /* Topbar */
 
-            .main-menu-content .topbar {
+            .main-menu-content .topbar-content {
                 background: linear-gradient(to bottom, rgba(139,171,232,1) 0%, rgba(79,115,193,1) 100%) !important;
                 text-decoration: none !important;
             }
@@ -431,8 +431,9 @@ const STYLES = {
 
             /* Comment actions */
 
-            .comment-actions {
+            .comment .comment-actions {
                 color: #888 !important;
+                display: block;
             }
 
             .comment.one-liner > .comment-content .comment-actions {
