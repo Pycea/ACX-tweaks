@@ -435,9 +435,9 @@ const STYLES = {
 
             /* Comment actions */
 
-            .comment .comment-actions {
+            .comments-page .comment .comment-actions {
                 color: #888 !important;
-                display: block !important;
+                display: block;
             }
 
             .comment.one-liner > .comment-content .comment-actions {
