@@ -346,7 +346,7 @@ let showFullDateOption = {
 
             let hour12Span = document.createElement("span");
             hour12Span.classList.add("hour12-time");
-            let hour12Text = document.createTextNode(`${hour12}:${minute}`);
+            let hour12Text = document.createTextNode(`${hour12}:${minute} ${amPm}`);
             hour12Span.appendChild(hour12Text);
 
             let hour24Span = document.createElement("span");
