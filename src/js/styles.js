@@ -97,7 +97,6 @@ const STYLES = {
     },
     "useOldStyling": {
         "css": `
-
             /* Global default font and look */
 
             :root {

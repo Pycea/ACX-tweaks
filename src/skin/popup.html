@@ -77,6 +77,7 @@
 
         #resetData {
             text-align: center;
+            position: relative;
         }
 
         #resetDataButton {
@@ -93,6 +94,13 @@
         #resetDataButton:hover {
             background-color: #c82333;
             border-color: #bd2130;
+        }
+
+        #version {
+            position: absolute;
+            bottom: 5px;
+            left: 4px;
+            font-size: 13.33px;
         }
 
         .spacer {
@@ -460,6 +468,7 @@
         <div class="spacer"></div>
 
         <div id="resetData" class="option">
+            <div id="version"></div>
             <button type="button" id="resetDataButton" class="trigger">Reset all data</button>
         </div>
     </div>

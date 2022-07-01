@@ -338,6 +338,11 @@ function addDebugChecker() {
     });
 }
 
+function populateVersion() {
+    let version = webExtension.runtime.getManifest().version;
+    $("#version").html(`v${version}`);
+}
+
 window.onload = async function() {
     await loadInitialOptionValues();
 
@@ -352,4 +357,5 @@ window.onload = async function() {
     createResetHandler();
     addDependencies();
     addDebugChecker();
+    populateVersion();
 }
