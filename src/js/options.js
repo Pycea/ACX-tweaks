@@ -831,7 +831,7 @@ let hideUsersOption = {
         this.hiddenSet = new Set(optionShadow[this.key].split(",").map(x => x.trim()).filter(x => x));
     },
     onCommentChange: function(comment) {
-        let nameTag = $(comment).find("> .comment-content .comment-meta .commenter-name .account-hover-wrapper > a");
+        let nameTag = $(comment).find("> .comment-content > tr > .comment-rest > .comment-meta > .commenter-name > .profile-hover-wrapper > a");
         let name = nameTag.text();
         if (this.hiddenSet.has(name)) {
             $(comment).addClass("hidden-post");
