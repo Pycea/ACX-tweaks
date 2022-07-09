@@ -143,10 +143,6 @@ const STYLES = {
                 display: none;
             }
 
-            .subscribe-cta.subscribe-btn {
-                display: none !important;
-            }
-
             button.user-indicator.signed-in {
                 background-color: #00000000 !important;
             }
