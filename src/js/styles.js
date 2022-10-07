@@ -147,6 +147,10 @@ const STYLES = {
                 background-color: #00000000 !important;
             }
 
+            .user-indicator-icon {
+                stroke: white !important;
+            }
+
             .notification-container {
                 transform: scale(.8) !important;
             }
@@ -478,6 +482,14 @@ const STYLES = {
 
             .comment.selected > .comment-content::before {
                 background: inherit !important;
+            }
+
+
+
+            /* Expand comment button */
+
+            .collapsed-reply, .comment-collapse-toggle {
+                font-weight: normal !important;
             }
 
 
