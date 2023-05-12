@@ -27,12 +27,6 @@ const STYLES = {
             }
         `,
     },
-    "hideSubOnlyPosts": {
-        "css": `
-            .sub-post {
-                display: none;
-            }`,
-    },
     "removeComments": {
         "css": `
             .comments-page {

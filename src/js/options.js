@@ -83,55 +83,6 @@ let useOldStylingOption = {
     },
 }
 
-let hideSubOnlyPostsOption = {
-    key: "hideSubOnlyPosts",
-    default: false,
-    hovertext: "Hide posts that are subscriber only",
-    processPost: function(post) {
-        let lock = $(post).find(".audience-lock");
-        if (lock.length !== 0) {
-            $(post).addClass("sub-post");
-        }
-    },
-    onStart: function(value) {
-        addStyle(this.key);
-        $(`#${this.key}-css`).prop("disabled", !value);
-    },
-    onLoad: function() {
-        if (optionShadow[this.key]) {
-            let that = this;
-            $("#main").find(".post-preview").each(function() {
-                that.processPost(this);
-            });
-        }
-    },
-    onMutation: function(mutation) {
-        if (!mutation.target.classList.contains("portable-archive-list") &&
-                mutation.target.tagName.toLowerCase() !== "tr") {
-            return;
-        }
-
-        for (let i = 0; i < mutation.addedNodes.length; i++) {
-            let node = mutation.addedNodes[i];
-            if (node.classList.contains("post-preview")) {
-                this.processPost(node);
-            } else if (node.classList.contains("audience-lock")) {
-                // for some reason substack caches everything except the lock icon?
-                this.processPost($(node).closest(".post-preview"));
-            }
-        }
-    },
-    onValueChange: function(value) {
-        $(`#${this.key}-css`).prop("disabled", !value);
-        if (value) {
-            let that = this;
-            $("#main").find(".post-preview").each(function() {
-                that.processPost(this);
-            });
-        }
-    },
-}
-
 let darkModeOption = {
     key: "darkMode",
     default: window.matchMedia("(prefers-color-scheme: dark)").matches,
@@ -1014,7 +965,6 @@ let hideUpdateNoticeOption = {
 let optionArray = [
     fixHeaderOption,
     useOldStylingOption,
-    hideSubOnlyPostsOption,
     darkModeOption,
     removeCommentsOption,
     showHeartsOption,
