@@ -1,6 +1,5 @@
 .comment .comment-actions > span {
     margin-left: 0 !important;
-    margin-right: 10px;
 }
 
 .comment .comment-meta .highlight {
@@ -68,17 +67,18 @@ blockquote blockquote {
     cursor: default;
 }
 
-.like-button:not(.liked) svg.full {
-    display: none;
-}
-
-.like-button.liked svg.empty {
-    display: none;
+.like-button .reaction-container > svg {
+    position: relative;
+    top: 3px; /* I give up */
 }
 
 .comment-heart {
     float: left;
     order: -1;
+}
+
+.comment-heart:hover {
+    text-decoration: none !important;
 }
 
 .parent-link a {
