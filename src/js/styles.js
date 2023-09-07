@@ -20,6 +20,29 @@ const STYLES = {
                 top: 0 !important;
             }`,
     },
+    "zenMode": {
+        "css": `
+            .post-header > .pencraft > .pencraft:nth-child(2),
+            .post-end-cta-full,
+            .end-of-post-recommend-cta-container,
+            .post-footer,
+            article.post > div:nth-child(4) > .pencraft,
+            .single-post-section,
+            .publication-footer {
+                display: none !important;
+            }
+
+            .post-header > .pencraft > .pencraft:first-child {
+                border-bottom: 1px solid #bec7d3;
+            }
+
+            .navbar-buttons .subscribe-btn,
+            #trigger1,
+            #trigger3 {
+                z-index: -100;
+            }
+        `,
+    },
     "hideBadge": {
         "css": `
             .profile-img-badge {

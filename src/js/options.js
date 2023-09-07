@@ -89,6 +89,19 @@ let darkModeOption = {
     hovertext: "Make this popup dark mode (does not apply to blog itself). To make the page dark, use an extension like Dark Reader.",
 }
 
+let zenModeOption = {
+    key: "zenMode",
+    default: false,
+    hovertext: "Remove like, share, and subscribe clutter (use separate option below to disable comments)",
+    onStart: function(value) {
+        addStyle(this.key);
+        this.onValueChange(value);
+    },
+    onValueChange: function(value) {
+        $(`#${this.key}-css`).prop("disabled", !value);
+    },
+}
+
 let removeCommentsOption = {
     key: "removeComments",
     default: false,
@@ -966,6 +979,7 @@ let optionArray = [
     fixHeaderOption,
     useOldStylingOption,
     darkModeOption,
+    zenModeOption,
     removeCommentsOption,
     showHeartsOption,
     showFullDateOption,
