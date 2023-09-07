@@ -382,6 +382,11 @@ const STYLES = {
                 display: initial !important;
             }
 
+            .comment-meta > *:not(:first-child) {
+                display: block !important;
+                padding-top: 4px !important;
+            }
+
             .comment-meta > .commenter-name, .comment-meta > .commenter-publication, .comment-meta > .highlight {
                 display: block;
             }
