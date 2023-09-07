@@ -81,7 +81,7 @@ function ajaxRequest(url, data={}, method="GET", dataType="text json") {
 
 async function getPostData() {
     logFuncCall();
-    let url = `https://astralcodexten.substack.com/api/v1/posts/${getPostName()}`;
+    let url = `https://www.astralcodexten.com/api/v1/posts/${getPostName()}`;
     let data = await ajaxRequest(url);
     return data;
 }
@@ -90,7 +90,7 @@ async function getPostComments() {
     logFuncCall();
     let postData = await getPostData();
     let postId = postData.id;
-    let url = `https://astralcodexten.substack.com/api/v1/post/${postId}/comments?token=&all_comments=true`;
+    let url = `https://www.astralcodexten.com/api/v1/post/${postId}/comments?token=&all_comments=true`;
     let data = await ajaxRequest(url);
     return data.comments;
 }
