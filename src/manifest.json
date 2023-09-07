@@ -12,7 +12,9 @@
     "content_scripts": [
         {
             "matches": [
-                "https://astralcodexten.substack.com/*"
+                "https://astralcodexten.substack.com/*",
+                "https://www.astralcodexten.com/*",
+                "https://astralcodexten.com/*"
             ],
             "js": ["lib/jquery-3.5.1.min.js", "js/options.js", "js/util.js", "js/styles.js", "js/content.js", "js/tests.js"],
             "css": ["skin/css/style.css"],
