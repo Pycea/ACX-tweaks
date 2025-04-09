@@ -3,17 +3,9 @@
 const STYLES = {
     "fixHeader": {
         "css": `
-            .main-menu-content {
+            .main-menu > * {
                 position: relative !important;
                 top: 0 !important;
-            }
-
-            .main-menu .backdrop {
-                position: fixed !important;
-            }
-
-            .topbar-replacement {
-                display: none;
             }
 
             .comment .comment-anchor {
