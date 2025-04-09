@@ -208,7 +208,7 @@ let showHeartsOption = {
                 commentIdToInfo[commentId].userReact = userReact;
             }
 
-            let url = `https://astralcodexten.substack.com/api/v1/comment/${commentId}/reaction`;
+            let url = `https://www.astralcodexten.com/api/v1/comment/${commentId}/reaction`;
             let data = {reaction: "❤"};
             ajaxRequest(url, data, method, "text");
         });

@@ -72,6 +72,10 @@ blockquote blockquote {
     top: 3px; /* I give up */
 }
 
+.like-button .reaction-container > svg.animation {
+    position: absolute;
+}
+
 .comment-heart {
     float: left;
     order: -1;
