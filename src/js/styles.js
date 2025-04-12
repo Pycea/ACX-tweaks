@@ -37,7 +37,7 @@ const STYLES = {
     },
     "hideBadge": {
         "css": `
-            .profile-img-badge {
+            .profile-hover-card-target + div {
                 display: none;
             }
         `,
