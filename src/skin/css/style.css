@@ -12,11 +12,11 @@
 
 /* Hide duplicate timestamp if not using full time option */
 
-.comment-meta .better-date {
+.comment-content .better-date {
     display: none;
 }
 
-.comment-meta .better-edited-indicator {
+.comment-content .better-edited-indicator {
     display: none;
 }
 

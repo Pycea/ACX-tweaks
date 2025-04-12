@@ -62,19 +62,19 @@ const STYLES = {
     },
     "showFullDate": {
         "css": `
-            .comment-meta a.worse-date {
+            .comment-content .worse-date {
                 display: none !important;
             }
 
-            .comment-meta a.better-date {
+            .comment-content .better-date {
                 display: initial !important;
             }
 
-            .comment-meta .edited-indicator {
+            .comment-content .edited-indicator {
                 display: none !important;
             }
 
-            .comment-meta .better-edited-indicator {
+            .comment-content .better-edited-indicator {
                 display: initial !important;
             }`,
     },

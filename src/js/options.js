@@ -344,17 +344,24 @@ let showFullDateOption = {
                 return;
             }
 
-            let metaDiv = $(comment).find("> .comment-content .comment-meta");
+            let metaDiv = $(comment).find("> .comment-content")
+                .children().eq(1)
+                .children().eq(0)
+                .children().eq(0)
+                .children().eq(0)
+                .children().eq(0);
+
+            let dateHolder = metaDiv.children("a").eq(0);
 
             // don't add if the new date element already exists
-            if (metaDiv.find(".better-date:not(.incomplete)").length !== 0) {
+            if (dateHolder.find(".better-date:not(.incomplete)").length !== 0) {
                 return;
             }
 
-            let origDate = metaDiv.children("a:not(.commenter-publication):first")[0];
+            let origDate = dateHolder.children()[0];
             origDate.classList.add("worse-date");
 
-            let newDateIncomplete = metaDiv.find(".better-date.incomplete");
+            let newDateIncomplete = dateHolder.find(".better-date.incomplete");
             let newDateDisplay = newDateIncomplete.length > 0 ? newDateIncomplete[0] : origDate.cloneNode();
             newDateDisplay.classList.remove("worse-date");
             newDateDisplay.classList.add("better-date", "incomplete");
@@ -374,20 +381,25 @@ let showFullDateOption = {
                 return;
             }
 
-            let commentMeta = $(comment).find("> .comment-content .comment-meta");
+            const metaDiv = $(comment).find("> .comment-content")
+                .children().eq(1)
+                .children().eq(0)
+                .children().eq(0)
+                .children().eq(0)
+                .children().eq(0);
+
+            const editedDateSpan = metaDiv.children("span")[0];
 
             // don't add if the new date element already exists
-            if (commentMeta.find(".better-edited-indicator:not(.incomplete)").length !== 0) {
+            if (metaDiv.find(".better-edited-indicator:not(.incomplete)").length !== 0) {
                 return;
             }
 
-            let origEditDate = commentMeta.find(".edited-indicator")[0];
-
-            let newEditDateIncomplete = commentMeta.find(".better-edited-indicator.incomplete");
-            let newEditDateDisplay = newEditDateIncomplete.length > 0 ? newEditDateIncomplete[0] : origEditDate.cloneNode();
-            newEditDateDisplay.classList.remove("edited-indicator");
+            let newEditDateIncomplete = metaDiv.find(".better-edited-indicator.incomplete");
+            let newEditDateDisplay = newEditDateIncomplete.length > 0 ? newEditDateIncomplete[0] : editedDateSpan.cloneNode();
+            editedDateSpan.classList.add("edited-indicator");
             newEditDateDisplay.classList.add("better-edited-indicator", "incomplete");
-            origEditDate.before(newEditDateDisplay);
+            editedDateSpan.after(newEditDateDisplay);
 
             let utcTime = commentIdToInfo[commentId].editedDate;
             let editedDate = new Date(utcTime);
