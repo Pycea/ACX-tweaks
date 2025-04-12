@@ -34,5 +34,10 @@
     "action": {
         "default_popup": "skin/popup.html",
         "default_title": "ACX Tweaks"
+    },
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "{495299c0-c688-44db-8526-dd6413012282}"
+        }
     }
 }
