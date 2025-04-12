@@ -44,7 +44,7 @@ const STYLES = {
     },
     "removeComments": {
         "css": `
-            .comments-page {
+            #discussion {
                 display: none;
             }
 
