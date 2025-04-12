@@ -1,5 +1,5 @@
 {
-    "manifest_version": 2,
+    "manifest_version": 3,
     "name": "ACX Tweaks",
     "description": "Quality of life improvements for the Astral Codex Ten blog on Substack.",
     "version": "1.1",
@@ -21,8 +21,17 @@
             "run_at": "document_start"
         }
     ],
-    "web_accessible_resources": ["icons/*.svg"],
-    "browser_action": {
+    "web_accessible_resources": [
+        {
+            "resources": ["icons/*.svg"],
+            "matches": [
+                "https://astralcodexten.substack.com/*",
+                "https://www.astralcodexten.com/*",
+                "https://astralcodexten.com/*"
+            ]
+        }
+    ],
+    "action": {
         "default_popup": "skin/popup.html",
         "default_title": "ACX Tweaks"
     }

@@ -920,45 +920,6 @@ let customCssOption = {
     },
 }
 
-let jsOnStartOption = {
-    key: "jsOnStart",
-    default: "",
-    hovertext: "Run custom JS when the page is first loaded (don't enter anything you don't trust)",
-    onStart: function(value) {
-        try {
-            eval(value);
-        } catch(e) {
-            console.error("onStart error:", e);
-        }
-    },
-}
-
-let jsOnPageChangeOption = {
-    key: "jsOnPageChange",
-    default: "",
-    hovertext: "Run custom JS when a new page/post is visited (don't enter anything you don't trust)",
-    onPageChange: function() {
-        try {
-            eval(optionShadow[this.key]);
-        } catch(e) {
-            console.error("onPageChange error:", e);
-        }
-    },
-}
-
-let jsOnLoadOption = {
-    key: "jsOnLoad",
-    default: "",
-    hovertext: "Run custom JS when the DOM is loaded (don't enter anything you don't trust)",
-    onLoad: function() {
-        try {
-            eval(optionShadow[this.key]);
-        } catch(e) {
-            console.error("onLoad error:", e);
-        }
-    },
-}
-
 let showDebugOption = {
     key: "showDebug",
     default: "",
@@ -1012,9 +973,6 @@ let optionArray = [
     nextUnreadKeyOption,
     parentKeyOption,
     customCssOption,
-    jsOnStartOption,
-    jsOnPageChangeOption,
-    jsOnLoadOption,
     showDebugOption,
     resetDataOption,
     hideUpdateNoticeOption,

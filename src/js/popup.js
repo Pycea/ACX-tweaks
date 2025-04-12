@@ -81,7 +81,7 @@ async function loadInitialOptionValues() {
 
 function addHovertext(element) {
     let id = $(element).attr("id");
-    let iconSvg = webExtension.extension.getURL("icons/question-circle-regular.svg");
+    let iconSvg = webExtension.runtime.getURL("icons/question-circle-regular.svg");
     let icon = $(`<img src="${iconSvg}" class="help-icon">`);
     let tooltip = $(`<span class="tooltip" id=${id + "-tooltip"}>${OPTIONS[id].hovertext}<span>`);
     tooltip.css("display", "none");
