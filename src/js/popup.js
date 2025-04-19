@@ -211,119 +211,123 @@ function createResetHandler() {
         }
     });
 }
-/*
+
 function addDependencies() {
-    // option to use 24 hour time depends on showing the full date
-    $("#showFullDateCheck").change(function() {
-        if (!this.checked) {
-            $("#use24HourCheck").prop("disabled", true).trigger("change");
+//     // option to use 24 hour time depends on showing the full date
+//     $("#showFullDateCheck").change(function() {
+//         if (!this.checked) {
+//             $("#use24HourCheck").prop("disabled", true).trigger("change");
+//         } else {
+//             $("#use24HourCheck").prop("disabled", false);
+//         }
+//     });
+
+//     if (!($("#showFullDateCheck").prop("checked"))) {
+//         $("#use24HourCheck").prop("disabled", true);
+//     }
+
+//     // option to highlight recent comments depends on highlighting comments
+//     $("#highlightNewCheck").change(function() {
+//         if (!this.checked) {
+//             $("#newTimeNumber").prop("disabled", true);
+//             $("#newTimeSelect").prop("disabled", true);
+//         } else {
+//             $("#newTimeNumber").prop("disabled", false);
+//             $("#newTimeSelect").prop("disabled", false);
+//         }
+//     });
+
+//     if (!($("#highlightNewCheck").prop("checked"))) {
+//         $("#newTimeNumber").prop("disabled", true);
+//         $("#newTimeSelect").prop("disabled", true);
+//     }
+
+//     // keyboard shortcuts depend on having them enabled
+//     $("#allowKeyboardShortcutsCheck").change(function() {
+//         if (!this.checked) {
+//             $("#smoothScrollCheck").prop("disabled", true);
+//             $("#prevCommentKeyText").prop("disabled", true);
+//             $("#nextCommentKeyText").prop("disabled", true);
+//             $("#prevUnreadKeyText").prop("disabled", true);
+//             $("#nextUnreadKeyText").prop("disabled", true);
+//             $("#parentKeyText").prop("disabled", true);
+//         } else {
+//             $("#smoothScrollCheck").prop("disabled", false);
+//             $("#prevCommentKeyText").prop("disabled", false);
+//             $("#nextCommentKeyText").prop("disabled", false);
+//             $("#prevUnreadKeyText").prop("disabled", false);
+//             $("#nextUnreadKeyText").prop("disabled", false);
+//             $("#parentKeyText").prop("disabled", false);
+//         }
+//     });
+
+//     if (!($("#allowKeyboardShortcutsCheck").prop("checked"))) {
+//         $("#smoothScrollCheck").prop("disabled", true);
+//         $("#prevCommentKeyText").prop("disabled", true);
+//         $("#nextCommentKeyText").prop("disabled", true);
+//         $("#prevUnreadKeyText").prop("disabled", true);
+//         $("#nextUnreadKeyText").prop("disabled", true);
+//         $("#parentKeyText").prop("disabled", true);
+//     }
+
+//     // update newTime setting on each keystroke, not just when the value changes
+//     $("#newTimeNumber").keydown(function(event) {
+//         if (["+", "-", ".", "e", "E"].includes(event.originalEvent.key)) {
+//             event.preventDefault();
+//         }
+//     });
+
+//     $("body").on("click", "a", function() {
+//         chrome.tabs.create({url: $(this).attr("href")});
+//         return false;
+//    });
+
+//     // dark mode option
+//     $("#darkModeCheck").change(function() {
+//         if (this.checked) {
+//             $("body").addClass("dark");
+//         } else {
+//             $("body").removeClass("dark");
+//         }
+//     });
+
+//     if (!($("#darkModeCheck").prop("checked"))) {
+//         $("body").removeClass("dark");
+//     }
+
+//     $("#shortcutToggle").click(function() {
+//         if ($(this).hasClass("open")) {
+//             $("#shortcutHolder").addClass("closed");
+//             $(this).removeClass("open");
+//             $("#shortcutToggleCaret").css("transform", "rotate(0deg)");
+//             $("#shortcutToggleText").text("Show shortcuts");
+//         } else {
+//             $("#shortcutHolder").removeClass("closed");
+//             $(this).addClass("open");
+//             $("#shortcutToggleCaret").css("transform", "rotate(90deg)");
+//             $("#shortcutToggleText").text("Hide shortcuts");
+//         }
+//     });
+
+    const advancedToggle = document.getElementById("advancedToggle");
+    advancedToggle.addEventListener("click", () => {
+        const holder = document.getElementById("advancedHolder");
+        const caret = document.getElementById("advancedToggleCaret");
+        const text = document.getElementById("advancedToggleText");
+        if (advancedToggle.classList.contains("open")) {
+            holder.classList.add("closed");
+            advancedToggle.classList.remove("open");
+            caret.style.transform = "rotate(0deg)";
+            text.textContent = "Show options";
         } else {
-            $("#use24HourCheck").prop("disabled", false);
-        }
-    });
-
-    if (!($("#showFullDateCheck").prop("checked"))) {
-        $("#use24HourCheck").prop("disabled", true);
-    }
-
-    // option to highlight recent comments depends on highlighting comments
-    $("#highlightNewCheck").change(function() {
-        if (!this.checked) {
-            $("#newTimeNumber").prop("disabled", true);
-            $("#newTimeSelect").prop("disabled", true);
-        } else {
-            $("#newTimeNumber").prop("disabled", false);
-            $("#newTimeSelect").prop("disabled", false);
-        }
-    });
-
-    if (!($("#highlightNewCheck").prop("checked"))) {
-        $("#newTimeNumber").prop("disabled", true);
-        $("#newTimeSelect").prop("disabled", true);
-    }
-
-    // keyboard shortcuts depend on having them enabled
-    $("#allowKeyboardShortcutsCheck").change(function() {
-        if (!this.checked) {
-            $("#smoothScrollCheck").prop("disabled", true);
-            $("#prevCommentKeyText").prop("disabled", true);
-            $("#nextCommentKeyText").prop("disabled", true);
-            $("#prevUnreadKeyText").prop("disabled", true);
-            $("#nextUnreadKeyText").prop("disabled", true);
-            $("#parentKeyText").prop("disabled", true);
-        } else {
-            $("#smoothScrollCheck").prop("disabled", false);
-            $("#prevCommentKeyText").prop("disabled", false);
-            $("#nextCommentKeyText").prop("disabled", false);
-            $("#prevUnreadKeyText").prop("disabled", false);
-            $("#nextUnreadKeyText").prop("disabled", false);
-            $("#parentKeyText").prop("disabled", false);
-        }
-    });
-
-    if (!($("#allowKeyboardShortcutsCheck").prop("checked"))) {
-        $("#smoothScrollCheck").prop("disabled", true);
-        $("#prevCommentKeyText").prop("disabled", true);
-        $("#nextCommentKeyText").prop("disabled", true);
-        $("#prevUnreadKeyText").prop("disabled", true);
-        $("#nextUnreadKeyText").prop("disabled", true);
-        $("#parentKeyText").prop("disabled", true);
-    }
-
-    // update newTime setting on each keystroke, not just when the value changes
-    $("#newTimeNumber").keydown(function(event) {
-        if (["+", "-", ".", "e", "E"].includes(event.originalEvent.key)) {
-            event.preventDefault();
-        }
-    });
-
-    $("body").on("click", "a", function() {
-        chrome.tabs.create({url: $(this).attr("href")});
-        return false;
-   });
-
-    // dark mode option
-    $("#darkModeCheck").change(function() {
-        if (this.checked) {
-            $("body").addClass("dark");
-        } else {
-            $("body").removeClass("dark");
-        }
-    });
-
-    if (!($("#darkModeCheck").prop("checked"))) {
-        $("body").removeClass("dark");
-    }
-
-    $("#shortcutToggle").click(function() {
-        if ($(this).hasClass("open")) {
-            $("#shortcutHolder").addClass("closed");
-            $(this).removeClass("open");
-            $("#shortcutToggleCaret").css("transform", "rotate(0deg)");
-            $("#shortcutToggleText").text("Show shortcuts");
-        } else {
-            $("#shortcutHolder").removeClass("closed");
-            $(this).addClass("open");
-            $("#shortcutToggleCaret").css("transform", "rotate(90deg)");
-            $("#shortcutToggleText").text("Hide shortcuts");
-        }
-    });
-
-    $("#advancedToggle").click(function() {
-        if ($(this).hasClass("open")) {
-            $("#advancedHolder").addClass("closed");
-            $(this).removeClass("open");
-            $("#advancedToggleCaret").css("transform", "rotate(0deg)");
-            $("#advancedToggleText").text("Show options");
-        } else {
-            $("#advancedHolder").removeClass("closed");
-            $(this).addClass("open");
-            $("#advancedToggleCaret").css("transform", "rotate(90deg)");
-            $("#advancedToggleText").text("Hide options");
+            holder.classList.remove("closed");
+            advancedToggle.classList.add("open");
+            caret.style.transform = "rotate(90deg)";
+            text.textContent = "Hide options";
         }
     });
 }
-*/
+
 function populateVersion() {
     const version = chrome.runtime.getManifest().version;
     document.getElementById("version").textContent = `v${version}`;
@@ -338,6 +342,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     addKeyModal();
     createResetHandler();
-    // addDependencies();
+    addDependencies();
     populateVersion();
 });

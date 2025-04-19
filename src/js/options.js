@@ -814,13 +814,13 @@ const customCssOption = {
         document.getElementById(cssId(this.key)).textContent = value;
     },
 }
-
+*/
 const showDebugOption = {
     key: "showDebug",
     default: "",
     hovertext: "Show matching debugging output in the console (use <code>\"*\"</code> for all)",
 }
-*/
+
 const resetDataOption = {
     key: "resetData",
     default: false,
@@ -860,9 +860,8 @@ let optionArray = [
     // nextUnreadKeyOption,
     // parentKeyOption,
     // customCssOption,
-    // showDebugOption,
+    showDebugOption,
     resetDataOption,
-    // hideUpdateNoticeOption,
 ];
 
 const OPTIONS = {};

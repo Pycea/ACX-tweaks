@@ -7,9 +7,9 @@
 //     ajaxError: any errors encountered
 
 function debug(category, ...debugStrings) {
-    // if (!optionManager.get(OptionKey.showDebug)) {
-    //     return;
-    // }
+    if (!optionManager.get(OptionKey.showDebug)) {
+        return;
+    }
 
     const debugRegex = "^(" +
         optionManager.get(OptionKey.showDebug)
