@@ -51,7 +51,7 @@ class OptionManager {
             this.optionShadow = result[this.localStorageKey];
         }
 
-        // this.processInitialValues();
+        this.processInitialValues();
     }
 
     processInitialValues() {
@@ -67,14 +67,18 @@ class OptionManager {
             } else {
                 debug("optionInitial", `${key} initial value is`, value);
             }
-
-            if (option.onStart) {
-                debug("funcs_" + key + ".onStart", key + ".onStart()");
-                option.onStart(value);
-            }
         }
 
         chrome.storage.local.set({[this.localStorageKey]: this.optionShadow});
+    }
+
+    runOnStartHandlers() {
+        for (const [key, option] of Object.entries(this.optionDict)) {
+            if (option.onStart) {
+                debug("funcs_" + key + ".onStart", key + ".onStart()");
+                option.onStart(this.optionShadow[key]);
+            }
+        }
     }
 
     set(key, value) {
@@ -110,9 +114,9 @@ class OptionManager {
         for (const [key, newValue] of Object.entries(optionChanges.newValue)) {
             // hacky, but an easy way to implement isEqual for dicts
             const newValueString = JSON.stringify(newValue);
-            const oldValueString = JSON.stringify(this.optionShadow[key]);
+            const oldValueString = JSON.stringify(optionChanges.oldValue[key]);
 
-            if (newValueString !== oldValueString) {
+            if (newValueString !== oldValueString && this.optionDict[key]) {
                 debug("optionGet", `Got change for ${key}`,
                     optionChanges.oldValue[key], "->", newValue);
                 this.optionShadow[key] = newValue;
@@ -599,7 +603,7 @@ class Comment {
         this.baseElem.classList.add("deleted");
         this.bodyElem.innerHTML = Comment.formatBody(null);
         const deletedUsername = document.createElement("div");
-        deletedUsername.classList.add("username");
+        deletedUsername.className = "username";
         deletedUsername.textContent = "Comment deleted";
         userProfileLink.replaceWith(deletedUsername);
         profileImage.src = CommentManager.getAvatarUrl(null, null);
@@ -615,7 +619,7 @@ let localStorageManager;
 
 // called when the page is first loaded
 
-function addKeyListener(optionManager) {
+function addKeyListener() {
     logFuncCall();
 
     function getKeyCommand(event) {
@@ -735,11 +739,14 @@ function addKeyListener(optionManager) {
     });
 }
 
-async function onStart(optionManager) {
+async function onStart() {
     logFuncCall();
     debug("pageEvent", "event: onStart");
-    chrome.storage.onChanged.addListener(optionManager.processOptionChange);
-    addKeyListener(optionManager);
+    optionManager.runOnStartHandlers();
+    chrome.storage.onChanged.addListener((changes, namespace) => {
+        optionManager.processOptionChange(changes, namespace)
+    });
+    addKeyListener();
 }
 
 
@@ -748,13 +755,13 @@ async function onStart(optionManager) {
 async function createComments() {
     const topLevelContainer = document.querySelector("#discussion .comments-page > .container");
     const commentListContainer = document.createElement("div");
-    commentListContainer.classList.add("comment-list-container");
+    commentListContainer.className = "comment-list-container";
     topLevelContainer.appendChild(commentListContainer);
     const commentList = document.createElement("div");
-    commentList.classList.add("comment-list");
+    commentList.className = "comment-list";
     commentListContainer.appendChild(commentList);
     const commentListItems = document.createElement("div");
-    commentListItems.classList.add("comment-list-items");
+    commentListItems.className = "comment-list-items";
     commentListItems.id = "top-comment-container";
     commentList.appendChild(commentListItems);
 
@@ -780,10 +787,10 @@ async function onLoad() {
 // actually do the things
 
 async function doAllSetup() {
-    optionManager = new OptionManager("options", OPTIONS);
+    optionManager = new OptionManager(OPTION_KEY, OPTIONS);
     await optionManager.init();
 
-    onStart(optionManager);
+    onStart();
 
     localStorageManager = new LocalStorageManager("acx-local-data-test", getPostName());
     const preloads = await getPreloads();

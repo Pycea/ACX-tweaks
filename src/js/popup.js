@@ -1,74 +1,13 @@
 "use strict";
 
-// OPTIONS loaded from options.js
-
-let webExtension;
-if (typeof browser !== "undefined") {
-    webExtension = browser;
-} else if (typeof chrome !== "undefined"){
-    webExtension = chrome;
-} else {
-    console.error("What kind of browser do you have anyway? (can't get WebExtension handle)");
-}
-
 // cache of the current options
 let optionShadow;
 
-
-
-// custom handlers
-
-function newTimeHandler() {
-    let units = $("#newTimeSelect").val(); // value is time length in minutes
-    let multiplier = $("#newTimeNumber").val();
-    let timeMs = units * multiplier * 60 * 1000; // x60000 to turn minutes to ms
-    setOption("newTime", timeMs);
-}
-
-const CUSTOM_TRIGGERS = {
-    "newTime": newTimeHandler,
-}
-
-function newTimeState(value) {
-    // value is in milliseconds
-
-    // numValue is the numerical part of the setting, without the units
-    // start out with minutes
-    let numValue = value / 1000 / 60;
-
-    // the value of the select is the number of minutes for the given time
-    let selectSetting = 1;
-
-    // if it's an even number of hours, use those instead
-    if (numValue % 60 === 0) {
-        numValue /= 60;
-        selectSetting *= 60;
-    }
-
-    // if it's an even number of days, use those instead
-    if (numValue % 24 === 0) {
-        numValue /= 24;
-        selectSetting *= 24;
-    }
-
-    $("#newTimeSelect").val(selectSetting);
-    $("#newTimeNumber").val(numValue);
-}
-
-const CUSTOM_SET_STATE = {
-    "newTime": newTimeState,
-}
-
-
-
-function setOption(key, value) {
-    optionShadow[key] = value;
-    webExtension.storage.local.set({[OPTION_KEY]: optionShadow});
-}
-
 async function loadInitialOptionValues() {
-    optionShadow = await getLocalState(OPTION_KEY);
-    if (!optionShadow) {
+    const result = await chrome.storage.local.get([OPTION_KEY]);
+    if (result[OPTION_KEY]) {
+        optionShadow = result[OPTION_KEY];
+    } else {
         optionShadow = {};
     }
 
@@ -79,76 +18,130 @@ async function loadInitialOptionValues() {
     }
 }
 
-function addHovertext(element) {
-    let id = $(element).attr("id");
-    let iconSvg = webExtension.runtime.getURL("icons/question-circle-regular.svg");
-    let icon = $(`<img src="${iconSvg}" class="help-icon">`);
-    let tooltip = $(`<span class="tooltip" id=${id + "-tooltip"}>${OPTIONS[id].hovertext}<span>`);
-    tooltip.css("display", "none");
-    $(element).append(icon);
-    $(`#wrapper`).append(tooltip);
+function setOption(key, value) {
+    optionShadow[key] = value;
+    chrome.storage.local.set({[OPTION_KEY]: optionShadow});
+}
 
-    $(icon).hover(function() {
-        let windowHeight = $(window).height();
-        // magic offset because ???
-        let tooltipHeight = tooltip.height() + 30;
-        let iconPosition = this.getBoundingClientRect().top + 7; // element height is 14, 7 is the middle
-        let topSpace = iconPosition - tooltipHeight;
-        let bottomSpace = (windowHeight - tooltipHeight) - iconPosition;
+
+
+// custom handlers
+
+// function newTimeHandler() {
+//     // value is time length in minutes
+//     const units = document.getElementById("newTimeSelect").value;
+//     const multiplier = document.getElementById("newTimeSelect").value;
+//     const timeMs = units * multiplier * 60 * 1000; // x60000 to turn minutes to ms
+//     setOption("newTime", timeMs);
+// }
+
+const CUSTOM_TRIGGERS = {
+    // "newTime": newTimeHandler,
+}
+
+// function newTimeState(value) {
+//     // value is in milliseconds
+
+//     // numValue is the numerical part of the setting, without the units
+//     // start out with minutes
+//     let numValue = value / 1000 / 60;
+
+//     // the value of the select is the number of minutes for the given time
+//     let selectSetting = 1;
+
+//     // if it's an even number of hours, use those instead
+//     if (numValue % 60 === 0) {
+//         numValue /= 60;
+//         selectSetting *= 60;
+//     }
+
+//     // if it's an even number of days, use those instead
+//     if (numValue % 24 === 0) {
+//         numValue /= 24;
+//         selectSetting *= 24;
+//     }
+
+//     $("#newTimeSelect").val(selectSetting);
+//     $("#newTimeNumber").val(numValue);
+// }
+
+const CUSTOM_SET_STATE = {
+    // "newTime": newTimeState,
+}
+
+
+
+
+function addHovertext(optionElem) {
+    const id = optionElem.id;
+    const iconSvg = chrome.runtime.getURL("icons/question-circle-regular.svg");
+    const icon = document.createElement("img");
+    icon.src = iconSvg;
+    icon.className = "help-icon";
+    const tooltip = document.createElement("span");
+    tooltip.id = `${id}-tooltip`;
+    tooltip.className = "tooltip";
+    tooltip.textContent = OPTIONS[id].hovertext;
+    tooltip.style.display = "none";
+    optionElem.appendChild(icon);
+    document.getElementById("wrapper").appendChild(tooltip);
+
+    icon.addEventListener("mouseenter", () => {
+        tooltip.style.display = "block";
+        const windowHeight = window.innerHeight;
+        const iconSpace = 15;
+        const tooltipHeight = tooltip.getBoundingClientRect().height + 2 * iconSpace;
+        // icon height is 14, 7 is the middle
+        const iconPosition = icon.getBoundingClientRect().top + 7;
+        const topSpace = iconPosition - tooltipHeight;
+        const bottomSpace = (windowHeight - tooltipHeight) - iconPosition;
 
         if (topSpace > 8) {
-            tooltip.css("top", `${iconPosition - tooltipHeight}px`);
+            tooltip.style.top = `${iconPosition - tooltipHeight}px`;
         } else if (bottomSpace > 8) {
-            tooltip.css("top", `${iconPosition + 11}px`);
+            tooltip.style.top = `${iconPosition + 11}px`;
         } else {
-            tooltip.css("top", `8px`);
+            tooltip.style.top = "8px";
         }
+    });
 
-        $(tooltip).css("display", "inline");
-    }, function() {
-        $(tooltip).css("display", "none");
+    icon.addEventListener("mouseleave", () => {
+        tooltip.style.display = "none";
     });
 }
 
-function createChangeHandler(element) {
-    let id = $(element).attr("id");
-    let input = $(element).find(".trigger");
+function createChangeHandler(optionElem) {
+    const id = optionElem.id;
+    const input = optionElem.querySelector(".trigger");
 
     // call custom handler if defined
     if (id in CUSTOM_TRIGGERS) {
-        $(input).change(function() {
-            CUSTOM_TRIGGERS[id]();
-        });
-
+        input.addEventListener("change", CUSTOM_TRIGGERS[id]);
         return;
     }
 
     // otherwise create default handler
-    if ($(input).hasClass("check")) {
-        $(input).change(function() {
-            setOption(id, $(input).prop("checked"));
-        });
-    } else if ($(input).hasClass("key")) {
-        $(input).focus(async function() {
+    if (input.classList.contains("check")) {
+        input.addEventListener("change", () => setOption(id, input.checked));
+    } else if (input.classList.contains("key")) {
+        input.addEventListener("focus", async () => {
             this.blur();
-            $("#key-input-text").css("display", "inline");
-            let keyPress = await getKeyPress();
+            document.getElementById("key-input-text").style.display = "inline";
+            const keyPress = await getKeyPress();
             setOption(id, keyPress);
-            let displayValue = keyDictToString(keyPress);
-            $(this).val(displayValue);
-            $("#key-input-text").css("display", "none");
+            const displayValue = keyDictToString(keyPress);
+            input.value = displayValue;
+            document.getElementById("key-input-text").style.display = "none";
         });
-    } else if ($(input).hasClass("text")) {
-        $(input).change(function() {
-            setOption(id, $(input).val());
-        });
+    } else if (input.classList.contains("text")) {
+        input.addEventListener("change", () => setOption(id, input.value));
     }
 }
 
-async function setInitialState(element) {
-    let id = $(element).attr("id");
-    let input = $(element).find(".trigger");
-    let setValue = optionShadow[id];
+function setInitialState(optionElem) {
+    const id = optionElem.id;
+    const input = optionElem.querySelector(".trigger");
+    const setValue = optionShadow[id];
 
     // call custom state setting function if defined
     if (id in CUSTOM_SET_STATE) {
@@ -156,39 +149,48 @@ async function setInitialState(element) {
         return;
     }
 
-    if ($(input).hasClass("check")) {
-        $(input).prop("checked", setValue);
-    } else if ($(input).hasClass("key")) {
-        let displayValue = keyDictToString(setValue);
-        $(input).val(displayValue);
-    } else if ($(input).hasClass("text")) {
-        $(input).val(setValue);
+    if (input.classList.contains("check")) {
+        input.checked = setValue;
+    } else if (input.classList.contains("key")) {
+        const displayValue = keyDictToString(setValue);
+        input.value = displayValue;
+    } else if (input.classList.contains("text")) {
+        input.value = setValue;
     }
 }
 
-async function processOption(element) {
-    addHovertext(element);
-    createChangeHandler(element);
-    await setInitialState(element);
+function processOption(optionElem) {
+    const id = optionElem.id;
+    if (!OPTIONS[id]) {
+        return;
+    }
+    addHovertext(optionElem);
+    createChangeHandler(optionElem);
+    setInitialState(optionElem);
 }
 
 function addKeyModal() {
-    let modal = $(`<span class="tooltip" id="key-input-text">Press a key or key combo, or click anywhere to disable<span>`);
-    modal.css("display", "none");
-    modal.addClass("center");
-    $(`#wrapper`).append(modal);
+    const modal = document.createElement("span");
+    modal.id = "key-input-text";
+    modal.classList.add("tooltip", "center");
+    modal.textContent = "Press a key or key combo, or click anywhere to disable";
+    modal.style.display = "none";
+    document.getElementById("wrapper").appendChild(modal);
 }
 
 function createResetHandler() {
     // on the first click, verify intension
     function firstClick(button) {
-        let width = button.getBoundingClientRect().width;
-        $(button).addClass("verify").html("Are you sure?").css("width", width);
+        const width = button.getBoundingClientRect().width;
+        button.classList.add("verify");
+        button.textContent = "Are you sure?";
+        button.style.width = width;
     }
 
     // on the second click, clear the data
     function secondClick(button) {
-        $(button).removeClass("verify").html("Reset all data");
+        button.classList.removeClass("verify");
+        button.textContent = "Reset all data";
 
         // reset options to defaults
         for (const [key, option] of Object.entries(OPTIONS)) {
@@ -196,21 +198,20 @@ function createResetHandler() {
         }
 
         optionShadow.resetData = true;
-
-        webExtension.storage.local.set({[OPTION_KEY]: optionShadow});
-
+        chrome.storage.local.set({[OPTION_KEY]: optionShadow});
         window.close();
     }
 
-    $(`#resetDataButton`).click(function() {
-        if ($(this).hasClass("verify")) {
-            secondClick(this);
+    const button = document.getElementById("resetDataButton");
+    button.addEventListener("click", () => {
+        if (button.classList.contains("verify")) {
+            secondClick(button);
         } else {
-            firstClick(this);
+            firstClick(button);
         }
     });
 }
-
+/*
 function addDependencies() {
     // option to use 24 hour time depends on showing the full date
     $("#showFullDateCheck").change(function() {
@@ -277,7 +278,7 @@ function addDependencies() {
     });
 
     $("body").on("click", "a", function() {
-        webExtension.tabs.create({url: $(this).attr("href")});
+        chrome.tabs.create({url: $(this).attr("href")});
         return false;
    });
 
@@ -322,40 +323,21 @@ function addDependencies() {
         }
     });
 }
-
-function addDebugChecker() {
-    let debugChecker = new StringRecognizer("debug");
-
-    document.addEventListener("keydown", function(event) {
-        if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
-            return;
-        }
-
-        let checkPassed = debugChecker.nextInput(event.key);
-        if (checkPassed) {
-            $(".debug").removeClass("debug");
-        }
-    });
-}
-
+*/
 function populateVersion() {
-    let version = webExtension.runtime.getManifest().version;
-    $("#version").html(`v${version}`);
+    const version = chrome.runtime.getManifest().version;
+    document.getElementById("version").textContent = `v${version}`;
 }
 
-window.onload = async function() {
+document.addEventListener("DOMContentLoaded", async () => {
     await loadInitialOptionValues();
 
-    let promiseArray = [];
-    for (const option of $(".option")) {
-        promiseArray.push(processOption(option));
+    for (const option of document.querySelectorAll(".option")) {
+        processOption(option);
     }
-
-    await Promise.all(promiseArray);
 
     addKeyModal();
     createResetHandler();
-    addDependencies();
-    addDebugChecker();
+    // addDependencies();
     populateVersion();
-}
+});

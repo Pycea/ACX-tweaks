@@ -25,7 +25,7 @@
     ],
     "web_accessible_resources": [
         {
-            "resources": ["icons/*.svg", "data/empty_comments.json", "data/templates.html", "js/inject.js"],
+            "resources": ["icons/", "data/empty_comments.json", "data/templates.html", "js/inject.js"],
             "matches": [
                 "https://www.astralcodexten.com/*"
             ]

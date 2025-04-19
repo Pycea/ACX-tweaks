@@ -1,15 +1,20 @@
 "use strict";
 
-function addStyle(key) {
-    let value = STYLES[key];
-    let css = value.css;
-    let style = $("<style>", {
-        "id": `${key}-css`,
-        "html": css,
-    });
+const OPTION_KEY = "options";
 
-    $(document.documentElement).append(style);
+function cssId(key) {
+    return `${key}-css`;
 }
+
+function addStyle(key) {
+    const value = STYLES[key];
+    const css = value.css;
+    const style = document.createElement("style");
+    style.id = cssId(key);
+    style.textContent = css;
+    document.documentElement.appendChild(style);
+}
+
 
 
 // {
@@ -17,47 +22,18 @@ function addStyle(key) {
 //     default: <value>,
 //     hovertext: <string>,
 //     onStart: function(value) { ... },
-//     onPageChange: function() { ... },
 //     onLoad: function() { ... },
 //     onCommentChange: function(comment) { ... },
-//     onMutation: function(mutation) { ... },
 //     onValueChange: function(value) { ... },
 // }
 //
-//                                                              +--------+
-//                                                              v        | on dynamic
-//  first load   +-----------+  onStart() finishes   +----------------+  | page load
-// ------------> | onStart() | --------------------> | onPageChange() | -+
-//               +-----------+                       +----------------+
-//                                                         |    ^
-//                                                     DOM |    |
-//                                                   loads |    | on dynamic
-//                                                         |    | page load
-//                                                         v    |
-//                                                 +--------------------+
-//                                                 |      onLoad()      | ------------>
-//                                                 | (end of page load) |  leave page
-//                                                 +--------------------+
-//
-//                 |                                          |                         | should be
-// function        | run condition                            | args                    | idempotent
-// ----------------+------------------------------------------+-------------------------+-----------
-// onStart         | once, when the extension is first loaded | none                    | n/a
-// onPageChange    | on each page/post change                 | none                    | n/a
-// onLoad          | on each page once the DOM is loaded      | none                    | n/a
-//                 |                                          |                         |
-// onCommentChange | when a new comment is added              | the new comment         | yes
-// onMutation      | when a mutation happens on the page      | the mutation            | no
-// onValueChange   | when the value of the option changes     | new value, if first run | yes
-//
 // Run order on page load:
 //     onStart() handlers
-//     onPageChange() handlers
 //     processAllComments()
-//         onCommentChange() handlers for any existing comments
+//         processComment() handlers for any existing comments
 //     onLoad() handlers
 
-let fixHeaderOption = {
+const fixHeaderOption = {
     key: "fixHeader",
     default: true,
     hovertext: "Keep the header fixed, so it doesn't keep appearing when scrolling up",
@@ -66,11 +42,11 @@ let fixHeaderOption = {
         this.onValueChange(value);
     },
     onValueChange: function(value) {
-        $(`#${this.key}-css`).prop("disabled", !value);
+        document.getElementById(cssId(this.key)).disabled = !value;
     },
 }
-
-let useOldStylingOption = {
+/*
+const useOldStylingOption = {
     key: "useOldStyling",
     default: false,
     hovertext: "Use styling similar to the old blog Slate Star Codex",
@@ -79,17 +55,17 @@ let useOldStylingOption = {
         this.onValueChange(value);
     },
     onValueChange: function(value) {
-        $(`#${this.key}-css`).prop("disabled", !value);
+        document.getElementById(cssId(this.key)).disabled = !value;
     },
 }
 
-let darkModeOption = {
+const darkModeOption = {
     key: "darkMode",
     default: window.matchMedia("(prefers-color-scheme: dark)").matches,
     hovertext: "Make this popup dark mode (does not apply to blog itself). To make the page dark, use an extension like Dark Reader.",
 }
 
-let zenModeOption = {
+const zenModeOption = {
     key: "zenMode",
     default: false,
     hovertext: "Remove like, share, and subscribe clutter (use separate option below to disable comments)",
@@ -98,11 +74,11 @@ let zenModeOption = {
         this.onValueChange(value);
     },
     onValueChange: function(value) {
-        $(`#${this.key}-css`).prop("disabled", !value);
+        document.getElementById(cssId(this.key)).disabled = !value;
     },
 }
 
-let removeCommentsOption = {
+const removeCommentsOption = {
     key: "removeComments",
     default: false,
     hovertext: "Completely remove the comments section from posts",
@@ -111,7 +87,7 @@ let removeCommentsOption = {
         this.onValueChange(value);
     },
     onValueChange: function(value) {
-        $(`#${this.key}-css`).prop("disabled", !value);
+        document.getElementById(cssId(this.key)).disabled = !value;
     },
 }
 
@@ -228,7 +204,7 @@ let showHeartsOption = {
 
         if (!deleted) {
             let actions = $(comment).find("> .comment-content .comment-actions");
-            if (actions.html() != "") {
+            if (actions.html() !== "") {
                 for (const childAction of actions.children()) {
                     let text = $(childAction).text();
                     if (text === "Reply") {
@@ -576,7 +552,7 @@ let applyCommentStylingOption = {
             return list.map(e => typeof e === "string" ? stringToList(regex, matchToTag, e) : e).flat();
         }
 
-        let italicStarRegex = /(.*?(?:^|\s|\(|\[|\{|\*))\*((?=[^*\s]).*?(?<=[^*\s]))\*/;
+        let italicStarRegex = /(.*?(?:^|\s|\(|\[|\{|\*))\*((?=[^*\s]).*?(?<=[^*\s]))\*TODOREMOVE/;
         let italicUnderscoreRegex = /(.*?(?:^|\s|\(|\[|\{|_))_((?=[^_\s]).*?(?<=[^_\s]))_/;
         function italicToTag(match) {
             let e = document.createElement("em");
@@ -615,7 +591,7 @@ let applyCommentStylingOption = {
         let quoteIndent = 0;
         if (typeof list[0] === "string") {
             let match;
-            while (match = list[0].match(/^\s*(>|&gt;)\s*/)) {
+            while (match = list[0].match(/^\s*(>|&gt;)\s*TODOREMOVE/)) {
                 quoteIndent++;
                 list[0] = list[0].substring(match[0].length);
             }
@@ -718,132 +694,53 @@ let addParentLinksOption = {
     },
 }
 
-let hideBadgeOption = {
-    key: "hideBadge",
-    default: true,
-    hovertext: "Hide the blue circles next to profile pictures",
-    onStart: function(value) {
-        addStyle(this.key);
-        this.onValueChange(value);
-    },
-    onValueChange: function(value) {
-        $(`#${this.key}-css`).prop("disabled", !value);
-    },
-}
-
-let loadAllOption = {
-    key: "loadAll",
-    default: true,
-    hovertext: "Load all comments preemptively (may cause increased lag)",
-    onLoad: function() {
-        let that = this;
-        for (const timeout of [0, 500, 1000, 2000]) {
-            setTimeout(function() {
-                that.onValueChange(optionShadow.loadAll);
-            }, timeout);
-        }
-    },
-    onValueChange: function(value) {
-        // this is ugliness incarnate, but what else are ya gonna do with substack?
-        function recursiveExpand() {
-            let expandButtons = $("button.collapsed-reply");
-            if (expandButtons.length) {
-                expandButtons.click();
-                setTimeout(recursiveExpand, 500);
-            }
-        }
-
-        if (value) {
-            recursiveExpand();
-        } else {
-            // nothing to do once the page is loaded
-        }
-    },
-}
-
-let hideNewOption = {
-    key: "hideNew",
-    default: false,
-    hovertext: "Hide the button that shows when new comments have been added",
-    processButton: function(button) {
-        if ($(button).text().includes("new")) {
-            $(button).addClass("new-comments");
-        }
-    },
-    onStart: function(value) {
-        addStyle(this.key);
-        $(`#${this.key}-css`).prop("disabled", !value);
-    },
-    onMutation: function(mutation) {
-        if (!mutation.target.classList.contains("collapsed")) {
-            return;
-        }
-
-        for (let i = 0; i < mutation.addedNodes.length; i++) {
-            let node = mutation.addedNodes[i];
-            if (node.classList.contains("collapsed-reply")) {
-                this.processButton(node);
-            }
-        }
-    },
-    onValueChange: function(value) {
-        $(`#${this.key}-css`).prop("disabled", !value);
-        if (value) {
-            let that = this;
-            $("#main").find("button.collapsed-reply").each(function() {
-                that.processButton(this);
-            });
-        }
-    },
-}
-
-let hideUsersOption = {
+const hideUsersOption = {
     key: "hideUsers",
     default: "",
     hovertext: "Hide comments from the listed users, in a comma separated list (if you don't like seeing the names in this box, add spaces at the front until they disappear)",
     onStart: function(value) {
         addStyle(this.key);
-        $(`#${this.key}-css`).prop("disabled", !value);
-        this.hiddenSet = new Set(optionShadow[this.key].split(",").map(x => x.trim()).filter(x => x));
+        document.getElementById(cssId(this.key)).disabled = !value;
+        this.hiddenSet = new Set(optionManager.get(this.key).split(",").map(x => x.trim()).filter(x => x));
     },
-    onCommentChange: function(comment) {
-        let nameTag = $(comment).find("> .comment-content > div:nth-child(2) .profile-hover-card-target a");
-        let name = nameTag.text();
+    processComment: function(comment) {
+        const commentId = comment.dataset.id;
+        const name = CommentManager.get(commentId).username;
         if (this.hiddenSet.has(name)) {
-            $(comment).addClass("hidden-post");
+            comment.classList.add("hidden-post");
 
             // no visible siblings, so remove the enclosing comment list
-            if ($(comment).parent().children(":not(.hidden-post)").length === 0) {
-                $(comment).parent().parent().addClass("hidden-post");
+            if (comment.parentElement.querySelector(":scope > :not(.hidden-post)").length === 0) {
+                comment.parentElement.parentElement.classList.add("hidden-post");
             }
         } else {
-            $(comment).removeClass("hidden-post");
-            $(comment).parent().parent().removeClass("hidden-post");
+            comment.classList.remove("hidden-post");
+            comment.parentElement.parentElement.classList.remove("hidden-post");
         }
     },
     onValueChange: function(value) {
-        $(`#${this.key}-css`).prop("disabled", !value);
+        document.getElementById(cssId(this.key)).disabled = !value;
 
         if (value) {
-            this.hiddenSet = new Set(optionShadow[this.key].split(",").map(x => x.trim()).filter(x => x));
+            this.hiddenSet = new Set(optionManager.get(this.key).split(",").map(x => x.trim()).filter(x => x));
             processAllComments();
         }
     },
 }
 
-let allowKeyboardShortcutsOption = {
+const allowKeyboardShortcutsOption = {
     key: "allowKeyboardShortcuts",
     default: true,
     hovertext: "Enable keyboard shortcuts for the various actions below",
 }
 
-let smoothScrollOption = {
+const smoothScrollOption = {
     key: "smoothScroll",
     default: true,
     hovertext: "Smoothly scroll when moving between comments (uncheck this to disable the animation and jump directly to the comment)",
 }
 
-let prevCommentKeyOption = {
+const prevCommentKeyOption = {
     key: "prevCommentKey",
     default: {
         "key": 73,
@@ -855,7 +752,7 @@ let prevCommentKeyOption = {
     hovertext: "Key/key combo to jump to the previous comment (click the box to set)",
 }
 
-let nextCommentKeyOption = {
+const nextCommentKeyOption = {
     key: "nextCommentKey",
     default: {
         "key": 85,
@@ -867,7 +764,7 @@ let nextCommentKeyOption = {
     hovertext: "Key/key combo to jump to the next comment (click the box to set)",
 }
 
-let prevUnreadKeyOption = {
+const prevUnreadKeyOption = {
     key: "prevUnreadKey",
     default: {
         "key": 75,
@@ -879,7 +776,7 @@ let prevUnreadKeyOption = {
     hovertext: "Key/key combo to jump to the previous new comment (click the box to set)",
 }
 
-let nextUnreadKeyOption = {
+const nextUnreadKeyOption = {
     key: "nextUnreadKey",
     default: {
         "key": 74,
@@ -891,7 +788,7 @@ let nextUnreadKeyOption = {
     hovertext: "Key/key combo to jump to the next new comment (click the box to set)",
 }
 
-let parentKeyOption = {
+const parentKeyOption = {
     key: "parentKey",
     default: {
         "key": 80,
@@ -903,83 +800,75 @@ let parentKeyOption = {
     hovertext: "Key/key combo to jump to the parent of the current comment (click the box to set)",
 }
 
-let customCssOption = {
+const customCssOption = {
     key: "customCss",
     default: "",
     hovertext: "Apply custom css to the page (don't enter anything you don't trust)",
     onStart: function(value) {
-        let style = $("<style>", {
-            "id": `${this.key}-css`,
-            "html": value,
-        });
-
-        $(document.documentElement).append(style);
+        const style = document.createElement("style");
+        style.id = cssId(this.key);
+        style.textContent = value;
+        document.documentElement.appendChild(style);
     },
     onValueChange: function(value) {
-        $(`#${this.key}-css`).html(value);
+        document.getElementById(cssId(this.key)).textContent = value;
     },
 }
 
-let showDebugOption = {
+const showDebugOption = {
     key: "showDebug",
     default: "",
     hovertext: "Show matching debugging output in the console (use <code>\"*\"</code> for all)",
 }
-
-let resetDataOption = {
+*/
+const resetDataOption = {
     key: "resetData",
     default: false,
     hovertext: "Reset all extension data. Use if something breaks that refreshing doesn't fix. Will delete data about which comments have been seen.",
     onStart: function(value) {
-        this.onValueChange(optionShadow[this.key]);
+        this.onValueChange(optionManager.get(this.key));
     },
     onValueChange: function(value) {
         if (value) {
-            localStorageData = {};
             window.localStorage.removeItem(LOCAL_DATA_KEY);
-            optionShadow.resetData = false;
-            webExtension.storage.local.set({[OPTION_KEY]: optionShadow});
+            optionManager.set(this.key, false);
         }
     },
 }
 
-let hideUpdateNoticeOption = {
-    key: "hideUpdateNotice",
-    default: false,
-}
+
 
 let optionArray = [
     fixHeaderOption,
-    useOldStylingOption,
-    darkModeOption,
-    zenModeOption,
-    removeCommentsOption,
-    showHeartsOption,
-    showFullDateOption,
-    use24HourOption,
-    highlightNewOption,
-    newTimeOption,
-    applyCommentStylingOption,
-    addParentLinksOption,
-    hideBadgeOption,
-    loadAllOption,
-    hideNewOption,
-    hideUsersOption,
-    allowKeyboardShortcutsOption,
-    smoothScrollOption,
-    prevCommentKeyOption,
-    nextCommentKeyOption,
-    prevUnreadKeyOption,
-    nextUnreadKeyOption,
-    parentKeyOption,
-    customCssOption,
-    showDebugOption,
+    // useOldStylingOption,
+    // darkModeOption,
+    // zenModeOption,
+    // removeCommentsOption,
+    // showHeartsOption,
+    // showFullDateOption,
+    // use24HourOption,
+    // highlightNewOption,
+    // newTimeOption,
+    // applyCommentStylingOption,
+    // addParentLinksOption,
+    // hideUsersOption,
+    // allowKeyboardShortcutsOption,
+    // smoothScrollOption,
+    // prevCommentKeyOption,
+    // nextCommentKeyOption,
+    // prevUnreadKeyOption,
+    // nextUnreadKeyOption,
+    // parentKeyOption,
+    // customCssOption,
+    // showDebugOption,
     resetDataOption,
-    hideUpdateNoticeOption,
+    // hideUpdateNoticeOption,
 ];
 
-let OPTIONS = {};
+const OPTIONS = {};
+const OptionKey = {};
 
 for (const option of optionArray) {
     OPTIONS[option.key] = option;
+    OptionKey[option.key] = option.key;
 }

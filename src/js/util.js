@@ -11,13 +11,12 @@ function debug(category, ...debugStrings) {
     //     return;
     // }
 
-    // const debugRegex = "^(" +
-    //     optionManager.get(OptionKey.showDebug)
-    //         .replace(/ /g, "")
-    //         .replace(/(?<!\.)\*/g, ".*")
-    //         .replace(/,/g, "|")
-    //          + ")$";
-    const debugRegex = /commentAction/;
+    const debugRegex = "^(" +
+        optionManager.get(OptionKey.showDebug)
+            .replace(/ /g, "")
+            .replace(/(?<!\.)\*/g, ".*")
+            .replace(/,/g, "|")
+             + ")$";
     if (category.match(debugRegex)) {
         const now = Date.now();
         const time = new Date(now).toLocaleTimeString("en-US", {hour12: false});
