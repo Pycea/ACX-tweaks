@@ -696,7 +696,7 @@ function addKeyListener() {
         if (command === KeyCommand.PrevComment || command === KeyCommand.PrevUnread) {
             index = min;
             index = mod(index, comments.length);
-            debug("keyPressBinary", `giong backwards, index is min, now ${index}`);
+            debug("keyPressBinary", `going backwards, index is min, now ${index}`);
             if (atEntry(comments[index])) {
                 index--;
                 debug("keyPressBinary", `At entry, decrementing to ${index}`);

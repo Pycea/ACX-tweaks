@@ -727,7 +727,7 @@ const hideUsersOption = {
         }
     },
 }
-
+*/
 const allowKeyboardShortcutsOption = {
     key: "allowKeyboardShortcuts",
     default: true,
@@ -814,7 +814,7 @@ const customCssOption = {
         document.getElementById(cssId(this.key)).textContent = value;
     },
 }
-*/
+
 const showDebugOption = {
     key: "showDebug",
     default: "",
@@ -852,13 +852,13 @@ let optionArray = [
     // applyCommentStylingOption,
     // addParentLinksOption,
     // hideUsersOption,
-    // allowKeyboardShortcutsOption,
-    // smoothScrollOption,
-    // prevCommentKeyOption,
-    // nextCommentKeyOption,
-    // prevUnreadKeyOption,
-    // nextUnreadKeyOption,
-    // parentKeyOption,
+    allowKeyboardShortcutsOption,
+    smoothScrollOption,
+    prevCommentKeyOption,
+    nextCommentKeyOption,
+    prevUnreadKeyOption,
+    nextUnreadKeyOption,
+    parentKeyOption,
     // customCssOption,
     showDebugOption,
     resetDataOption,

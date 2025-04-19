@@ -125,7 +125,7 @@ function createChangeHandler(optionElem) {
         input.addEventListener("change", () => setOption(id, input.checked));
     } else if (input.classList.contains("key")) {
         input.addEventListener("focus", async () => {
-            this.blur();
+            input.blur();
             document.getElementById("key-input-text").style.display = "inline";
             const keyPress = await getKeyPress();
             setOption(id, keyPress);
@@ -295,19 +295,23 @@ function addDependencies() {
 //         $("body").removeClass("dark");
 //     }
 
-//     $("#shortcutToggle").click(function() {
-//         if ($(this).hasClass("open")) {
-//             $("#shortcutHolder").addClass("closed");
-//             $(this).removeClass("open");
-//             $("#shortcutToggleCaret").css("transform", "rotate(0deg)");
-//             $("#shortcutToggleText").text("Show shortcuts");
-//         } else {
-//             $("#shortcutHolder").removeClass("closed");
-//             $(this).addClass("open");
-//             $("#shortcutToggleCaret").css("transform", "rotate(90deg)");
-//             $("#shortcutToggleText").text("Hide shortcuts");
-//         }
-//     });
+    const shortcutToggle = document.getElementById("shortcutToggle");
+    shortcutToggle.addEventListener("click", () => {
+        const holder = document.getElementById("shortcutHolder");
+        const caret = document.getElementById("shortcutToggleCaret");
+        const text = document.getElementById("shortcutToggleText");
+        if (shortcutToggle.classList.contains("open")) {
+            holder.classList.add("closed");
+            shortcutToggle.classList.remove("open");
+            caret.style.transform = "rotate(0deg)";
+            text.textContent = "Show shortcuts";
+        } else {
+            holder.classList.remove("closed");
+            shortcutToggle.classList.add("open");
+            caret.style.transform = "rotate(90deg)";
+            text.textContent = "Hide shortcuts";
+        }
+    });
 
     const advancedToggle = document.getElementById("advancedToggle");
     advancedToggle.addEventListener("click", () => {

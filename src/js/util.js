@@ -16,7 +16,7 @@ function debug(category, ...debugStrings) {
             .replace(/ /g, "")
             .replace(/(?<!\.)\*/g, ".*")
             .replace(/,/g, "|")
-             + ")$";
+            + ")$";
     if (category.match(debugRegex)) {
         const now = Date.now();
         const time = new Date(now).toLocaleTimeString("en-US", {hour12: false});
@@ -226,7 +226,7 @@ function keyDictToString(keyDict) {
         return "none";
     }
 
-    const keyString = keyCodes[keyDict.key] || String.fromCharCode(keyDict.key);
+    let keyString = keyCodes[keyDict.key] || String.fromCharCode(keyDict.key);
     if (keyDict.meta) {
         keyString = "command-" + keyString;
     }
@@ -270,20 +270,19 @@ function isMatchingKeyEvent(keyDict, event) {
 }
 
 function getKeyPress() {
-    logFuncCall();
-    return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve) {
         function keyPress(event) {
             if (!["Control", "Alt", "Shift", "Meta"].includes(event.key)) {
                 resolve(getKeyDictFromEvent(event));
             } else {
-                $(document).one("keydown", keyPress);
+                document.addEventListener("keydown", keyPress, {once: true});
             }
         }
 
-        $(document).one("keydown", keyPress);
-        $(document).one("mousedown", function(event) {
+        document.addEventListener("keydown", keyPress, {once: true});
+        document.addEventListener("mousedown", () => {
             resolve(getKeyDictFromEvent(null));
-        });
+        }, {once: true});
     });
 }
 
