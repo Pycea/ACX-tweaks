@@ -1,0 +1,62 @@
+<template id="comment-template">
+    <div class="comment">
+        <div class="comment-content">
+            <div class="profile">
+                <div class="profile-icon">
+                    <a class="profile-link">
+                        <img class="profile-image">
+                    </a>
+                </div>
+            </div>
+            <div class="comment-main">
+                <div class="comment-header">
+                    <a class="user-profile-link">
+                        <div class="username"></div>
+                    </a>
+                    <a class="comment-post-date-link">
+                        <div class="comment-post-date"></div>
+                    </a>
+                    <div class="comment-edited"></div>
+                </div>
+                <div class="comment-body"></div>
+                <div class="comment-footer">
+                    <div class="reply">Reply</div>
+                    <div class="edit">Edit</div>
+                    <div class="delete">Delete</div>
+                </div>
+                <div class="text-edit-container"></div>
+            </div>
+        </div>
+        <div class="children"></div>
+        <div class="collapser">
+            <div class="line"></div>
+        </div>
+    </div>
+</template>
+
+<template id="reply-template">
+    <div class="reply-container">
+        <div class="profile-icon">
+            <img class="profile-image">
+        </div>
+        <div class="text-input-container">
+            <textarea class="text-input" rows="5" placeholder="Write a comment..."></textarea>
+            <div class="text-input-buttons">
+                <button class="reply-post primary" disabled>Reply</button>
+                <button class="reply-cancel secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template id="edit-template">
+    <div class="edit-container">
+        <div class="text-input-container">
+            <textarea class="text-input"></textarea>
+            <div class="text-input-buttons">
+                <button class="edit-post primary">Save</button>
+                <button class="edit-cancel secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+</template>

@@ -6,60 +6,85 @@
 //     ajaxResponse: the response given
 //     ajaxError: any errors encountered
 
-// the local storage key of the options
-const OPTION_KEY = "options";
-
-// the local storage key of the page last visited time
-// SEEN_COMMENTS_KEY: {
-//     "title": [
-//         commentId,
-//         ...
-//     ],
-//     ...
-// }
-const LOCAL_DATA_KEY = "acx-local-data";
-
 function debug(category, ...debugStrings) {
-    if (!optionShadow.showDebug) {
-        return;
-    }
+    // if (!optionManager.get(OptionKey.showDebug)) {
+    //     return;
+    // }
 
-    let debugRegex = "^(" +
-        optionShadow.showDebug
-            .replace(/ /g, "")
-            .replace(/(?<!\.)\*/g, ".*")
-            .replace(/,/g, "|")
-             + ")$";
+    // const debugRegex = "^(" +
+    //     optionManager.get(OptionKey.showDebug)
+    //         .replace(/ /g, "")
+    //         .replace(/(?<!\.)\*/g, ".*")
+    //         .replace(/,/g, "|")
+    //          + ")$";
+    const debugRegex = /commentAction/;
     if (category.match(debugRegex)) {
-        let now = Date.now();
-        let time = new Date(now).toLocaleTimeString("en-US", {hour12: false});
-        let ms = (now % 1000).toString().padStart(3, "0");
+        const now = Date.now();
+        const time = new Date(now).toLocaleTimeString("en-US", {hour12: false});
+        const ms = (now % 1000).toString().padStart(3, "0");
         console.log(`${time}.${ms}  ${category}:`, ...debugStrings);
     }
 }
 
 function logFuncCall(verbose=false) {
-    if (!optionShadow.showDebug) {
+    if (!optionManager.get(OptionKey.showDebug)) {
         return;
     }
 
-    let errorStack = new Error().stack;
-    let funcLine = errorStack.split("\n")[2].trim();
-    let funcNameMatch = funcLine.match(/at (\w+)/);
+    const errorStack = new Error().stack;
+    const funcLine = errorStack.split("\n")[2].trim();
+    const funcNameMatch = funcLine.match(/at ([\w.]+)/);
     if (!funcNameMatch) {
         console.error(`Bad stack found: ${errorStack}`);
         return;
     }
 
-    let funcName = funcNameMatch[1];
-    let logHandle = (verbose ? "func" : "funcs") + "_" + funcName;
+    const funcName = funcNameMatch[1];
+    const logHandle = (verbose ? "func" : "funcs") + "_" + funcName;
 
     debug(logHandle, funcName + "()");
 }
 
-// why is js so terrible?
 function mod(a, b) {
     return ((a % b) + b) % b;
+}
+
+function getPreloads() {
+    const injectionScript = document.createElement("script");
+    injectionScript.src = chrome.runtime.getURL("js/inject.js");
+    document.documentElement.appendChild(injectionScript);
+    injectionScript.onload = () => injectionScript.remove();
+
+    return new Promise(resolve => {
+        window.addEventListener("message", (event) => {
+            if (event.source === window && event.data.handshake === "acx-tweaks-preloads") {
+                resolve(event.data.preloads);
+            }
+        });
+    });
+}
+
+function apiCall(url, method="GET", data={}, timeout=10) {
+    logFuncCall();
+    debug("fetchCall", url, data, method);
+    const options = {
+        method: method,
+        headers: {"Content-Type": "application/json"},
+        signal: AbortSignal.timeout(timeout * 1000),
+    };
+    if (method !== "GET" && method !== "HEAD") {
+        options.body = JSON.stringify(data);
+    }
+    return fetch(url, options)
+        .then((response) => response.json())
+        .then((data) => {
+            debug("fetchResponse", data);
+            return data;
+        })
+        .catch((error) => {
+            debug("fetchError", error);
+            throw error;
+        });
 }
 
 function ajaxRequest(url, data={}, method="GET", dataType="text json") {
@@ -79,69 +104,37 @@ function ajaxRequest(url, data={}, method="GET", dataType="text json") {
     });
 }
 
+async function loadTemplate(url) {
+    logFuncCall();
+    const res = await fetch(url);
+    const text = await res.text();
+    const template = document.createElement("template");
+    template.innerHTML = text.trim();
+    return template;
+}
+
 async function getPostData() {
     logFuncCall();
-    let url = `https://www.astralcodexten.com/api/v1/posts/${getPostName()}`;
-    let data = await ajaxRequest(url);
+    const url = `https://www.astralcodexten.com/api/v1/posts/${getPostName()}`;
+    const data = await apiCall(url);
     return data;
 }
 
 async function getPostComments() {
     logFuncCall();
-    let postData = await getPostData();
-    let postId = postData.id;
-    let url = `https://www.astralcodexten.com/api/v1/post/${postId}/comments?token=&all_comments=true`;
-    let data = await ajaxRequest(url);
+    const postData = await getPostData();
+    const postId = postData.id;
+    const url = `https://www.astralcodexten.com/api/v1/post/${postId}/comments?block=false&token=&all_comments=true`;
+    const data = await apiCall(url);
     return data.comments;
 }
 
-async function getVersionInfo() {
-    logFuncCall();
-    let url = "https://gist.githubusercontent.com/Pycea/a647f861e7ad2b2ae28b512cd68864cc/raw";
-    try {
-        let data = await ajaxRequest(url);
-        return data;
-    } catch (error) {
-        console.error(error);
-        return {};
+function getPostName() {
+    let match = window.location.pathname.match(/\/p\/([^/]+)/);
+    if (match) {
+        return match[1];
     }
-}
-
-function validateVersion(version) {
-    if (!version) return false;
-    let match = version.match(/^\d+(.\d+)*$/);
-    return !!match;
-}
-
-function compareVersion(versionA, versionB) {
-    if (versionA === versionB) return 0;
-    if (!versionB) return 1;
-    if (!versionA) return -1;
-
-    let splitA = versionA.split(".");
-    let splitB = versionB.split(".");
-    for (let i = 0; i < Math.max(splitA.length, splitB.length); i++) {
-        let na = Number(splitA[i]);
-        let nb = Number(splitB[i]);
-
-        if (!isNaN(na) && isNaN(nb)) return 1;
-        if (isNaN(na) && !isNaN(nb)) return -1;
-
-        if (na > nb) return 1;
-        if (na < nb) return -1;
-    }
-
-    return 0;
-}
-
-function getLocalState(storageId) {
-    let storagePromise = new Promise(function(resolve, reject) {
-        webExtension.storage.local.get(storageId, function(items) {
-            resolve(items[storageId]);
-        });
-    });
-
-    return storagePromise;
+    return null;
 }
 
 function getCommentId(comment) {
@@ -153,8 +146,8 @@ function getCommentId(comment) {
 }
 
 function getCommentIdNumber(comment) {
-    let idString = getCommentId(comment);
-    let id = parseInt(idString.substring(8));
+    const idString = getCommentId(comment);
+    const id = parseInt(idString.substring(8));
 
     if (!id) {
         console.error(`Bad comment id found: ${idString}`);
@@ -234,7 +227,7 @@ function keyDictToString(keyDict) {
         return "none";
     }
 
-    let keyString = keyCodes[keyDict.key] || String.fromCharCode(keyDict.key);
+    const keyString = keyCodes[keyDict.key] || String.fromCharCode(keyDict.key);
     if (keyDict.meta) {
         keyString = "command-" + keyString;
     }
@@ -256,7 +249,7 @@ function getKeyDictFromEvent(event) {
         event = {};
     }
 
-    let keyDict = {
+    const keyDict = {
         "key": event.keyCode || null,
         "control": event.ctrlKey || false,
         "alt": event.altKey || false,
@@ -268,9 +261,9 @@ function getKeyDictFromEvent(event) {
 }
 
 function isMatchingKeyEvent(keyDict, event) {
-    let eventDict = getKeyDictFromEvent(event);
+    const eventDict = getKeyDictFromEvent(event);
     for (const [key, value] of Object.entries(keyDict)) {
-        if (value != eventDict[key]) {
+        if (value !== eventDict[key]) {
             return false;
         }
     }
@@ -304,6 +297,6 @@ class StringRecognizer {
     nextInput(char) {
         this.soFar += char;
         this.soFar = this.soFar.substring(1);
-        return this.soFar == this.string;
+        return this.soFar === this.string;
     }
 }

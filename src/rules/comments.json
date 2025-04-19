@@ -1,0 +1,20 @@
+[
+    {
+        "id" : 1,
+        "priority": 1,
+        "action" : { "type" : "redirect", "redirect": { "extensionPath": "/data/empty_comments.json" } },
+        "condition" : {
+            "urlFilter" : "||astralcodexten.com/api/v1/post/*/comments*",
+            "resourceTypes" : ["xmlhttprequest"]
+        }
+    },
+    {
+        "id" : 2,
+        "priority": 1,
+        "action" : { "type" : "allow" },
+        "condition" : {
+            "urlFilter" : "||astralcodexten.com/api/v1/post/*/comments?block=false*",
+            "resourceTypes" : ["xmlhttprequest"]
+        }
+    }
+]

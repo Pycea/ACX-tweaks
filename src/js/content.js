@@ -1,29 +1,19 @@
 "use strict";
 
-// thanks chrome!
-let webExtension;
-if (typeof browser !== "undefined") {
-    webExtension = browser;
-} else if (typeof chrome !== "undefined"){
-    webExtension = chrome;
-} else {
-    console.error("What kind of browser do you have anyway? (can't get WebExtension handle)");
-}
-
 // DEBUG handles
 // option*
 //     optionInitial: initial option values
 //     optionGet: receive option change
 //     optionSet: setting option value
 // processComment: each comment processed
-// mutation*
-//     mutationType: known types of mutation
-//     mutationOther: other mutations
 // keyPress*
-//     keyPress: each key press
+//     keyPressEvent: each key press
 //     keyPressBinary: binary search internals
-// updateCheck: related to update checks
-// pageLoadFsm: related to page loading events
+// pageEvent: related to page events (onStart and onLoad)
+// commentAction*
+//     commentActionReply: replying to comments
+//     commentActionEdit: editing comments
+//     commentActionDelete: deleting comments
 // func*
 //     func_<func_name>: function calls that are called a lot and probably not too useful
 //     funcs_<func_name>: other function calls
@@ -31,703 +21,783 @@ if (typeof browser !== "undefined") {
 // OPTIONS loaded from options.js
 // STYLES loaded from styles.js
 
-const PageTypeEnum = Object.freeze({
-    "main": "main",
-    "post": "post",
-    "unknown": "unknown",
+const PageType = Object.freeze({
+    "Main": "Main",
+    "Post": "Post",
+    "Unknown": "Unknown",
 });
 
-const KeyCommandEnum = Object.freeze({
-    "prevComment": "prevComment",
-    "nextComment": "nextComment",
-    "prevUnread": "prevUnread",
-    "nextUnread": "nextUnread",
-    "parent": "parent",
-    "unknown": "unknown",
+const KeyCommand = Object.freeze({
+    "PrevComment": "PrevComment",
+    "NextComment": "NextComment",
+    "PrevUnread": "PrevUnread",
+    "NextUnread": "NextUnread",
+    "Parent": "Parent",
+    "Unknown": "Unknown",
 });
 
-// cache of the current options
-let optionShadow;
 
-// data from local storage
-// {
-//     <post name>: {
-//         "lastViewedDate": <date>,
-//     },
-//     ...
-// }
-let localStorageData;
-
-// cache of comment ids comment info
-// {
-//     <comment id>: {
-//         "date": <date>,
-//         "hearts": <num>,
-//         "userReact": <user liked comment>,
-//         "deleted": <deleted>,
-//     },
-//     ...
-// }
-let commentIdToInfo = {};
-
-// timer for writing new seen comments to local storage
-let localStorageTimer = null;
-
-// whether to keep reacting to changes
-let observeChanges = true;
-
-
-
-// Page related utilities
-
-// the URL of the page without any hashes or params
-function baseUrl() {
-    return window.location.origin + window.location.pathname;
-}
-
-function getPageType() {
-    if (window.location.pathname.match(/\/p\/[^/]+/)) {
-        return PageTypeEnum.post;
-    } else {
-        return PageTypeEnum.main;
+class OptionManager {
+    constructor(localStorageKey, optionDict) {
+        this.localStorageKey = localStorageKey;
+        this.optionDict = optionDict;
+        this.optionShadow = {};
     }
-}
 
-function getPostName() {
-    let match = window.location.pathname.match(/\/p\/([^/]+)/);
-    if (match) {
-        return match[1];
+    async init() {
+        logFuncCall();
+        const result = await chrome.storage.local.get([this.localStorageKey]);
+        if (result[this.localStorageKey]) {
+            this.optionShadow = result[this.localStorageKey];
+        }
+
+        // this.processInitialValues();
     }
-    return null;
-}
 
+    processInitialValues() {
+        logFuncCall();
 
-
-// Dealing with option changes
-
-function setOption(key, value) {
-    logFuncCall();
-    debug("optionSet", `Changing option ${key}, `, optionShadow[key], "->", value);
-    optionShadow[key] = value;
-    webExtension.storage.local.set({[OPTION_KEY]: optionShadow});
-}
-
-// calls the option handling function for the given option value
-function doOptionChange(key, value) {
-    logFuncCall();
-    if (key in OPTIONS && OPTIONS[key].onValueChange) {
-        debug("optionGet", `Processing option change for ${key}`);
-        debug("funcs_" + key + ".onValueChange", key + ".onValueChange()");
-        OPTIONS[key].onValueChange(value, false);
-    }
-}
-
-// processes local storage changes, and calls the appropriate option handling function if an option
-// was changed
-function processStorageChange(changes, namespace) {
-    logFuncCall();
-    if (namespace === "local") {
-        if (changes.options) {
-            let changedKeys = [];
-
-            for (const [key, newValue] of Object.entries(changes.options.newValue)) {
-                // ew, but I don't really want to implement isEqual for dicts
-                let newValueString = JSON.stringify(newValue);
-                let oldValueString = JSON.stringify(optionShadow[key]);
-
-                if (newValueString !== oldValueString) {
-                    debug("optionGet", `Got change for ${key}`, changes.options.oldValue[key], "->", newValue);
-                    optionShadow[key] = newValue;
-                    changedKeys.push(key);
-                }
+        for (const [key, option] of Object.entries(this.optionDict)) {
+            let value = this.optionShadow[key];
+            if (value === undefined) {
+                // the option hasn't been set in local storage, set it to the default
+                value = option.default;
+                this.optionShadow[key] = value;
+                debug("optionInitial", `${key} not found, setting to`, value);
+            } else {
+                debug("optionInitial", `${key} initial value is`, value);
             }
 
-            for (const key of changedKeys) {
-                doOptionChange(key, changes.options.newValue[key]);
-            }
-        }
-    }
-}
-
-
-
-// Individual comment processing
-
-function ensurePostEntry() {
-    logFuncCall(true);
-    let postName = getPostName();
-    if (!(postName in localStorageData)) {
-        localStorageData[postName] = {
-            "lastViewedDate": new Date().toISOString(),
-        }
-    }
-}
-
-// update the local storage with our cached version
-function saveLocalStorage() {
-    logFuncCall();
-    window.localStorage.setItem(LOCAL_DATA_KEY, JSON.stringify(localStorageData));
-}
-
-function processAllComments() {
-    logFuncCall();
-    processChildComments($("#main"));
-}
-
-// processes to apply to all comments and children in a given dom element
-function processChildComments(node) {
-    logFuncCall(true);
-    let commentHandlerObjects = [];
-
-    for (const [key, option] of Object.entries(OPTIONS)) {
-        if (option.onCommentChange && (optionShadow[key] || option.alwaysProcessComments)) {
-            commentHandlerObjects.push(option);
-        }
-    }
-
-    if (commentHandlerObjects.length > 0) {
-        $(node).find("div.comment:not(.comment-input-wrap)").addBack("div.comment:not(.comment-input-wrap)").each(function() {
-            debug("processComment", this);
-
-            for (const object of commentHandlerObjects) {
-                debug("func_" + object.key + ".onCommentChange", object.key + ".onCommentChange()");
-                try {
-                    object.onCommentChange(this);
-                } catch (e) {
-                    console.error(e);
-                }
-            }
-        });
-    }
-}
-
-
-
-// Processing page mutations
-
-function processMutation(mutation) {
-    logFuncCall(true);
-    if (!observeChanges) {
-        return;
-    }
-
-    function nodeHasClass(node, classList) {
-        for (const c of classList) {
-            if (node.classList.contains(c)) {
-                return true;
+            if (option.onStart) {
+                debug("funcs_" + key + ".onStart", key + ".onStart()");
+                option.onStart(value);
             }
         }
 
-        return false;
+        chrome.storage.local.set({[this.localStorageKey]: this.optionShadow});
     }
 
-    // is this a hack? even the wisest cannot tell
-    if (mutation.target.classList.contains("single-post") &&
-        mutation.addedNodes[0].tagName.toLowerCase() === "article") {
-        debug("mutationType", "switch to new page", mutation);
-        // we switched to a different page with pushState
-        debug("pageLoadFsm", "action: dynamic page load");
-        pageSetup();
-        runOnLoadHandlers();
-    } else if (nodeHasClass(mutation.target, ["comment", "comment-list", "comment-list-items", "container"])) {
-        debug("mutationType", "possible comment add", mutation);
+    set(key, value) {
+        logFuncCall();
+        debug("optionSet", `Changing option ${key}, `,
+            this.optionShadow[key], "->", value);
+        this.optionShadow[key] = value;
+        chrome.storage.local.set({[this.localStorageKey]: this.optionShadow});
+    }
 
-        // check for comments
-        for (let i = 0; i < mutation.addedNodes.length; i++) {
-            let node = mutation.addedNodes[i];
-            if (nodeHasClass(node, ["comment", "comment-list", "comment-list-container", "comment-list-items", "comment-list-collapser"])) {
-                processChildComments(node);
+    get(value) {
+        return this.optionShadow[value];
+    }
+
+    doOptionChange(key, value) {
+        logFuncCall();
+        if (key in this.optionDict && this.optionDict[key].onValueChange) {
+            debug("optionGet", `Processing option change for ${key}`);
+            debug("funcs_" + key + ".onValueChange", key + ".onValueChange()");
+            this.optionDict[key].onValueChange(value, false);
+        }
+    }
+
+    processOptionChange(changes, namespace) {
+        logFuncCall();
+        const optionChanges = changes[this.localStorageKey];
+        if (namespace !== "local" || !optionChanges) {
+            return;
+        }
+
+        const changedKeys = [];
+
+        for (const [key, newValue] of Object.entries(optionChanges.newValue)) {
+            // hacky, but an easy way to implement isEqual for dicts
+            const newValueString = JSON.stringify(newValue);
+            const oldValueString = JSON.stringify(this.optionShadow[key]);
+
+            if (newValueString !== oldValueString) {
+                debug("optionGet", `Got change for ${key}`,
+                    optionChanges.oldValue[key], "->", newValue);
+                this.optionShadow[key] = newValue;
+                changedKeys.push(key);
             }
         }
-    } else {
-        // do nothing
-        debug("mutationOther", "other mutation", mutation);
-    }
 
-    // call mutation handlers
-    let mutationHandlerObjects = [];
-
-    for (const [key, option] of Object.entries(OPTIONS)) {
-        if (option.onMutation && optionShadow[key]) {
-            mutationHandlerObjects.push(option);
-        }
-    }
-
-    if (mutationHandlerObjects.length > 0) {
-        for (const object of mutationHandlerObjects) {
-            debug("func_" + object.key + ".onMutation", object.key + ".onMutation()");
-            object.onMutation(mutation);
+        for (const key of changedKeys) {
+            this.doOptionChange(key, optionChanges.newValue[key]);
         }
     }
 }
 
+class LocalStorageManager {
+    constructor(localStorageKey, postName) {
+        this.localStorageKey = localStorageKey;
+        this.postName = postName;
 
-
-// Setup before page load, run once
-
-async function loadInitialOptionValues() {
-    optionShadow = await getLocalState(OPTION_KEY);
-    if (!optionShadow) {
-        optionShadow = {};
-    }
-}
-
-function loadLocalStorage() {
-    logFuncCall();
-    let dataString = window.localStorage.getItem(LOCAL_DATA_KEY);
-    if (!dataString) {
-        dataString = "{}";
-    }
-    localStorageData = JSON.parse(dataString);
-}
-
-// load the initial values of the options and do any necessary config for them
-function processInitialOptionValues() {
-    logFuncCall();
-
-    for (const [key, option] of Object.entries(OPTIONS)) {
-        let value = optionShadow[key];
-        if (value === undefined) {
-            // the option hasn't been set in local storage, set it to the default
-            value = option.default;
-            optionShadow[key] = value;
-            debug("optionInitial", `${key} not found, setting to`, value);
+        const dataString = window.localStorage.getItem(this.localStorageKey);
+        if (dataString) {
+            this.localStorageData = JSON.parse(dataString);
         } else {
-            debug("optionInitial", `${key} initial value is`, value);
-        }
-
-        if (option.onStart) {
-            debug("funcs_" + key + ".onStart", key + ".onStart()");
-            option.onStart(value);
+            this.localStorageData = {};
         }
     }
 
-    webExtension.storage.local.set({[OPTION_KEY]: optionShadow});
+    save() {
+        logFuncCall();
+        window.localStorage.setItem(this.localStorageKey,
+            JSON.stringify(this.localStorageData));
+    }
+
+    set(key, value) {
+        logFuncCall();
+        if (!this.localStorageData[this.postName]) {
+            this.localStorageData[this.postName] = {};
+        }
+        this.localStorageData[this.postName][key] = value;
+        this.save();
+    }
+
+    get(key) {
+        return this.localStorageData[this.postName][key];
+    }
 }
 
+class PageInfo {
+    static preloads;
+    static userId;
+    static avatarUrl;
+    static pageType;
+    static postId;
+    static postName;
+    static loadDate;
 
-function addDomObserver() {
-    logFuncCall();
-    let observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-            for (let i = 0; i < mutation.addedNodes.length; i++) {
-                processMutation(mutation);
+    static init(preloads) {
+        logFuncCall();
+
+        PageInfo.preloads = preloads;
+        PageInfo.userId = preloads.user?.id;
+        PageInfo.username = preloads.user?.name;
+        PageInfo.avatarUrl = preloads.user?.photo_url;
+
+        PageInfo.pageType = preloads.post ? PageType.Post : PageType.Main;
+
+        PageInfo.postId = preloads.post?.id;
+        PageInfo.postName = preloads.post?.slug;
+
+        PageInfo.loadDate = new Date();
+    }
+}
+
+class CommentManager {
+    static commentIdToInfo;
+    static topLevelComments;
+
+    static init(nestedComments) {
+        logFuncCall();
+
+        CommentManager.commentIdToInfo = {};
+        CommentManager.topLevelComments = [];
+
+        const getInfoRecursive = (comment) => {
+            const commentId = comment.id;
+            const userId = comment.user_id;
+            const username = comment.name;
+            const userPhoto = comment.photo_url;
+            const ancestorPath = comment.ancestor_path;
+            const date = comment.date;
+            const editedDate = comment.edited_at;
+            const deleted = comment.deleted;
+            const hearts = comment.reactions?.["❤"] || 0;
+            const userReact = comment.reaction;
+            const body = comment.body;
+            const children = [];
+
+            for (const childComment of comment.children) {
+                children.push(childComment.id);
+                getInfoRecursive(childComment);
+            }
+
+            CommentManager.addComment({
+                commentId,
+                userId,
+                username,
+                userPhoto,
+                ancestorPath,
+                date,
+                editedDate,
+                deleted,
+                hearts,
+                userReact,
+                body,
+                children,
+            });
+        }
+
+        for (const comment of nestedComments) {
+            CommentManager.topLevelComments.push(comment.id);
+            getInfoRecursive(comment);
+        }
+    }
+
+    static getAvatarUrl(baseUrl, userId) {
+        const avatarColors = ["purple", "yellow", "orange", "green", "black"];
+        if (!baseUrl) {
+            const color = userId ? avatarColors[userId % avatarColors.length] : "default-light";
+            baseUrl = `https://substack.com/img/avatars/${color}.png`;
+        }
+
+        return `https://substackcdn.com/image/fetch/w_32,h_32,c_fill,f_auto,q_auto:good,fl_progressive:steep/${encodeURI(baseUrl)}`;
+    }
+
+    static getProfileUrl(userId, username) {
+        if (!userId || !username) {
+            return null;
+        }
+        const normalizedName = username.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase().trim().replace(/\s+/g, "-").replace(/&/g, "-and-")
+            .replace(/[^\w-]+/g, "").replace(/-+/g, "-").replace(/^-|-$/g, "");
+        const slug = userId + (normalizedName ? `-${normalizedName}` : "");
+        return `https://substack.com/profile/${slug}`;
+    }
+
+    static addComment({
+        commentId,
+        userId,
+        username,
+        userPhoto,
+        ancestorPath,
+        date,
+        editedDate=null,
+        deleted=false,
+        hearts=0,
+        userReact=false,
+        body,
+        children=[]
+    }) {
+        logFuncCall(true);
+
+        const entry = {
+            commentId,
+            userId,
+            username,
+            userPhoto: CommentManager.getAvatarUrl(userPhoto, userId),
+            userProfileUrl: CommentManager.getProfileUrl(userId, username),
+            ancestorPath,
+            parent: parseInt(ancestorPath.split(".").at(-1)) || null,
+            date: date ? new Date(date) : date,
+            editedDate: editedDate ? new Date(editedDate) : editedDate,
+            deleted: deleted || !userId,
+            hearts,
+            userReact,
+            body,
+            children,
+        };
+
+        for (const [key, value] of Object.entries(entry)) {
+            if (value === undefined) {
+                throw Error(`addComment(): missing required key ${key}`);
+            }
+        }
+
+        CommentManager.commentIdToInfo[commentId] = entry;
+    }
+
+    static editComment(commentId, body, editedDate) {
+        CommentManager.commentIdToInfo[commentId].body = body;
+        CommentManager.commentIdToInfo[commentId].editedDate = editedDate;
+    }
+
+
+    static get(commentId) {
+        return CommentManager.commentIdToInfo[commentId];
+    }
+}
+
+class Comment {
+    constructor(id) {
+        this.id = id;
+        this.info = CommentManager.get(this.id);
+
+        const commentTemplate = document.getElementById("comment-template").content.cloneNode(true);
+        this.baseElem = commentTemplate.querySelector(".comment");
+        this.contentElem = this.baseElem.querySelector(":scope > .comment-content");
+        this.bodyElem = this.contentElem.querySelector(".comment-body");
+        this.footerElem = this.contentElem.querySelector(".comment-footer");
+        this.textEditContainer = this.contentElem.querySelector(".text-edit-container");
+        this.childrenContainer = this.baseElem.querySelector(":scope > .children");
+
+        this.fillCommentElem();
+    }
+
+    static months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+    ];
+
+    static formatDateShort(date) {
+        if (!date) {
+            return "";
+        }
+
+        const diffSeconds = (PageInfo.loadDate - date) / 1000;
+        const diffMinutes = diffSeconds / 60;
+        const diffHours = diffMinutes / 60;
+        const diffDays = diffHours / 24;
+
+        if (diffMinutes < 1) {
+            return "Just now";
+        } else if (diffHours < 1) {
+            return `${Math.floor(diffMinutes)}m`;
+        } else if (diffHours < 24) {
+            return `${Math.floor(diffHours)}h`;
+        } else if (diffDays < 8) {
+            return `${Math.floor(diffDays)}d`;
+        } else if (date.getFullYear() === PageInfo.loadDate.getFullYear()) {
+            return `${Comment.months[date.getMonth()]} ${date.getDate()}`;
+        } else {
+            return `${Comment.months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+        }
+    }
+
+    static formatDateLong(date) {
+        if (!date) {
+            return "";
+        }
+
+        const year = date.getFullYear();
+        const month = Comment.months[date.getMonth()];
+        const day = date.getDate();
+        const hour = date.getHours();
+        const minute = date.getMinutes().toString().padStart(2, "0");
+        const amPm = hour >= 12 ? "PM" : "AM";
+        return `${month} ${day}, ${year}, ${hour > 12 ? hour - 12 : hour}:${minute} ${amPm}`;
+    }
+
+    static formatBody(body) {
+        if (!body) {
+            return "<i>Comment deleted</i>";
+        }
+
+        body = body.trim();
+        body = body.replace(/\n+/g, "\n");
+        body = body.replace(/\b(https?:\/\/[A-Z0-9.-]+\.[A-Z]{2,}([A-Z0-9_.~:\/?#\[\]@!$&'()*+,;=-]*[A-Z0-9_~\/?#\[@$&'(*+,=])?)/gi,
+            "<a href='$1'>$1</a>");
+        body = body.replace(/\b([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})\b/gi,
+            "<a href='mailto:$1'>$1</a>");
+
+        const paragraphs = body.split(/\n+/);
+        return paragraphs.map(p => `<p>${p}</p>`).join("");
+    }
+
+    fillCommentElem() {    
+        const profileImage = this.contentElem.querySelector(".profile-image");
+        const userProfileLink = this.contentElem.querySelector(".user-profile-link");
+        const username = this.contentElem.querySelector(".username");
+        const commentPostDateLink = this.contentElem.querySelector(".comment-post-date-link");
+        const commentPostDate = this.contentElem.querySelector(".comment-post-date");
+        const commentEdited = this.contentElem.querySelector(".comment-edited");
+
+        this.baseElem.dataset.id = this.id;
+        profileImage.src = this.info.userPhoto;
+        profileImage.alt = `${this.info.username}'s avatar`;
+        userProfileLink.href = this.info.userProfileUrl;
+        username.textContent = this.info.username || "Comment deleted";
+        commentPostDateLink.href = `${PageInfo.postName}/comment/${this.id}`;
+        commentPostDate.textContent = Comment.formatDateShort(this.info.date);
+        commentPostDate.setAttribute("title", Comment.formatDateLong(this.info.date));
+        commentEdited.textContent = this.info.editedDate ? "Edited" : "";
+        commentEdited.setAttribute("title", Comment.formatDateLong(this.info.editedDate));
+        this.bodyElem.innerHTML = Comment.formatBody(this.info.body);
+        this.baseElem.querySelector(":scope > .collapser").addEventListener("click", () => {
+            this.baseElem.classList.toggle("collapsed");
+            if (this.baseElem.getBoundingClientRect().top < 0) {
+                this.baseElem.scrollIntoView({"behavior": "smooth"});
             }
         });
-    });
 
-    observer.observe(document, {childList: true, subtree: true});
+        const replyButton = this.footerElem.querySelector(".reply");
+        replyButton.addEventListener("click", () => this.replyButtonClick());
+
+        if (PageInfo.userId !== this.info.userId) {
+            this.footerElem.querySelector(".edit").remove();
+            this.footerElem.querySelector(".delete").remove();
+        } else {
+            const editButton = this.footerElem.querySelector(".edit");
+            editButton.addEventListener("click", () => this.editButtonClick());
+
+            const deleteButton = this.footerElem.querySelector(".delete");
+            deleteButton.addEventListener("click", () => this.deleteComment());
+        }
+
+        if (this.info.deleted) {
+            this.contentElem.querySelector(".comment-header")
+                .insertBefore(username, userProfileLink);
+            userProfileLink.remove();
+            this.baseElem.classList.add("deleted");
+        }
+
+        for (const childId of this.info.children) {
+            const child = new Comment(childId);
+            this.childrenContainer.appendChild(child.baseElem);
+        }
+    }
+
+    postCommentApi(text) {
+        const url = `https://www.astralcodexten.com/api/v1/post/${PageInfo.postId}/comment`;
+        const data = {
+            body: text,
+            parent_id: this.id,
+        };
+        return apiCall(url, "POST", data);
+    }
+
+    async postReply() {
+        const replyInput = this.textEditContainer.querySelector(".reply-container .text-input");
+        const postReplyButton =
+            this.textEditContainer.querySelector(".reply-container .reply-post");
+        const body = replyInput.value;
+        postReplyButton.disabled = true;
+
+        let data;
+        try {
+            data = await this.postCommentApi(body);
+        } catch(error) {
+            debug("commentActionReply", "reply failed", error);
+            postReplyButton.disabled = false;
+            return;
+        }
+
+        debug("commentActionReply", "reply successful", data);
+        const newCommentId = data.id;
+        const username = data.name;
+        const userPhoto = data.photo_url;
+        const postDate = new Date(data.date);
+
+        CommentManager.addComment({
+            commentId: newCommentId,
+            userId: PageInfo.userId,
+            username,
+            userPhoto,
+            ancestorPath: data.ancestor_path,
+            date: postDate,
+            body,
+        });
+
+        const newComment = new Comment(newCommentId);
+        this.childrenContainer.appendChild(newComment.baseElem);
+        this.textEditContainer.replaceChildren();
+    }
+
+    replyButtonClick() {
+        const replyTemplate = document.getElementById("reply-template").content.cloneNode(true);
+        const replyBase = replyTemplate.querySelector(".reply-container");
+        const profileImage = replyBase.querySelector(".profile-image");
+        const replyInput = replyBase.querySelector(".text-input");
+        const postReplyButton = replyBase.querySelector(".reply-post");
+        const cancelReplyButton = replyBase.querySelector(".reply-cancel");
+
+        profileImage.src = CommentManager.getAvatarUrl(PageInfo.avatarUrl, PageInfo.userId);
+        profileImage.alt = `${PageInfo.username}'s avatar`;
+        replyInput.addEventListener("input", () => {
+            postReplyButton.disabled = replyInput.value === "";
+        });
+        postReplyButton.addEventListener("click",
+            () => this.postReply());
+        cancelReplyButton.addEventListener("click", () => {
+            replyBase.remove();
+        });
+
+        this.textEditContainer.replaceChildren();
+        this.textEditContainer.appendChild(replyTemplate);
+    }
+
+    editCommentApi(text) {
+        const url = `https://www.astralcodexten.com/api/v1/comment/${this.id}`;
+        return apiCall(url, "PATCH", {body: text});
+    }
+
+    async editComment() {
+        const editInput = this.textEditContainer.querySelector(".edit-container .text-input");
+        const postEditButton = this.textEditContainer.querySelector(".edit-container .edit-post");
+        const body = editInput.value;
+        postEditButton.disabled = true;
+
+        let data;
+        try {
+            data = await this.editCommentApi(body);
+        } catch (error) {
+            debug("commentActionEdit", "edit failed", error);
+            postEditButton.disabled = false;
+            return;
+        }
+
+        debug("commentActionEdit", "edit successful", data);
+        const editDate = new Date(data.edited.date);
+        CommentManager.editComment(this.id, body, editDate);
+        this.bodyElem.innerHTML = Comment.formatBody(body);
+        this.textEditContainer.replaceChildren();
+        this.bodyElem.classList.remove("hidden");
+        this.footerElem.classList.remove("hidden");
+    }
+
+    editButtonClick() {
+        const editTemplate = document.getElementById("edit-template").content.cloneNode(true);
+        const editBase = editTemplate.querySelector(".edit-container");
+        const editInput = editBase.querySelector(".text-input");
+        const postEditButton = editBase.querySelector(".edit-post");
+        const cancelEditButton = editBase.querySelector(".edit-cancel");
+
+        editInput.value = this.info.body;
+        const textRows = this.info.body.match(/\n+/g)?.length + 1 || 1;
+        editInput.rows = Math.min(Math.max(5, textRows), 15);
+        this.bodyElem.classList.add("hidden");
+        this.footerElem.classList.add("hidden");
+        editInput.addEventListener("input", () => {
+            postEditButton.disabled = editInput.value === "";
+        });
+        postEditButton.addEventListener("click",
+            () => this.editComment());
+        cancelEditButton.addEventListener("click", () => {
+            editBase.remove();
+            this.bodyElem.classList.remove("hidden");
+            this.footerElem.classList.remove("hidden");
+        });
+
+        this.textEditContainer.replaceChildren();
+        this.textEditContainer.appendChild(editTemplate);
+    }
+
+    deleteCommentApi() {
+        const url = `https://www.astralcodexten.com/api/v1/comment/${this.id}`;
+        return apiCall(url, "DELETE");
+    }
+
+    async deleteComment() {
+        const confirmDelete =
+            confirm("Are you sure you want to delete this comment? This action cannot be reversed.");
+        if (!confirmDelete) {
+            return;
+        }
+
+        const userProfileLink = this.contentElem.querySelector(".user-profile-link");
+        const profileImage = this.contentElem.querySelector(".profile-image");
+
+        try {
+            this.deleteCommentApi();
+        } catch (error) {
+            debug("commentActionDelete", "delete failed", error);
+            return;
+        }
+
+        this.baseElem.classList.add("deleted");
+        this.bodyElem.innerHTML = Comment.formatBody(null);
+        const deletedUsername = document.createElement("div");
+        deletedUsername.classList.add("username");
+        deletedUsername.textContent = "Comment deleted";
+        userProfileLink.replaceWith(deletedUsername);
+        profileImage.src = CommentManager.getAvatarUrl(null, null);
+    }
 }
 
-// reacts to key presses
-function addKeyListener() {
+
+
+let optionManager;
+let localStorageManager;
+
+
+
+// called when the page is first loaded
+
+function addKeyListener(optionManager) {
     logFuncCall();
+
+    function getKeyCommand(event) {
+        if (isMatchingKeyEvent(optionManager.get(OptionKey.prevCommentKey), event)) {
+            return KeyCommand.PrevComment;
+        } else if (isMatchingKeyEvent(optionManager.get(OptionKey.nextCommentKey), event)) {
+            return KeyCommand.NextComment;
+        } else if (isMatchingKeyEvent(optionManager.get(OptionKey.prevUnreadKey), event)) {
+            return KeyCommand.PrevUnread;
+        } else if (isMatchingKeyEvent(optionManager.get(OptionKey.nextUnreadKey), event)) {
+            return KeyCommand.NextUnread;
+        } else if (isMatchingKeyEvent(optionManager.get(OptionKey.parentKey), event)) {
+            return KeyCommand.Parent;
+        } else {
+            return KeyCommand.Unknown;
+        }
+    }
+
+    function inView(element) {
+        return element.getBoundingClientRect().top > -5;
+    }
+
+    function atEntry(element) {
+        // scrolling isn't pixel perfect, so include some buffer room
+        return Math.abs(element.getBoundingClientRect().top) < 5;
+    }
 
     document.addEventListener("keydown", function(event) {
         // don't trigger when writing
-        if ($(event.target).is("input, textarea, .ProseMirror")) {
-            debug("func_onKeydown", "onKeydown(", event, ")");
+        if (event.target.matches("input, textarea, div[contenteditable='true'], .ProseMirror")) {
             return;
+        }
+        debug("funcs_onKeydown", "onKeydown(", event, ")");
+
+        if (!optionManager.get(OptionKey.allowKeyboardShortcuts)) {
+            return;
+        }
+
+        debug("keyPressEvent", event);
+
+        const command = getKeyCommand(event);
+
+        if (command === KeyCommand.Unknown) {
+            return;
+        }
+
+        let comments;
+        const commentContainer = document.getElementById("top-comment-container");
+        if ([KeyCommand.PrevComment, KeyCommand.NextComment, KeyCommand.Parent].includes(command)) {
+            comments = commentContainer.querySelectorAll(".comment");
         } else {
-            debug("funcs_onKeydown", "onKeydown(", event, ")");
+            comments = commentContainer.querySelectorAll(".new-comment");
         }
 
-        if (!optionShadow.allowKeyboardShortcuts) {
+        if (comments.length === 0) {
             return;
         }
 
-        debug("keyPress", event);
+        let min = -1;
+        let max = comments.length;
 
-        function getKeyCommand(event) {
-            if (isMatchingKeyEvent(optionShadow.prevCommentKey, event)) {
-                return KeyCommandEnum.prevComment;
-            } else if (isMatchingKeyEvent(optionShadow.nextCommentKey, event)) {
-                return KeyCommandEnum.nextComment;
-            } else if (isMatchingKeyEvent(optionShadow.prevUnreadKey, event)) {
-                return KeyCommandEnum.prevUnread;
-            } else if (isMatchingKeyEvent(optionShadow.nextUnreadKey, event)) {
-                return KeyCommandEnum.nextUnread;
-            } else if (isMatchingKeyEvent(optionShadow.parentKey, event)) {
-                return KeyCommandEnum.parent;
+        while (max - min > 1) {
+            const mid = Math.floor((min + max) / 2);
+            debug("keyPressBinary", `${min} ${mid} ${max}`);
+            if (inView(comments[mid])) {
+                max = mid;
             } else {
-                return KeyCommandEnum.unknown;
+                min = mid;
             }
+            debug("keyPressBinary", `    mid is now ${mid}`);
         }
 
-        let command = getKeyCommand(event);
-
-        if ([KeyCommandEnum.prevComment, KeyCommandEnum.nextComment,
-                KeyCommandEnum.prevUnread, KeyCommandEnum.nextUnread,
-                KeyCommandEnum.parent].includes(command)) {
-
-            function inView(element) {
-                return element.getBoundingClientRect().top > -5;
-            }
-
-            function atEntry(element) {
-                // scrolling isn't pixel perfect, so include some buffer room
-                return Math.abs(element.getBoundingClientRect().top) < 5;
-            }
-
-            let comments;
-            if ([KeyCommandEnum.prevComment, KeyCommandEnum.nextComment, KeyCommandEnum.parent].includes(command)) {
-                comments = $("#main").find(".comment-content");
-            } else {
-                comments = $("#main").find(".new-comment");
-            }
-
-            if (comments.length === 0) {
-                return;
-            }
-
-            let min = -1;
-            let max = comments.length;
-
-            while (max - min > 1) {
-                let mid = Math.floor((min + max) / 2);
-                debug("keyPressBinary", `${min} ${mid} ${max}`);
-                if (inView(comments[mid])) {
-                    max = mid;
-                } else {
-                    min = mid;
-                }
-                debug("keyPressBinary", `    mid is now ${mid}`);
-            }
-
-            let index;
-            if (command === KeyCommandEnum.prevComment || command === KeyCommandEnum.prevUnread) {
-                index = min;
-                index = mod(index, comments.length);
-                debug("keyPressBinary", `gong backwards, index is min, now ${index}`);
-                if (atEntry(comments[index])) {
-                    index--;
-                    debug("keyPressBinary", `At entry, decrementing to ${index}`);
-                }
-            } else if (command === KeyCommandEnum.nextComment || command === KeyCommandEnum.nextUnread) {
-                index = max;
-                index = mod(index, comments.length);
-                debug("keyPressBinary", `going forwards, index is max, now ${index}`);
-                if (atEntry(comments[index])) {
-                    index++;
-                    debug("keyPressBinary", `At entry, incrementing to ${index}`);
-                }
-            } else if (command === KeyCommandEnum.parent) {
-                index = max;
-                debug("keyPressBinary", `getting parent, index is max, now ${index}`);
-                if (index < 0 || index >= comments.length) {
-                    return;
-                }
-
-                let parent = $(comments[index]).parent().parent().closest(".comment");
-                if (parent.length === 0) {
-                    debug("keyPressBinary", "already at top level comment");
-                    return;
-                }
-
-                debug("keyPressBinary", "found parent comment");
-
-                let scrollBehavior = optionShadow.smoothScroll ? "smooth" : "auto";
-                parent[0].scrollIntoView({"behavior": scrollBehavior});
-                return;
-            }
-
-            // wrap around at the top and bottom
+        let index;
+        if (command === KeyCommand.PrevComment || command === KeyCommand.PrevUnread) {
+            index = min;
             index = mod(index, comments.length);
+            debug("keyPressBinary", `giong backwards, index is min, now ${index}`);
+            if (atEntry(comments[index])) {
+                index--;
+                debug("keyPressBinary", `At entry, decrementing to ${index}`);
+            }
+        } else if (command === KeyCommand.NextComment || command === KeyCommand.NextUnread) {
+            index = max;
+            index = mod(index, comments.length);
+            debug("keyPressBinary", `going forwards, index is max, now ${index}`);
+            if (atEntry(comments[index])) {
+                index++;
+                debug("keyPressBinary", `At entry, incrementing to ${index}`);
+            }
+        } else if (command === KeyCommand.Parent) {
+            index = max;
+            debug("keyPressBinary", `getting parent, index is max, now ${index}`);
+            if (index < 0 || index >= comments.length) {
+                return;
+            }
 
-            debug("keyPressBinary", `index is ${index}`, comments[index]);
+            const parent = $(comments[index]).parent().parent().closest(".comment");
+            if (parent.length === 0) {
+                debug("keyPressBinary", "already at top level comment");
+                return;
+            }
 
-            let scrollBehavior = optionShadow.smoothScroll ? "smooth" : "auto";
-            comments[index].scrollIntoView({"behavior": scrollBehavior});
+            debug("keyPressBinary", "found parent comment");
+
+            const scrollBehavior = optionManager.get(OptionKey.smoothScroll) ? "smooth" : "auto";
+            parent[0].scrollIntoView({"behavior": scrollBehavior});
+            return;
         }
+
+        // wrap around at the top and bottom
+        index = mod(index, comments.length);
+
+        debug("keyPressBinary", `index is ${index}`, comments[index]);
+
+        const scrollBehavior = optionManager.get(OptionKey.smoothScroll) ? "smooth" : "auto";
+        comments[index].scrollIntoView({"behavior": scrollBehavior});
     });
 }
 
-// called when the extension is first loaded, run only once per session
-async function onStart() {
-    await loadInitialOptionValues();
+async function onStart(optionManager) {
     logFuncCall();
-    debug("pageLoadFsm", "state: onStart");
-    loadLocalStorage();
-    processInitialOptionValues();
-    webExtension.storage.onChanged.addListener(processStorageChange);
-    processAllComments(); // on the off chance there's already comments loaded
-    addDomObserver();
-    addKeyListener();
+    debug("pageEvent", "event: onStart");
+    chrome.storage.onChanged.addListener(optionManager.processOptionChange);
+    addKeyListener(optionManager);
 }
-
-
-
-// Setup for each page, run on every page change
-
-function updatePostReadDate() {
-    logFuncCall();
-    let postName = getPostName();
-    ensurePostEntry(postName);
-    localStorageData[postName].lastViewedDate = new Date().toISOString();
-    saveLocalStorage();
-}
-
-function runOnPageChangeHandlers() {
-    logFuncCall();
-    for (const [key, option] of Object.entries(OPTIONS)) {
-        if (option.onPageChange) {
-            debug("funcs_" + key + ".onPageChange", key + ".onPageChange()");
-            option.onPageChange();
-        }
-    }
-}
-
-// create cache of comment id -> date
-async function createCommentDateCache() {
-    logFuncCall();
-
-    function getDateRecursive(comment) {
-        let id = comment.id;
-        let userId = comment.user_id;
-        let ancestorPath = comment.ancestor_path;
-        let date = comment.date;
-        let editedDate = comment.edited_at;
-        let hearts = comment.reactions?.["❤"];
-        let userReact = comment.reaction;
-        let deleted = comment.deleted;
-        commentIdToInfo[id] = {
-            "userId": userId,
-            "ancestorPath": ancestorPath,
-            "date": date,
-            "editedDate": editedDate,
-            "hearts": hearts,
-            "userReact": userReact,
-            "deleted": deleted || !userId,
-        };
-
-        for (const childComment of comment.children) {
-            getDateRecursive(childComment);
-        }
-    }
-
-    let comments = await getPostComments();
-
-    commentIdToInfo = {};
-    for (const comment of comments) {
-        getDateRecursive(comment);
-    }
-}
-
-// called for each new page in a session
-async function pageSetup() {
-    logFuncCall();
-    debug("pageLoadFsm", `state: onPageChange, new page '${getPostName()}'`);
-
-    if (getPageType() === PageTypeEnum.post) {
-        updatePostReadDate();
-        runOnPageChangeHandlers();
-        await createCommentDateCache();
-        processAllComments();
-    }
-}
-
 
 
 // Setup once the DOM is loaded
 
-async function checkForUpdates() {
-    logFuncCall();
+async function createComments() {
+    const topLevelContainer = document.querySelector("#discussion .comments-page > .container");
+    const commentListContainer = document.createElement("div");
+    commentListContainer.classList.add("comment-list-container");
+    topLevelContainer.appendChild(commentListContainer);
+    const commentList = document.createElement("div");
+    commentList.classList.add("comment-list");
+    commentListContainer.appendChild(commentList);
+    const commentListItems = document.createElement("div");
+    commentListItems.classList.add("comment-list-items");
+    commentListItems.id = "top-comment-container";
+    commentList.appendChild(commentListItems);
 
-    if (optionShadow.hideUpdateNotice) {
-        return;
-    }
-
-    let manifest = webExtension.runtime.getManifest();
-    let currentVersion = manifest.version;
-    let updateData = await getVersionInfo();
-    let latestRequiredVersion = updateData.latest_required;
-
-    if (!validateVersion(currentVersion)) {
-        console.error(`Bad current version found: ${currentVersion}`);
-        return;
-    }
-
-    if (!validateVersion(latestRequiredVersion)) {
-        console.error(`Bad required version found: ${latestRequiredVersion}`);
-        return;
-    }
-
-    debug("updateCheck", `current version is ${currentVersion}`);
-    debug("updateCheck", `lastest required version is ${latestRequiredVersion}`);
-
-    if (compareVersion(currentVersion, latestRequiredVersion) >= 0) {
-        debug("updateCheck", "no update required");
-        return;
-    }
-
-    let updateUrl;
-    if (typeof browser !== "undefined") {
-        updateUrl = "https://addons.mozilla.org/en-US/firefox/addon/acx-tweaks/";
-        debug("updateCheck", "update required, Firefox");
-    } else if (typeof chrome !== "undefined"){
-        updateUrl = "https://chrome.google.com/webstore/detail/acx-tweaks/jdpghojhfigbpoeiadalafcmohaekglf";
-        debug("updateCheck", "update required, Chrome");
-    } else {
-        console.error("Can't get update url.");
-        debug("updateCheck", "update required, unknown browser");
-    }
-
-    let iconSvg = webExtension.extension.getURL("icons/caret-right-solid.svg");
-
-    let moreText = `You are on version ${currentVersion}. Without the latest version, ${latestRequiredVersion}, some stuff on the page might break.`;
-    if (updateData.reasons[latestRequiredVersion]) {
-        moreText += `<br><br>Reason: ${updateData.reasons[latestRequiredVersion]}`;
-    }
-
-    let popupHtml = `
-        <div id="update-popup">
-            <div id="update-content">
-                New ACX Tweaks version available.<br>
-                ${updateUrl ? `Update <a href="${updateUrl}" id="update-url" target="_blank">here</a>.` : ""}
-
-                <div id="update-more-info">
-                    <img src="${iconSvg}" id="update-caret-icon">
-                    More info
-                </div>
-
-                <div id="update-more" class="closed">
-                    ${moreText}
-                </div>
-
-                <div id="update-checkbox">
-                    <input type="checkbox" id="update-dont-show-again">
-                    <label id="update-checkbox-label" for="update-dont-show-again">Don't show again</label>
-                </div>
-
-                <button id="update-close">Close</button>
-            </div>
-        </div>
-    `;
-
-    let popupStyling = `
-        <style id="update-css">
-            #update-popup {
-                position: fixed;
-                bottom: 10px;
-                right: 10px;
-                width: 250px;
-                border: 1px solid white;
-                border-radius: 10px;
-                padding: 15px;
-                background: #3b3b3b;
-                color: white;
-                font: 14px Verdana, sans-serif;
-            }
-
-            #update-caret-icon {
-                filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(157deg) brightness(102%) contrast(101%);
-                width: 11px;
-                height: 11px;
-                display: inline-block;
-                transition: .1s ease-in;
-            }
-
-            #update-url {
-                color: white;
-            }
-
-            #update-more-info {
-                margin-top: 10px;
-                font: 12px Verdana, sans-serif;
-                cursor: pointer;
-            }
-
-            #update-more {
-                font: 12px Verdana, sans-serif;
-                border: 1px solid #888;
-                margin-top: 5px;
-                margin-bottom: 5px;
-                padding: 5px;
-                max-height: 100px;
-                overflow: scroll;
-                overflow-x: hidden;
-                transition: max-height .1s ease-in;
-            }
-
-            #update-more.closed {
-                max-height: 0;
-                padding: 0;
-                border: none;
-            }
-
-            #update-checkbox {
-                margin-bottom: 5px;
-            }
-
-            #update-dont-show-again {
-                margin-left: 0;
-                vertical-align: middle;
-                cursor: pointer;
-            }
-
-            #update-checkbox-label {
-                vertical-align: middle;
-                user-select: none;
-                font: 12px Verdana, sans-serif;
-                cursor: pointer;
-            }
-
-            #update-close {
-                cursor: pointer;
-            }
-        </style>
-    `;
-
-    $("body").append(popupHtml);
-    $(document.documentElement).append(popupStyling);
-
-    $("#update-more-info").click(function() {
-        if ($(this).hasClass("open")) {
-            $(this).removeClass("open");
-            $("#update-caret-icon").css("transform", "rotate(0deg)");
-            $("#update-more").addClass("closed");
-        } else {
-            $(this).addClass("open");
-            $("#update-caret-icon").css("transform", "rotate(90deg)");
-            $("#update-more").removeClass("closed");
-        }
-    });
-
-    $("#update-close").click(function() {
-        if ($("#update-dont-show-again").prop("checked")) {
-            setOption("hideUpdateNotice", true);
-        }
-
-        $("#update-popup").remove();
-        $("#update-css").remove();
-    });
-}
-
-function runOnLoadHandlers() {
-    logFuncCall();
-    for (const [key, option] of Object.entries(OPTIONS)) {
-        if (option.onLoad) {
-            debug("funcs_" + key + ".onLoad", key + ".onLoad()");
-            option.onLoad();
-        }
+    for (const commentId of CommentManager.topLevelComments) {
+        const comment = new Comment(commentId);
+        commentListItems.appendChild(comment.baseElem);
     }
 }
 
-// called when the DOM is loaded, run only once per session
 async function onLoad() {
     logFuncCall();
-    debug("pageLoadFsm", "state: onLoad");
-    runOnLoadHandlers();
-}
+    debug("pageEvent", "event: onLoad");
 
+    if (PageInfo.pageType === PageType.Post) {
+        const template = await loadTemplate(chrome.runtime.getURL("data/templates.html"));
+        document.head.appendChild(template.content);
+        localStorageManager.set("lastViewedDate", new Date().toISOString());
+        createComments();
+    }
+}
 
 
 // actually do the things
 
 async function doAllSetup() {
-    await onStart();
-    await pageSetup();
-    $(document).ready(onLoad);
+    optionManager = new OptionManager("options", OPTIONS);
+    await optionManager.init();
+
+    onStart(optionManager);
+
+    localStorageManager = new LocalStorageManager("acx-local-data-test", getPostName());
+    const preloads = await getPreloads();
+    PageInfo.init(preloads);
+
+    if (PageInfo.pageType === PageType.Post) {
+        CommentManager.init(await getPostComments());
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", onLoad);
+    } else {
+        onLoad();
+    }
 }
 
 doAllSetup();

@@ -4,7 +4,11 @@
     "description": "Quality of life improvements for the Astral Codex Ten blog on Substack.",
     "version": "1.2",
     "permissions": [
-        "storage"
+        "storage",
+        "declarativeNetRequestWithHostAccess"
+    ],
+    "host_permissions": [
+        "https://www.astralcodexten.com/*"
     ],
     "icons": {
         "128": "icons/acx-128.png"
@@ -12,9 +16,7 @@
     "content_scripts": [
         {
             "matches": [
-                "https://astralcodexten.substack.com/*",
-                "https://www.astralcodexten.com/*",
-                "https://astralcodexten.com/*"
+                "https://www.astralcodexten.com/*"
             ],
             "js": ["lib/jquery-3.5.1.min.js", "js/options.js", "js/util.js", "js/styles.js", "js/content.js", "js/tests.js"],
             "css": ["skin/css/style.css"],
@@ -23,14 +25,19 @@
     ],
     "web_accessible_resources": [
         {
-            "resources": ["icons/*.svg"],
+            "resources": ["icons/*.svg", "data/empty_comments.json", "data/templates.html", "js/inject.js"],
             "matches": [
-                "https://astralcodexten.substack.com/*",
-                "https://www.astralcodexten.com/*",
-                "https://astralcodexten.com/*"
+                "https://www.astralcodexten.com/*"
             ]
         }
     ],
+    "declarative_net_request" : {
+        "rule_resources" : [{
+            "id": "comments",
+            "enabled": true,
+            "path": "rules/comments.json"
+        }]
+    },
     "action": {
         "default_popup": "skin/popup.html",
         "default_title": "ACX Tweaks"

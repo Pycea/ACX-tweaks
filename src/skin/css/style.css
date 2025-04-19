@@ -1,15 +1,3 @@
-.comment .comment-actions > span {
-    margin-left: 0 !important;
-}
-
-.comment .comment-meta .highlight {
-    margin-right: 0 !important;
-}
-
-.comment .comment-meta .highlight .highlight-text {
-    top: -2px;
-}
-
 /* Hide duplicate timestamp if not using full time option */
 
 .comment-content .better-date {
@@ -99,4 +87,232 @@ blockquote blockquote {
 .hidden-post:first-child + .comment, .hidden-post:first-child + .hidden-post + .comment,
 .hidden-post:first-child + .hidden-post + .hidden-post + .comment {
     margin-top: 0 !important;
+}
+
+
+
+/* Recreation of substack ui */
+
+.text-input-buttons button {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    padding: 16px;
+    font-size: 15px;
+    font-weight: 600;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--animate-hover);
+}
+
+.text-input-buttons button.primary {
+    background-color: var(--color-button-primary-bg);
+    color: var(--color-button-primary-fg);
+}
+
+.text-input-buttons button.primary:hover {
+    background-color: var(--color-button-primary-bg-hover);
+}
+
+.text-input-buttons button.primary:disabled {
+    background-color: var(--color-button-disabled-bg);
+    color: var(--color-button-disabled-fg);
+    cursor: default;
+}
+
+.text-input-buttons button.secondary {
+    background-color: var(--color-button-secondary-bg);
+    color: var(--color-button-secondary-fg);
+}
+
+.text-input-buttons button.secondary:hover {
+    background-color: var(--color-button-secondary-bg-hover);
+}
+
+.comment-content {
+    display: flex;
+    gap: 12px;
+    padding-bottom: 12px;
+}
+
+.profile {
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-image {
+    width: 32px;
+    border-radius: 32px;
+    outline: 1px solid var(--color-utility-detail);
+    outline-offset: -1px;
+}
+
+.comment-main {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.comment-header {
+    display: flex;
+    gap: 6px;
+}
+
+.comment-header div {
+    color: var(--color-fg-secondary);
+    font-size: 13px;
+    font-family: var(--font-family-text);
+    line-height: 20px;
+}
+
+.comment-header .user-profile-link {
+    text-decoration: none;
+}
+
+.comment-header .user-profile-link:hover {
+    text-decoration: underline;
+}
+
+.comment-header .username {
+    color: var(--color-fg-primary);
+    font-weight: 500;
+}
+
+.deleted .comment-header .username {
+    color: #7b8086;
+    font-weight: 400;
+}
+
+.comment-post-date-link {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.comment-post-date-link:hover {
+    text-decoration: underline;
+}
+
+.comment-edit {
+    font-style: italic;
+    cursor: pointer;
+}
+
+.comment-edit:hover {
+    text-decoration: underline;
+}
+
+.comment-body {
+    margin-top: 4px;
+}
+
+.comment-body.hidden {
+    display: none;
+}
+
+.comment-footer {
+    display: flex;
+    padding-top: 8px;
+    gap: 16px;
+    font-size: 11px;
+    font-family: var(--font-family-meta);
+    font-weight: 500;
+    color: var(--color-fg-secondary);
+    line-height: 20px;
+    text-transform: uppercase;
+}
+
+.comment-footer.hidden {
+    display: none;
+}
+
+.comment-footer div {
+    cursor: pointer;
+}
+
+.comment-footer div:hover {
+    text-decoration: underline;
+}
+
+.children {
+    padding-left: 32px;
+    padding-top: 12px;
+    margin-bottom: 16px;
+}
+
+.children:empty {
+    display: none;
+}
+
+.collapser {
+    display: flex;
+    position: absolute;
+    width: 32px;
+    top: 36px;
+    bottom: 0;
+    cursor: pointer;
+}
+
+.children:empty + .collapser {
+    display: none;
+}
+
+.collapser .line {
+    background-color: var(--color-bg-tertiary);
+    height: 100%;
+    width: 1px;
+    margin: 0 auto;
+}
+
+.collapser:hover .line {
+    background-color: var(--color-fg-tertiary);
+}
+
+.comment.collapsed > .comment-main,
+.comment.collapsed > .children {
+    display: none;
+}
+
+.reply-container,
+.edit-container {
+    display: flex;
+    flex-grow: 1;
+    gap: 12px;
+}
+
+.reply-container {
+    padding-top: 16px;
+}
+
+.edit-container {
+    padding-top: 8px;
+}
+
+.text-input-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 8px
+}
+
+.text-input {
+    box-sizing: border-box;
+    padding: 8px 12px;
+    min-height: 40px;
+    resize: vertical;
+    border-radius: 8px;
+    font: 15px var(--font-family-text);
+    line-height: 20px;
+    background-color: var(--color-bg-primary);
+    color: var(--color-fg-primary);
+    border: var(--border-default);
+}
+
+.text-input:focus-within {
+    border: var(--border-focus);
+}
+
+.text-input-buttons {
+    display: flex;
+    gap: 8px;
 }
