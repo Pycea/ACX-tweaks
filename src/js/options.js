@@ -58,13 +58,13 @@ const useOldStylingOption = {
         document.getElementById(cssId(this.key)).disabled = !value;
     },
 }
-/*
+
 const darkModeOption = {
     key: "darkMode",
     default: window.matchMedia("(prefers-color-scheme: dark)").matches,
     hovertext: "Make this popup dark mode (does not apply to blog itself). To make the page dark, use an extension like Dark Reader.",
 }
-*/
+
 const zenModeOption = {
     key: "zenMode",
     default: false,
@@ -700,7 +700,7 @@ const resetDataOption = {
 let optionArray = [
     fixHeaderOption,
     useOldStylingOption,
-    // darkModeOption,
+    darkModeOption,
     zenModeOption,
     removeCommentsOption,
     // showHeartsOption,

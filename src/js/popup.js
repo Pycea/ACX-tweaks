@@ -285,18 +285,19 @@ function addDependencies() {
         }
     });
 
-//     // dark mode option
-//     $("#darkModeCheck").change(function() {
-//         if (this.checked) {
-//             $("body").addClass("dark");
-//         } else {
-//             $("body").removeClass("dark");
-//         }
-//     });
+    // dark mode option
+    const darkModeCheck = document.querySelector("#darkModeCheck");
+    darkModeCheck.addEventListener("change", () => {
+        if (darkModeCheck.checked) {
+            document.body.classList.add("dark");
+        } else {
+            document.body.classList.remove("dark");
+        }
+    });
 
-//     if (!($("#darkModeCheck").prop("checked"))) {
-//         $("body").removeClass("dark");
-//     }
+    if (!darkModeCheck.checked) {
+        document.body.classList.remove("dark");
+    }
 
     const shortcutToggle = document.getElementById("shortcutToggle");
     shortcutToggle.addEventListener("click", () => {
