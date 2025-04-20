@@ -77,7 +77,7 @@ const zenModeOption = {
         document.getElementById(cssId(this.key)).disabled = !value;
     },
 }
-/*
+
 const removeCommentsOption = {
     key: "removeComments",
     default: false,
@@ -90,7 +90,7 @@ const removeCommentsOption = {
         document.getElementById(cssId(this.key)).disabled = !value;
     },
 }
-
+/*
 let showHeartsOption = {
     key: "showHearts",
     default: false,
@@ -799,7 +799,7 @@ let optionArray = [
     // useOldStylingOption,
     // darkModeOption,
     zenModeOption,
-    // removeCommentsOption,
+    removeCommentsOption,
     // showHeartsOption,
     showFullDateOption,
     use24HourOption,

@@ -29,20 +29,9 @@ const STYLES = {
             }
         `,
     },
-    "hideBadge": {
-        "css": `
-            .profile-hover-card-target + div {
-                display: none;
-            }
-        `,
-    },
     "removeComments": {
         "css": `
             #discussion {
-                display: none;
-            }
-
-            .post-footer > .post-meta tr td:nth-child(2) {
                 display: none;
             }
         `,
@@ -509,16 +498,6 @@ const STYLES = {
 
             body {
                 overflow-y: hidden !important;
-            }`,
-    },
-    "hideNew": {
-        "css": `
-            button.new-comments {
-                display: none;
-            }
-
-            .comment-list-container .comment-list.has-new-comments {
-                padding-top: 12px !important;
             }`,
     },
 }
