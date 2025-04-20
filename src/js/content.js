@@ -109,16 +109,18 @@ class OptionManager {
             return;
         }
 
+        console.log(optionChanges)
+
         const changedKeys = [];
 
         for (const [key, newValue] of Object.entries(optionChanges.newValue)) {
             // hacky, but an easy way to implement isEqual for dicts
             const newValueString = JSON.stringify(newValue);
-            const oldValueString = JSON.stringify(optionChanges.oldValue[key]);
+            const oldValueString = JSON.stringify(optionChanges?.oldValue?.[key]);
 
             if (newValueString !== oldValueString && this.optionDict[key]) {
                 debug("optionGet", `Got change for ${key}`,
-                    optionChanges.oldValue[key], "->", newValue);
+                    optionChanges.oldValue?.[key], "->", newValue);
                 this.optionShadow[key] = newValue;
                 changedKeys.push(key);
             }
@@ -439,7 +441,7 @@ class Comment {
         this.baseElem.querySelector(":scope > .collapser").addEventListener("click", () => {
             this.baseElem.classList.toggle("collapsed");
             if (this.baseElem.getBoundingClientRect().top < 0) {
-                this.baseElem.scrollIntoView({"behavior": "smooth"});
+                this.baseElem.scrollIntoView();
             }
         });
 
@@ -661,7 +663,7 @@ function addKeyListener() {
 
     function atEntry(element) {
         // scrolling isn't pixel perfect, so include some buffer room
-        return Math.abs(element.getBoundingClientRect().top) < 5;
+        return Math.abs(element.getBoundingClientRect().top) < 15;
     }
 
     document.addEventListener("keydown", function(event) {
@@ -740,9 +742,7 @@ function addKeyListener() {
             }
 
             debug("keyPressBinary", "found parent comment");
-
-            const scrollBehavior = optionManager.get(OptionKey.smoothScroll) ? "smooth" : "auto";
-            parent[0].scrollIntoView({"behavior": scrollBehavior});
+            parent[0].scrollIntoView();
             return;
         }
 
@@ -750,9 +750,7 @@ function addKeyListener() {
         index = mod(index, comments.length);
 
         debug("keyPressBinary", `index is ${index}`, comments[index]);
-
-        const scrollBehavior = optionManager.get(OptionKey.smoothScroll) ? "smooth" : "auto";
-        comments[index].scrollIntoView({"behavior": scrollBehavior});
+        comments[index].scrollIntoView();
     });
 }
 

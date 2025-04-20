@@ -640,8 +640,7 @@ const addParentLinksOption = {
         footer.appendChild(parentLink);
 
         parentLink.addEventListener("click", () => {
-            const scrollBehavior = optionManager.get(OptionKey.smoothScroll) ? "smooth" : "auto";
-            scrollElement.scrollIntoView({ "behavior": scrollBehavior, "block": "start" });
+            scrollElement.scrollIntoView();
         });
     },
     onValueChange: function(value) {
@@ -689,8 +688,15 @@ const allowKeyboardShortcutsOption = {
 
 const smoothScrollOption = {
     key: "smoothScroll",
-    default: true,
+    default: !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
     hovertext: "Smoothly scroll when moving between comments (uncheck this to disable the animation and jump directly to the comment)",
+    onStart: function(value) {
+        addStyle(this.key);
+        this.onValueChange(value);
+    },
+    onValueChange: function(value) {
+        document.getElementById(cssId(this.key)).disabled = !value;
+    },
 }
 
 const prevCommentKeyOption = {

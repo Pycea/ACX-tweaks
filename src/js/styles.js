@@ -91,6 +91,13 @@ const STYLES = {
                 display: none !important;
             }`,
     },
+    "smoothScroll": {
+        "css": `
+            html {
+                scroll-behavior: smooth;
+            }
+        `,
+    },
     "useOldStyling": {
         "css": `
             /* Global default font and look */
