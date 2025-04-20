@@ -14,24 +14,18 @@ const STYLES = {
     },
     "zenMode": {
         "css": `
-            .post-header > .pencraft > .pencraft:nth-child(2),
-            .post-end-cta-full,
-            .end-of-post-recommend-cta-container,
-            .post-footer,
-            article.post > div:nth-child(4) > .pencraft,
+            [data-testid="noncontributor-cta-button"],
+            .post-ufi,
+            .available-content ~ *,
             .single-post-section,
-            .publication-footer {
-                display: none !important;
+            .publication-footer,
+            .subscribe-footer {
+                display: none;
             }
 
-            .post-header > .pencraft > .pencraft:first-child {
-                border-bottom: 1px solid #bec7d3;
-            }
-
-            .navbar-buttons .subscribe-btn,
-            #trigger1,
-            #trigger3 {
-                z-index: -100;
+            .post-header > .pencraft > .pencraft:first-child,
+            .available-content {
+                border-bottom: var(--border-default);
             }
         `,
     },

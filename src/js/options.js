@@ -64,7 +64,7 @@ const darkModeOption = {
     default: window.matchMedia("(prefers-color-scheme: dark)").matches,
     hovertext: "Make this popup dark mode (does not apply to blog itself). To make the page dark, use an extension like Dark Reader.",
 }
-
+*/
 const zenModeOption = {
     key: "zenMode",
     default: false,
@@ -77,7 +77,7 @@ const zenModeOption = {
         document.getElementById(cssId(this.key)).disabled = !value;
     },
 }
-
+/*
 const removeCommentsOption = {
     key: "removeComments",
     default: false,
@@ -837,7 +837,7 @@ let optionArray = [
     fixHeaderOption,
     // useOldStylingOption,
     // darkModeOption,
-    // zenModeOption,
+    zenModeOption,
     // removeCommentsOption,
     // showHeartsOption,
     // showFullDateOption,
