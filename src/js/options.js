@@ -252,7 +252,7 @@ const showFullDateOption = {
         document.getElementById(cssId(this.key)).disabled = !value;
     },
     processComment: function(comment) {
-        const commentContent = comment.querySelector(".comment-content");
+        const commentContent = comment.querySelector(":scope > .comment-content");
         const commentId = comment.dataset.id;
         const commentInfo = CommentManager.get(commentId);
 
@@ -602,59 +602,56 @@ let applyCommentStylingOption = {
         }
     },
 }
-
-let addParentLinksOption = {
+*/
+const addParentLinksOption = {
     key: "addParentLinks",
     default: true,
     hovertext: "Add links to scroll to the parent comment, or the top of the comments page for top level comments",
     onStart: function(value) {
         addStyle(this.key);
-        $(`#${this.key}-css`).prop("disabled", value);
+        document.getElementById(cssId(this.key)).disabled = value;
     },
-    onCommentChange: function(comment) {
-        let actions = $(comment).find("> .comment-content .comment-actions");
+    processComment: function(comment) {
+        const footer = comment.querySelector(":scope > .comment-content .comment-footer");
 
         // don't add link if it already exists
-        if (actions.find(".parent-link").length !== 0) {
+        if (footer.querySelector(".parent-link")) {
             return;
         }
 
-        let parentComment = $(comment).parent().closest(".comment");
+        const parentComment = comment.parentElement.parentElement;
         let scrollElement, displayText;
-        if (parentComment.length === 0) {
+        if (!parentComment.classList.contains("comment")) {
             // already at top level comment
-            scrollElement = $(".comments-page");
+            scrollElement = document.querySelector("#discussion");
             displayText = "Top";
         } else {
-            scrollElement = parentComment.find("> .comment-anchor:first-child");
+            scrollElement = parentComment;
             displayText = "Parent";
         }
 
         // create parent link element
-        // <span class="parent-link">
-        //     <a>${displayText}</a>
-        // </span>
-        let parentLink = document.createElement("span");
+        // <div class="parent-link">
+        //     ${displayText}
+        // </div>
+        const parentLink = document.createElement("div");
         parentLink.classList.add("parent-link");
-        let link = document.createElement("a");
-        let text = document.createTextNode(displayText);
-        link.appendChild(text);
-        parentLink.appendChild(link);
-
-        actions[0].appendChild(parentLink);
+        parentLink.textContent = displayText;
+        footer.appendChild(parentLink);
 
         parentLink.addEventListener("click", () => {
-            scrollElement[0].scrollIntoView({ "behavior": "smooth" });
+            const scrollBehavior = optionManager.get(OptionKey.smoothScroll) ? "smooth" : "auto";
+            scrollElement.scrollIntoView({ "behavior": scrollBehavior, "block": "start" });
         });
     },
     onValueChange: function(value) {
-        $(`#${this.key}-css`).prop("disabled", value);
+        document.getElementById(cssId(this.key)).disabled = value;
         if (value) {
-            processAllComments();
+            optionManager.processAllComments();
         }
     },
 }
-*/
+
 const hideUsersOption = {
     key: "hideUsers",
     default: "",
@@ -806,7 +803,7 @@ let optionArray = [
     // highlightNewOption,
     // newTimeOption,
     // applyCommentStylingOption,
-    // addParentLinksOption,
+    addParentLinksOption,
     hideUsersOption,
     allowKeyboardShortcutsOption,
     smoothScrollOption,

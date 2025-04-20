@@ -132,6 +132,10 @@ blockquote blockquote {
     margin-top: 12px
 }
 
+.comment {
+    scroll-margin-top: 8px;
+}
+
 .comment.hidden {
     display: none;
 }
