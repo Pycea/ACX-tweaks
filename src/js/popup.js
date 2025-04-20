@@ -213,18 +213,20 @@ function createResetHandler() {
 }
 
 function addDependencies() {
-//     // option to use 24 hour time depends on showing the full date
-//     $("#showFullDateCheck").change(function() {
-//         if (!this.checked) {
-//             $("#use24HourCheck").prop("disabled", true).trigger("change");
-//         } else {
-//             $("#use24HourCheck").prop("disabled", false);
-//         }
-//     });
+    // option to use 24 hour time depends on showing the full date
+    const showFullDateCheck = document.querySelector("#showFullDateCheck");
+    const use24HourCheck = document.querySelector("#use24HourCheck");
+    showFullDateCheck.addEventListener("change", () => {
+        if (!showFullDateCheck.checked) {
+            use24HourCheck.disabled = true;
+        } else {
+            use24HourCheck.disabled = false;
+        }
+    });
 
-//     if (!($("#showFullDateCheck").prop("checked"))) {
-//         $("#use24HourCheck").prop("disabled", true);
-//     }
+    if (!showFullDateCheck.checked) {
+        use24HourCheck.disabled = true;
+    }
 
 //     // option to highlight recent comments depends on highlighting comments
 //     $("#highlightNewCheck").change(function() {
@@ -242,33 +244,31 @@ function addDependencies() {
 //         $("#newTimeSelect").prop("disabled", true);
 //     }
 
-//     // keyboard shortcuts depend on having them enabled
-//     $("#allowKeyboardShortcutsCheck").change(function() {
-//         if (!this.checked) {
-//             $("#smoothScrollCheck").prop("disabled", true);
-//             $("#prevCommentKeyText").prop("disabled", true);
-//             $("#nextCommentKeyText").prop("disabled", true);
-//             $("#prevUnreadKeyText").prop("disabled", true);
-//             $("#nextUnreadKeyText").prop("disabled", true);
-//             $("#parentKeyText").prop("disabled", true);
-//         } else {
-//             $("#smoothScrollCheck").prop("disabled", false);
-//             $("#prevCommentKeyText").prop("disabled", false);
-//             $("#nextCommentKeyText").prop("disabled", false);
-//             $("#prevUnreadKeyText").prop("disabled", false);
-//             $("#nextUnreadKeyText").prop("disabled", false);
-//             $("#parentKeyText").prop("disabled", false);
-//         }
-//     });
+    // keyboard shortcuts depend on having them enabled
+    const shortcutsCheck = document.querySelector("#allowKeyboardShortcutsCheck");
+    shortcutsCheck.addEventListener("change", () => {
+        if (!shortcutsCheck.checked) {
+            document.querySelector("#prevCommentKeyText").disabled = true;
+            document.querySelector("#nextCommentKeyText").disabled = true;
+            document.querySelector("#prevUnreadKeyText").disabled = true;
+            document.querySelector("#nextUnreadKeyText").disabled = true;
+            document.querySelector("#parentKeyText").disabled = true;
+        } else {
+            document.querySelector("#prevCommentKeyText").disabled = false;
+            document.querySelector("#nextCommentKeyText").disabled = false;
+            document.querySelector("#prevUnreadKeyText").disabled = false;
+            document.querySelector("#nextUnreadKeyText").disabled = false;
+            document.querySelector("#parentKeyText").disabled = false;
+        }
+    });
 
-//     if (!($("#allowKeyboardShortcutsCheck").prop("checked"))) {
-//         $("#smoothScrollCheck").prop("disabled", true);
-//         $("#prevCommentKeyText").prop("disabled", true);
-//         $("#nextCommentKeyText").prop("disabled", true);
-//         $("#prevUnreadKeyText").prop("disabled", true);
-//         $("#nextUnreadKeyText").prop("disabled", true);
-//         $("#parentKeyText").prop("disabled", true);
-//     }
+    if (!shortcutsCheck.checked) {
+        document.querySelector("#prevCommentKeyText").disabled = true;
+        document.querySelector("#nextCommentKeyText").disabled = true;
+        document.querySelector("#prevUnreadKeyText").disabled = true;
+        document.querySelector("#nextUnreadKeyText").disabled = true;
+        document.querySelector("#parentKeyText").disabled = true;
+    }
 
 //     // update newTime setting on each keystroke, not just when the value changes
 //     $("#newTimeNumber").keydown(function(event) {
@@ -277,10 +277,13 @@ function addDependencies() {
 //         }
 //     });
 
-//     $("body").on("click", "a", function() {
-//         chrome.tabs.create({url: $(this).attr("href")});
-//         return false;
-//    });
+    document.body.addEventListener("click", (event) => {
+        const a = event.target.closest("a");
+        if (a) {
+            chrome.tabs.create({url: a.href});
+            event.preventDefault();
+        }
+    });
 
 //     // dark mode option
 //     $("#darkModeCheck").change(function() {

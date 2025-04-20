@@ -336,7 +336,7 @@ class Comment {
         this.id = id;
         this.info = CommentManager.get(this.id);
 
-        const commentTemplate = document.getElementById("comment-template").content.cloneNode(true);
+        const commentTemplate = document.querySelector("#comment-template").content.cloneNode(true);
         this.baseElem = commentTemplate.querySelector(".comment");
         this.contentElem = this.baseElem.querySelector(":scope > .comment-content");
         this.bodyElem = this.contentElem.querySelector(".comment-body");
@@ -517,7 +517,7 @@ class Comment {
     }
 
     replyButtonClick() {
-        const replyTemplate = document.getElementById("reply-template").content.cloneNode(true);
+        const replyTemplate = document.querySelector("#reply-template").content.cloneNode(true);
         const replyBase = replyTemplate.querySelector(".reply-container");
         const profileImage = replyBase.querySelector(".profile-image");
         const replyInput = replyBase.querySelector(".text-input");
@@ -569,7 +569,7 @@ class Comment {
     }
 
     editButtonClick() {
-        const editTemplate = document.getElementById("edit-template").content.cloneNode(true);
+        const editTemplate = document.querySelector("#edit-template").content.cloneNode(true);
         const editBase = editTemplate.querySelector(".edit-container");
         const editInput = editBase.querySelector(".text-input");
         const postEditButton = editBase.querySelector(".edit-post");
@@ -684,7 +684,7 @@ function addKeyListener() {
         }
 
         let comments;
-        const commentContainer = document.getElementById("top-comment-container");
+        const commentContainer = document.querySelector("#top-comment-container");
         if ([KeyCommand.PrevComment, KeyCommand.NextComment, KeyCommand.Parent].includes(command)) {
             comments = commentContainer.querySelectorAll(".comment");
         } else {
