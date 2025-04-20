@@ -658,7 +658,7 @@ const parentKeyOption = {
     },
     hovertext: "Key/key combo to jump to the parent of the current comment (click the box to set)",
 }
-/*
+
 const customCssOption = {
     key: "customCss",
     default: "",
@@ -673,7 +673,7 @@ const customCssOption = {
         document.getElementById(cssId(this.key)).textContent = value;
     },
 }
-*/
+
 const showDebugOption = {
     key: "showDebug",
     default: "",
@@ -718,7 +718,7 @@ let optionArray = [
     prevUnreadKeyOption,
     nextUnreadKeyOption,
     parentKeyOption,
-    // customCssOption,
+    customCssOption,
     showDebugOption,
     resetDataOption,
 ];
