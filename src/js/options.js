@@ -378,7 +378,7 @@ const highlightNewOption = {
     },
     onStart: function(value) {
         addStyle(this.key);
-        this.onValueChange(value);
+        document.getElementById(cssId(this.key)).disabled = !value;
     },
     processComment: function(comment) {
         const commentId = comment.dataset.id;
@@ -403,7 +403,9 @@ const highlightNewOption = {
     },
     onValueChange: function(value) {
         document.getElementById(cssId(this.key)).disabled = !value;
-        optionManager.processAllComments();
+        if (value) {
+            optionManager.processAllComments();
+        }
     },
 }
 

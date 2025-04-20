@@ -130,6 +130,7 @@ class OptionManager {
     }
 
     processAllComments() {
+        logFuncCall();
         const commentHandlerObjects = Object.values(this.optionDict)
             .filter(o => o.processComment && (this.optionShadow[o.key] || o.alwaysProcessComments));
 
@@ -799,7 +800,9 @@ async function onLoad() {
         document.head.appendChild(template.content);
         localStorageManager.set("lastViewedDate", new Date().toISOString());
         createComments();
-        optionManager.processAllComments();
+        requestAnimationFrame(() => {
+            optionManager.processAllComments();
+        });
     }
 }
 
