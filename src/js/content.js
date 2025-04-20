@@ -583,8 +583,6 @@ class Comment {
         const cancelEditButton = editBase.querySelector(".edit-cancel");
 
         editInput.value = this.info.body;
-        const textRows = this.info.body.match(/\n+/g)?.length + 1 || 1;
-        editInput.rows = Math.min(Math.max(5, textRows), 15);
         this.bodyElem.classList.add("hidden");
         this.footerElem.classList.add("hidden");
         editInput.addEventListener("input", () => {
@@ -600,6 +598,7 @@ class Comment {
 
         this.textEditContainer.replaceChildren();
         this.textEditContainer.appendChild(editTemplate);
+        editInput.style.height = `${Math.min(Math.max(editInput.scrollHeight, 116), 500) + 2}px`;
     }
 
     deleteCommentApi() {
