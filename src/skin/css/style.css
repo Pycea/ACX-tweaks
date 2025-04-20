@@ -18,10 +18,10 @@
     display: inline;
 }
 
-/* Highlight for new comments */
+/* Hide new comment tag */
 
 .new-tag-text {
-    color: #d35400;
+    display: none;
 }
 
 /* Hide new comment styling if not using comment styling option */

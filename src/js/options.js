@@ -368,100 +368,46 @@ const use24HourOption = {
         document.getElementById(cssId(this.key)).disabled = !value;
     },
 }
-/*
-let highlightNewOption = {
+
+const highlightNewOption = {
     key: "highlightNew",
     default: true,
     hovertext: "Highlight comments that you haven't seen yet",
-    startSaveTimer: function() {
-        if (this.localStorageTimer) {
-            clearTimeout(this.localStorageTimer);
-        }
-
-        let that = this;
-        this.localStorageTimer = setTimeout(function() {
-            let postName = getPostName();
-            localStorageData[postName].seenComments = Array.from(that.seenCommentsSet);
-            saveLocalStorage();
-        }, 500);
-    },
-    ensureSeenComments: function() {
-        ensurePostEntry();
-        let postName = getPostName();
-        if (!("seenComments" in localStorageData[postName])) {
-            localStorageData[postName].seenComments = [];
-        }
-        this.startSaveTimer();
-    },
-    updateNewTime: function(value) {
-        // the delta is in milliseconds
-        let newCommentDelta = value;
-        let newCommentDate = new Date(new Date().getTime() - newCommentDelta);
-
-        this.newCommentDate = newCommentDate;
+    updateNewTime: function(deltaMs) {
+        this.newCommentCutoff = new Date(PageInfo.loadDate - deltaMs);
     },
     onStart: function(value) {
-        if (value) {
-            $(document.documentElement).addClass("highlight-new");
-        } else {
-            $(document.documentElement).removeClass("highlight-new");
-        }
+        addStyle(this.key);
+        this.onValueChange(value);
     },
-    onPageChange: function() {
-        this.ensureSeenComments();
-        let postName = getPostName();
-        this.seenCommentsSet = new Set(localStorageData[postName].seenComments);
-        this.pageSeenCommentsSet = new Set();
-        this.localStorageTimer = null;
-    },
-    onCommentChange: function(comment) {
-        let commentId = getCommentIdNumber(comment);
-        let commentDate = new Date(commentIdToInfo[commentId]?.date);
-        let commentSeen = this.seenCommentsSet.has(commentId) && !this.pageSeenCommentsSet.has(commentId);
+    processComment: function(comment) {
+        const commentId = comment.dataset.id;
+        const commentInfo = CommentManager.get(commentId);
+        const commentDate = commentInfo.editedDate || commentInfo.date;
+        const commentSeen = PageInfo.lastViewedDate && commentDate <= PageInfo.lastViewedDate;
+        const header = comment.querySelector(":scope > .comment-content .comment-header");
 
-        this.seenCommentsSet.add(commentId);
-        if (!commentSeen) {
-            this.pageSeenCommentsSet.add(commentId);
-        }
-        this.ensureSeenComments();
-        this.startSaveTimer();
-
-        if ((!commentSeen || commentDate > this.newCommentDate) && optionShadow[this.key]) {
-            if (!$(comment).hasClass("new-comment")) {
-                $(comment).addClass("new-comment");
-                let dateSpan = $(comment).find("> .comment-content .comment-meta > *:not(.highlight)").last();
-                let newTagText = document.createElement("span");
-                newTagText.classList.add("new-tag-text");
-                newTagText.textContent = "~new~";
-                let newTagCss = document.createElement("span");
-                newTagCss.classList.add("new-tag-css");
-                let newTag = document.createElement("span");
-                newTag.classList.add("new-tag");
-                newTag.appendChild(newTagText);
-                newTag.appendChild(newTagCss);
-
-                dateSpan.after(newTag);
+        if (!commentSeen || commentDate && commentDate >= this.newCommentCutoff) {
+            if (header.querySelector(".new-tag-text")) {
+                return;
             }
+            comment.classList.add("new-comment");
+            const newTag = document.createElement("div");
+            newTag.classList.add("new-tag-text");
+            newTag.textContent = "~new~";
+            header.appendChild(newTag);
         } else {
-            $(comment).removeClass("new-comment");
-            let metaDiv = $(comment).find("> .comment-content .comment-meta");
-            metaDiv.find(".new-tag").remove();
+            comment.classList.remove("new-comment");
+            header.querySelector(".new-tag-text")?.remove();
         }
     },
     onValueChange: function(value) {
-        if (value) {
-            $(document.documentElement).addClass("highlight-new");
-        } else {
-            $(document.documentElement).removeClass("highlight-new");
-            this.alwaysProcessComments = true;
-        }
-
-        processAllComments();
-        this.alwaysProcessComments = false;
+        document.getElementById(cssId(this.key)).disabled = !value;
+        optionManager.processAllComments();
     },
 }
 
-let newTimeOption = {
+const newTimeOption = {
     key: "newTime",
     default: 0,
     hovertext: "Mark comments posted within the given time range as new",
@@ -470,10 +416,10 @@ let newTimeOption = {
     },
     onValueChange: function(value) {
         OPTIONS.highlightNew.updateNewTime(value);
-        processAllComments();
+        optionManager.processAllComments();
     },
 }
-*/
+
 const applyCommentStylingOption = {
     key: "applyCommentStyling",
     default: true,
@@ -600,7 +546,11 @@ const hideUsersOption = {
     hovertext: "Hide comments from the listed users, in a comma separated list (if you don't like seeing the names in this box, add spaces at the front until they disappear)",
     alwaysProcessComments: true,
     onStart: function(value) {
-        this.hiddenSet = new Set(optionManager.get(this.key).split(",").map(x => x.trim()).filter(x => x));
+        this.hiddenSet = new Set(
+            optionManager.get(this.key)
+                .split(",")
+                .map(x => x.trim())
+                .filter(x => x));
     },
     processComment: function(comment) {
         const commentId = comment.dataset.id;
@@ -618,7 +568,11 @@ const hideUsersOption = {
         }
     },
     onValueChange: function(value) {
-        this.hiddenSet = new Set(optionManager.get(this.key).split(",").map(x => x.trim()).filter(x => x));
+        this.hiddenSet = new Set(
+            optionManager.get(this.key)
+            .split(",")
+            .map(x => x.trim())
+            .filter(x => x));
         optionManager.processAllComments();
     },
 }
@@ -749,8 +703,8 @@ let optionArray = [
     // showHeartsOption,
     showFullDateOption,
     use24HourOption,
-    // highlightNewOption,
-    // newTimeOption,
+    highlightNewOption,
+    newTimeOption,
     applyCommentStylingOption,
     addParentLinksOption,
     hideUsersOption,

@@ -43,6 +43,14 @@ const STYLES = {
             }
         `,
     },
+    "highlightNew": {
+        "css": `
+            .comment-header .new-tag-text {
+                display: block;
+                color: #e65c00;
+            }
+        `,
+    },
     "showFullDate": {
         "css": `
             .comment-content .worse-date {
@@ -67,11 +75,11 @@ const STYLES = {
     },
     "use24Hour": {
         "css": `
-            .better-date .hour24-time {
+            .comment-header .hour24-time {
                 display: inline;
             }
 
-            .better-date .hour12-time {
+            .comment-header .hour12-time {
                 display: none;
             }`,
     },

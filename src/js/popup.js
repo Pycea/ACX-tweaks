@@ -27,46 +27,46 @@ function setOption(key, value) {
 
 // custom handlers
 
-// function newTimeHandler() {
-//     // value is time length in minutes
-//     const units = document.getElementById("newTimeSelect").value;
-//     const multiplier = document.getElementById("newTimeSelect").value;
-//     const timeMs = units * multiplier * 60 * 1000; // x60000 to turn minutes to ms
-//     setOption("newTime", timeMs);
-// }
-
-const CUSTOM_TRIGGERS = {
-    // "newTime": newTimeHandler,
+function newTimeHandler() {
+    // value is time length in minutes
+    const units = document.querySelector("#newTimeNumber").value;
+    const multiplier = document.querySelector("#newTimeSelect").value;
+    const timeMs = units * multiplier * 60 * 1000; // x60000 for minutes to ms
+    setOption("newTime", timeMs);
 }
 
-// function newTimeState(value) {
-//     // value is in milliseconds
+const CUSTOM_TRIGGERS = {
+    "newTime": newTimeHandler,
+}
 
-//     // numValue is the numerical part of the setting, without the units
-//     // start out with minutes
-//     let numValue = value / 1000 / 60;
+function newTimeState(value) {
+    // value is in milliseconds
 
-//     // the value of the select is the number of minutes for the given time
-//     let selectSetting = 1;
+    // numValue is the numerical part of the setting, without the units
+    // start out with minutes
+    let numValue = value / 1000 / 60;
 
-//     // if it's an even number of hours, use those instead
-//     if (numValue % 60 === 0) {
-//         numValue /= 60;
-//         selectSetting *= 60;
-//     }
+    // the value of the select is the number of minutes for the given time
+    let selectSetting = 1;
 
-//     // if it's an even number of days, use those instead
-//     if (numValue % 24 === 0) {
-//         numValue /= 24;
-//         selectSetting *= 24;
-//     }
+    // if it's an even number of hours, use those instead
+    if (numValue % 60 === 0) {
+        numValue /= 60;
+        selectSetting *= 60;
+    }
 
-//     $("#newTimeSelect").val(selectSetting);
-//     $("#newTimeNumber").val(numValue);
-// }
+    // if it's an even number of days, use those instead
+    if (numValue % 24 === 0) {
+        numValue /= 24;
+        selectSetting *= 24;
+    }
+
+    document.querySelector("#newTimeSelect").value = selectSetting;
+    document.querySelector("#newTimeNumber").value = numValue;
+}
 
 const CUSTOM_SET_STATE = {
-    // "newTime": newTimeState,
+    "newTime": newTimeState,
 }
 
 
@@ -112,13 +112,19 @@ function addHovertext(optionElem) {
 
 function createChangeHandler(optionElem) {
     const id = optionElem.id;
-    const input = optionElem.querySelector(".trigger");
+    const inputs = optionElem.querySelectorAll(".trigger");
 
     // call custom handler if defined
     if (id in CUSTOM_TRIGGERS) {
-        input.addEventListener("change", CUSTOM_TRIGGERS[id]);
+        inputs.forEach((input) => {
+            input.addEventListener("change", CUSTOM_TRIGGERS[id]);
+        });
         return;
+    } else if (inputs.length !== 1) {
+        throw Error(`${id}: Options with multiple inputs require custom handlers`);
     }
+
+    const input = inputs[0];
 
     // otherwise create default handler
     if (input.classList.contains("check")) {
@@ -228,21 +234,22 @@ function addDependencies() {
         use24HourCheck.disabled = true;
     }
 
-//     // option to highlight recent comments depends on highlighting comments
-//     $("#highlightNewCheck").change(function() {
-//         if (!this.checked) {
-//             $("#newTimeNumber").prop("disabled", true);
-//             $("#newTimeSelect").prop("disabled", true);
-//         } else {
-//             $("#newTimeNumber").prop("disabled", false);
-//             $("#newTimeSelect").prop("disabled", false);
-//         }
-//     });
+    // option to highlight recent comments depends on highlighting comments
+    const highlightNewCheck = document.querySelector("#highlightNewCheck");
+    highlightNewCheck.addEventListener("change", () => {
+        if (!highlightNewCheck.checked) {
+            document.querySelector("#newTimeNumber").disabled = true;
+            document.querySelector("#newTimeSelect").disabled = true;
+        } else {
+            document.querySelector("#newTimeNumber").disabled = false;
+            document.querySelector("#newTimeSelect").disabled = false;
+        }
+    });
 
-//     if (!($("#highlightNewCheck").prop("checked"))) {
-//         $("#newTimeNumber").prop("disabled", true);
-//         $("#newTimeSelect").prop("disabled", true);
-//     }
+    if (!highlightNewCheck.checked) {
+        document.querySelector("#newTimeNumber").disabled = true;
+        document.querySelector("#newTimeSelect").disabled = true;
+    }
 
     // keyboard shortcuts depend on having them enabled
     const shortcutsCheck = document.querySelector("#allowKeyboardShortcutsCheck");
@@ -269,13 +276,6 @@ function addDependencies() {
         document.querySelector("#nextUnreadKeyText").disabled = true;
         document.querySelector("#parentKeyText").disabled = true;
     }
-
-//     // update newTime setting on each keystroke, not just when the value changes
-//     $("#newTimeNumber").keydown(function(event) {
-//         if (["+", "-", ".", "e", "E"].includes(event.originalEvent.key)) {
-//             event.preventDefault();
-//         }
-//     });
 
     document.body.addEventListener("click", (event) => {
         const a = event.target.closest("a");

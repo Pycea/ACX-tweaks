@@ -177,7 +177,7 @@ class LocalStorageManager {
     }
 
     get(key) {
-        return this.localStorageData[this.postName][key];
+        return this.localStorageData[this.postName]?.[key];
     }
 }
 
@@ -190,7 +190,7 @@ class PageInfo {
     static postName;
     static loadDate;
 
-    static init(preloads) {
+    static init(preloads, localStorageManager) {
         logFuncCall();
 
         PageInfo.preloads = preloads;
@@ -204,6 +204,8 @@ class PageInfo {
         PageInfo.postName = preloads.post?.slug;
 
         PageInfo.loadDate = new Date();
+        const dateString = localStorageManager.get("lastViewedDate");
+        PageInfo.lastViewedDate = dateString ? new Date(dateString) : null;
     }
 }
 
@@ -433,8 +435,12 @@ class Comment {
         commentPostDateLink.href = `${PageInfo.postName}/comment/${this.id}`;
         commentPostDate.textContent = Comment.formatDateShort(this.info.date);
         commentPostDate.setAttribute("title", Comment.formatDateLong(this.info.date));
-        commentEdited.textContent = this.info.editedDate ? "Edited" : "";
-        commentEdited.setAttribute("title", Comment.formatDateLong(this.info.editedDate));
+        if (this.info.editedDate) {
+            commentEdited.textContent = "Edited";
+            commentEdited.setAttribute("title", Comment.formatDateLong(this.info.editedDate));
+        } else {
+            commentEdited.remove();
+        }
         this.bodyElem.innerHTML = Comment.formatBody(this.info.body);
         this.baseElem.querySelector(":scope > .collapser").addEventListener("click", () => {
             this.baseElem.classList.toggle("collapsed");
@@ -804,11 +810,11 @@ async function doAllSetup() {
     optionManager = new OptionManager(OPTION_KEY, OPTIONS);
     await optionManager.init();
 
-    onStart();
-
     localStorageManager = new LocalStorageManager("acx-local-data-test", getPostName());
     const preloads = await getPreloads();
-    PageInfo.init(preloads);
+    PageInfo.init(preloads, localStorageManager);
+
+    onStart();
 
     if (PageInfo.pageType === PageType.Post) {
         CommentManager.init(await getPostComments());

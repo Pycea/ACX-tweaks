@@ -54,7 +54,7 @@ function getPreloads() {
     document.documentElement.appendChild(injectionScript);
     injectionScript.onload = () => injectionScript.remove();
 
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         window.addEventListener("message", (event) => {
             if (event.source === window && event.data.handshake === "acx-tweaks-preloads") {
                 resolve(event.data.preloads);
@@ -75,7 +75,7 @@ function apiCall(url, method="GET", data={}, timeout=10) {
         options.body = JSON.stringify(data);
     }
     return fetch(url, options)
-        .then((response) => response.json())
+        .then(response => response.json())
         .then((data) => {
             debug("fetchResponse", data);
             return data;
