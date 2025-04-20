@@ -767,6 +767,10 @@ async function onStart() {
         optionManager.processOptionChange(changes, namespace)
     });
     addKeyListener();
+    history.scrollRestoration = "manual";
+    window.addEventListener("beforeunload", () => {
+        sessionStorage.setItem("scrollY", window.scrollY);
+    });
 }
 
 
@@ -802,6 +806,10 @@ async function onLoad() {
         createComments();
         requestAnimationFrame(() => {
             optionManager.processAllComments();
+            const savedY = sessionStorage.getItem("scrollY");
+            if (savedY) {
+                window.scrollTo({top: parseInt(savedY)});
+            }
         });
     }
 }
