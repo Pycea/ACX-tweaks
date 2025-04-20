@@ -523,11 +523,4 @@ const STYLES = {
                 padding-top: 12px !important;
             }`,
     },
-    "hideUsers": {
-        "css": `
-            .hidden-post {
-                display: none;
-            }
-        `,
-    },
 }

@@ -23,7 +23,7 @@ function addStyle(key) {
 //     hovertext: <string>,
 //     onStart: function(value) { ... },
 //     onLoad: function() { ... },
-//     onCommentChange: function(comment) { ... },
+//     processComment: function(comment) { ... },
 //     onValueChange: function(value) { ... },
 // }
 //
@@ -693,41 +693,36 @@ let addParentLinksOption = {
         }
     },
 }
-
+*/
 const hideUsersOption = {
     key: "hideUsers",
     default: "",
     hovertext: "Hide comments from the listed users, in a comma separated list (if you don't like seeing the names in this box, add spaces at the front until they disappear)",
+    alwaysProcessComments: true,
     onStart: function(value) {
-        addStyle(this.key);
-        document.getElementById(cssId(this.key)).disabled = !value;
         this.hiddenSet = new Set(optionManager.get(this.key).split(",").map(x => x.trim()).filter(x => x));
     },
     processComment: function(comment) {
         const commentId = comment.dataset.id;
         const name = CommentManager.get(commentId).username;
         if (this.hiddenSet.has(name)) {
-            comment.classList.add("hidden-post");
+            comment.classList.add("hidden");
 
-            // no visible siblings, so remove the enclosing comment list
-            if (comment.parentElement.querySelector(":scope > :not(.hidden-post)").length === 0) {
-                comment.parentElement.parentElement.classList.add("hidden-post");
+            // no visible siblings, so hide the enclosing child list
+            if (!comment.parentElement.querySelector(":scope > :not(.hidden)")) {
+                comment.parentElement.classList.add("hidden");
             }
         } else {
-            comment.classList.remove("hidden-post");
-            comment.parentElement.parentElement.classList.remove("hidden-post");
+            comment.classList.remove("hidden");
+            comment.parentElement.classList.remove("hidden");
         }
     },
     onValueChange: function(value) {
-        document.getElementById(cssId(this.key)).disabled = !value;
-
-        if (value) {
-            this.hiddenSet = new Set(optionManager.get(this.key).split(",").map(x => x.trim()).filter(x => x));
-            processAllComments();
-        }
+        this.hiddenSet = new Set(optionManager.get(this.key).split(",").map(x => x.trim()).filter(x => x));
+        optionManager.processAllComments();
     },
 }
-*/
+
 const allowKeyboardShortcutsOption = {
     key: "allowKeyboardShortcuts",
     default: true,
@@ -799,7 +794,7 @@ const parentKeyOption = {
     },
     hovertext: "Key/key combo to jump to the parent of the current comment (click the box to set)",
 }
-
+/*
 const customCssOption = {
     key: "customCss",
     default: "",
@@ -814,7 +809,7 @@ const customCssOption = {
         document.getElementById(cssId(this.key)).textContent = value;
     },
 }
-
+*/
 const showDebugOption = {
     key: "showDebug",
     default: "",
@@ -851,7 +846,7 @@ let optionArray = [
     // newTimeOption,
     // applyCommentStylingOption,
     // addParentLinksOption,
-    // hideUsersOption,
+    hideUsersOption,
     allowKeyboardShortcutsOption,
     smoothScrollOption,
     prevCommentKeyOption,

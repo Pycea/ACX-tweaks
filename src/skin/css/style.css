@@ -83,12 +83,6 @@ blockquote blockquote {
     width: initial !important;
 }
 
-/* is this a hack? */
-.hidden-post:first-child + .comment, .hidden-post:first-child + .hidden-post + .comment,
-.hidden-post:first-child + .hidden-post + .hidden-post + .comment {
-    margin-top: 0 !important;
-}
-
 
 
 /* Recreation of substack ui */
@@ -128,6 +122,18 @@ blockquote blockquote {
 
 .text-input-buttons button.secondary:hover {
     background-color: var(--color-button-secondary-bg-hover);
+}
+
+.comment-list-items {
+    margin-top: -12px;
+}
+
+.comment-list-items .comment {
+    margin-top: 12px
+}
+
+.comment.hidden {
+    display: none;
 }
 
 .comment-content {
@@ -179,7 +185,7 @@ blockquote blockquote {
     font-weight: 500;
 }
 
-.deleted .comment-header .username {
+.deleted > .comment-content .comment-header .username {
     color: #7b8086;
     font-weight: 400;
 }
@@ -202,11 +208,12 @@ blockquote blockquote {
     text-decoration: underline;
 }
 
-.comment-body {
+.comment .comment-body {
     margin-top: 4px;
+    max-height: none;
 }
 
-.comment-body.hidden {
+.comment .comment-body.hidden {
     display: none;
 }
 
@@ -236,11 +243,11 @@ blockquote blockquote {
 
 .children {
     padding-left: 32px;
-    padding-top: 12px;
     margin-bottom: 16px;
 }
 
-.children:empty {
+.children:empty,
+.children.hidden {
     display: none;
 }
 

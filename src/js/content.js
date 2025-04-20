@@ -128,6 +128,24 @@ class OptionManager {
             this.doOptionChange(key, optionChanges.newValue[key]);
         }
     }
+
+    processAllComments() {
+        const commentHandlerObjects = Object.values(this.optionDict)
+            .filter(o => o.processComment && (this.optionShadow[o.key] || o.alwaysProcessComments));
+
+        if (commentHandlerObjects.length === 0) {
+            return;
+        }
+
+        const comments = document.querySelectorAll(".comment");
+        for (const comment of comments) {
+            debug("processComment", comment);
+            for (const object of  commentHandlerObjects) {
+                debug("func_" + object.key + ".processComment", object.key + ".processComment()");
+                object.processComment(comment);
+            }
+        }
+    }
 }
 
 class LocalStorageManager {
@@ -307,7 +325,6 @@ class CommentManager {
         CommentManager.commentIdToInfo[commentId].body = body;
         CommentManager.commentIdToInfo[commentId].editedDate = editedDate;
     }
-
 
     static get(commentId) {
         return CommentManager.commentIdToInfo[commentId];
@@ -780,6 +797,7 @@ async function onLoad() {
         document.head.appendChild(template.content);
         localStorageManager.set("lastViewedDate", new Date().toISOString());
         createComments();
+        optionManager.processAllComments();
     }
 }
 
