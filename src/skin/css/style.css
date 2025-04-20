@@ -24,6 +24,11 @@
     display: none;
 }
 
+.highlight-new .comment-header .new-tag-text {
+    display: block;
+    color: #e65c00;
+}
+
 /* Hide new comment styling if not using comment styling option */
 
 span.new-style {

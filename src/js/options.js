@@ -45,7 +45,7 @@ const fixHeaderOption = {
         document.getElementById(cssId(this.key)).disabled = !value;
     },
 }
-/*
+
 const useOldStylingOption = {
     key: "useOldStyling",
     default: false,
@@ -58,7 +58,7 @@ const useOldStylingOption = {
         document.getElementById(cssId(this.key)).disabled = !value;
     },
 }
-
+/*
 const darkModeOption = {
     key: "darkMode",
     default: window.matchMedia("(prefers-color-scheme: dark)").matches,
@@ -305,12 +305,8 @@ const showFullDateOption = {
 
         function getEditedDateElem(date) {
             const dateElem = getLocalDateElem(date);
-
-            // <div>edited ${dateElem}</div>
-            let div = document.createElement("div");
-            div.textContent = "edited ";
-            div.appendChild(dateElem);
-            return div;
+            dateElem.firstChild.textContent = "edited " + dateElem.firstChild.textContent;
+            return dateElem;
         }
 
         function applyBetterDate() {
@@ -324,7 +320,7 @@ const showFullDateOption = {
             origDate.classList.add("worse-date");
 
             const betterDate = getLocalDateElem(date);
-            betterDate.classList.add("better-date");
+            betterDate.classList.add("comment-post-date", "better-date");
 
             origDate.after(betterDate);
         }
@@ -340,7 +336,7 @@ const showFullDateOption = {
             origDate.classList.add("worse-edited-date");
 
             const betterDate = getEditedDateElem(date);
-            betterDate.classList.add("better-edited-date");
+            betterDate.classList.add("comment-edited", "better-edited-date");
 
             origDate.after(betterDate);
         }
@@ -377,8 +373,11 @@ const highlightNewOption = {
         this.newCommentCutoff = new Date(PageInfo.loadDate - deltaMs);
     },
     onStart: function(value) {
-        addStyle(this.key);
-        document.getElementById(cssId(this.key)).disabled = !value;
+        if (value) {
+            document.documentElement.classList.add("highlight-new");
+        } else {
+            document.documentElement.classList.remove("highlight-new");
+        }
     },
     processComment: function(comment) {
         const commentId = comment.dataset.id;
@@ -402,9 +401,11 @@ const highlightNewOption = {
         }
     },
     onValueChange: function(value) {
-        document.getElementById(cssId(this.key)).disabled = !value;
         if (value) {
             optionManager.processAllComments();
+            document.documentElement.classList.add("highlight-new");
+        } else {
+            document.documentElement.classList.remove("highlight-new");
         }
     },
 }
@@ -454,7 +455,7 @@ const applyCommentStylingOption = {
         const match = innerHtml.match(blockquotePattern);
         if (match) {
             const depth = match[0].match(/&gt;\s*/g).length;
-            const content = innerHtml.slice(match[0].length);
+            const content = `${innerHtml.slice(match[0].length)}`;
             innerHtml = "<blockquote>".repeat(depth) + content + "</blockquote>".repeat(depth);
         }
 
@@ -698,7 +699,7 @@ const resetDataOption = {
 
 let optionArray = [
     fixHeaderOption,
-    // useOldStylingOption,
+    useOldStylingOption,
     // darkModeOption,
     zenModeOption,
     removeCommentsOption,
