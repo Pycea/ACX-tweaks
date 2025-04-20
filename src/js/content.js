@@ -109,8 +109,6 @@ class OptionManager {
             return;
         }
 
-        console.log(optionChanges)
-
         const changedKeys = [];
 
         for (const [key, newValue] of Object.entries(optionChanges.newValue)) {
@@ -411,12 +409,12 @@ class Comment {
         body = body.trim();
         body = body.replace(/\n+/g, "\n");
         body = body.replace(/\b(https?:\/\/[A-Z0-9.-]+\.[A-Z]{2,}([A-Z0-9_.~:\/?#\[\]@!$&'()*+,;=-]*[A-Z0-9_~\/?#\[@$&'(*+,=])?)/gi,
-            "<a href='$1'>$1</a>");
+            "<a href='$1' target='_blank' rel='noreferrer'>$1</a>");
         body = body.replace(/\b([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})\b/gi,
             "<a href='mailto:$1'>$1</a>");
 
         const paragraphs = body.split(/\n+/);
-        return paragraphs.map(p => `<p>${p}</p>`).join("");
+        return paragraphs.map(p => `<p><span>${p}</span></p>`).join("");
     }
 
     fillCommentElem() {    

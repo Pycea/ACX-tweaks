@@ -84,11 +84,11 @@ const STYLES = {
     "applyCommentStyling": {
         "css": `
             .comment-body span.new-style {
-                display: inline !important;
+                display: inline;
             }
 
             .comment-body span.old-style {
-                display: none !important;
+                display: none;
             }`,
     },
     "smoothScroll": {

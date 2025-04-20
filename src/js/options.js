@@ -473,136 +473,79 @@ let newTimeOption = {
         processAllComments();
     },
 }
-
-let applyCommentStylingOption = {
+*/
+const applyCommentStylingOption = {
     key: "applyCommentStyling",
     default: true,
     hovertext: "Apply basic styling to comments (italics, block quotes, and Markdown style text links)",
     processCommentParagraph: function(innerHtml) {
-        // quick first pass to rule out cases where formatting isn't needed
-        if (!innerHtml.match(/[*_>]|&gt;/)) {
-            let container = document.createElement("span");
-            container.classList.add("new-style");
-            container.innerHTML = innerHtml;
-            return container;
+        // skip paragraphs with no formatting
+        if (!/[\[*_]|^&gt;/.test(innerHtml)) {
+            return null;
         }
 
-        // recursively use regexes to split the string into parts
-        // ["starting *string* with _italics_ *here*"] =>
-        // ["starting ", "<em>string</em>", " with _italics_ ", "<em>here</em>"] =>
-        // ["starting ", "<em>string</em>", " with ", "<em>italics</em>", " ", "<em>here</em>"]
-        function stringToList(regex, matchToTag, string) {
-            let list = [];
-            let match;
-            while(match = string.match(regex)) {
-                let matchLength = match[0].length;
-                let prefix = match[1];
-
-                if (prefix) list.push(prefix);
-                list.push(matchToTag(match));
-
-                string = string.substring(matchLength);
-            }
-
-            if (string) list.push(string);
-
-            return list;
-        }
-
-        function listPass(regex, matchToTag, list) {
-            return list.map(e => typeof e === "string" ? stringToList(regex, matchToTag, e) : e).flat();
-        }
-
-        let italicStarRegex = /(.*?(?:^|\s|\(|\[|\{|\*))\*((?=[^*\s]).*?(?<=[^*\s]))\*TODOREMOVE/;
-        let italicUnderscoreRegex = /(.*?(?:^|\s|\(|\[|\{|_))_((?=[^_\s]).*?(?<=[^_\s]))_/;
-        function italicToTag(match) {
-            let e = document.createElement("em");
-            e.innerHTML = match[2];
-            return e;
-        };
-        // yes I'm parsing html with a regex. deal with it
-        let linkRegex = /(.*?)\[(.+?)\]\(<a href="(.*?)".*?<\/a>\)/;
-        function linkToTag(match) {
-            let e = document.createElement("a");
-            e.setAttribute("href", match[3]);
-            e.classList.add("linkified");
-            e.setAttribute("target", "_blank");
-            e.setAttribute("rel", "nofollow ugc noreferrer");
-            e.innerHTML = match[2];
-            return e;
-        }
-        let bareLinkRegex = /(.*?)<a href="(.*?)".*?>(.*?)<\/a>/;
-        function bareLinkToTag(match) {
-            let e = document.createElement("a");
-            e.setAttribute("href", match[2]);
-            e.classList.add("linkified");
-            e.setAttribute("target", "_blank");
-            e.setAttribute("rel", "nofollow ugc noreferrer");
-            e.innerHTML = match[3];
-            return e;
-        }
-
-        let list = [innerHtml];
-        list = listPass(linkRegex, linkToTag, list);
-        list = listPass(bareLinkRegex, bareLinkToTag, list);
-        list = listPass(italicStarRegex, italicToTag, list);
-        list = listPass(italicUnderscoreRegex, italicToTag, list);
-
-        // special case blockquotes
-        let quoteIndent = 0;
-        if (typeof list[0] === "string") {
-            let match;
-            while (match = list[0].match(/^\s*(>|&gt;)\s*TODOREMOVE/)) {
-                quoteIndent++;
-                list[0] = list[0].substring(match[0].length);
-            }
-        }
-
-        let container = document.createElement("span");
+        const container = document.createElement("span");
         container.classList.add("new-style");
 
-        let quoteContainer = container;
-        for (let i = 0; i < quoteIndent; i++) {
-            let b = document.createElement("blockquote");
-            quoteContainer.appendChild(b);
-            quoteContainer = b;
-        }
+        const italicPattern = /(?<!\w)([_*])(\w[^*_]*?\w)\1(?!\w)/g;
+        const formattedLinkPattern = /\[([^\]]+)\]\(<a\s+href=["']([^"']+)["'][^>]*>.*?<\/a>\)/g;
+        const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
+        const blockquotePattern = /^((&gt;\s*)+)/;
 
-        // build final span
-        for (let entry of list) {
-            if (typeof entry === "string") {
-                quoteContainer.innerHTML += entry;
-            } else {
-                quoteContainer.appendChild(entry);
+        innerHtml = innerHtml.replace(italicPattern, "<em>$2</em>");
+        innerHtml = innerHtml.replace(formattedLinkPattern, (_, text, href) => {
+            return `<a href='${href}' target='_blank' rel='noreferrer'>${text}</a>`;
+        });
+        innerHtml = innerHtml.replace(linkPattern, (_, text, href) => {
+            if (!/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(href)) {
+                href = `https://${href}`;
             }
+            return `<a href='${href}' target='_blank' rel='noreferrer'>${text}</a>`;
+        });
+
+        const match = innerHtml.match(blockquotePattern);
+        if (match) {
+            const depth = match[0].match(/&gt;\s*/g).length;
+            const content = innerHtml.slice(match[0].length);
+            innerHtml = "<blockquote>".repeat(depth) + content + "</blockquote>".repeat(depth);
         }
 
+        container.innerHTML = innerHtml;
         return container;
     },
     onStart: function(value) {
         addStyle(this.key);
-        $(`#${this.key}-css`).prop("disabled", !value);
+        document.getElementById(cssId(this.key)).disabled = !value;
     },
-    onCommentChange: function(comment) {
-        let commentBody = $(comment).find("> .comment-content .comment-body");
-        let that = this;
-        $(commentBody).find("p span").each(function() {
+    processComment: function(comment) {
+        const commentId = comment.dataset.id;
+        const body = CommentManager.get(commentId).body
+        // quick first pass to rule out cases where formatting isn't needed
+        if (!/[\[*_>]/.test(body)) {
+            return;
+        }
+
+        const commentBody = comment.querySelector(":scope > .comment-content .comment-body");
+        CommentManager.get()
+        commentBody.querySelectorAll("p span").forEach((span) => {
             // only process the text once
-            if ($(this).siblings().length === 0) {
-                this.classList.add("old-style");
-                let newSpan = that.processCommentParagraph(this.innerHTML);
-                this.parentElement.appendChild(newSpan);
+            if (span.parentElement.children.length === 1) {
+                const newSpan = this.processCommentParagraph(span.innerHTML);
+                if (newSpan) {
+                    span.classList.add("old-style");
+                    span.parentElement.appendChild(newSpan);
+                }
             }
-        });
+        }, this);
     },
     onValueChange: function(value) {
-        $(`#${this.key}-css`).prop("disabled", !value);
+        document.getElementById(cssId(this.key)).disabled = !value;
         if (value) {
-            processAllComments();
+            optionManager.processAllComments();
         }
     },
 }
-*/
+
 const addParentLinksOption = {
     key: "addParentLinks",
     default: true,
@@ -808,7 +751,7 @@ let optionArray = [
     use24HourOption,
     // highlightNewOption,
     // newTimeOption,
-    // applyCommentStylingOption,
+    applyCommentStylingOption,
     addParentLinksOption,
     hideUsersOption,
     allowKeyboardShortcutsOption,
