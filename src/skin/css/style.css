@@ -1,10 +1,10 @@
 /* Hide duplicate timestamp if not using full time option */
 
-.comment-content .better-date {
+.better-date {
     display: none;
 }
 
-.comment-content .better-edited-indicator {
+.better-edited-date {
     display: none;
 }
 

@@ -242,18 +242,22 @@ let showHeartsOption = {
         }
     },
 }
-
-let showFullDateOption = {
+*/
+const showFullDateOption = {
     key: "showFullDate",
     default: true,
     hovertext: "Show the full date and time when a comment was posted and edited",
     onStart: function(value) {
         addStyle(this.key);
-        $(`#${this.key}-css`).prop("disabled", !value);
+        document.getElementById(cssId(this.key)).disabled = !value;
     },
-    onCommentChange: function(comment) {
-        function getLocalDateSpan(date) {
-            let months = [
+    processComment: function(comment) {
+        const commentContent = comment.querySelector(".comment-content");
+        const commentId = comment.dataset.id;
+        const commentInfo = CommentManager.get(commentId);
+
+        function getLocalDateElem(date) {
+            const months = [
                 "January",
                 "February",
                 "March",
@@ -268,134 +272,91 @@ let showFullDateOption = {
                 "December",
             ];
 
-            let year = date.getFullYear();
-            let month = months[date.getMonth()];
-            let day = date.getDate();
-            let hour = date.getHours();
-            let minute = date.getMinutes().toString().padStart(2, "0");
+            const year = date.getFullYear();
+            const month = months[date.getMonth()];
+            const day = date.getDate();
+            const hour = date.getHours();
+            const minute = date.getMinutes().toString().padStart(2, "0");
 
-            let amPm = hour <= 11 ? "am" : "pm";
-            let hour12 = hour === 0 ? 12 : (hour > 12 ? hour - 12 : hour);
+            const amPm = hour <= 11 ? "am" : "pm";
+            const hour12 = hour === 0 ? 12 : (hour > 12 ? hour - 12 : hour);
 
-            // <span>
+            // <div>
             //     ${month} ${day}, ${year} at 
             //     <span class="hour12-time">${hour12}:${minute} ${amPm}</span>
             //     <span class="hour24-time">${hour}:${minute}</span>
-            // </span>
-            let holder = document.createElement("span");
+            // </div>
+            const holder = document.createElement("div");
+            holder.textContent = `${month} ${day}, ${year} at `;
 
-            let hour12Span = document.createElement("span");
+            const hour12Span = document.createElement("span");
             hour12Span.classList.add("hour12-time");
-            let hour12Text = document.createTextNode(`${hour12}:${minute} ${amPm}`);
-            hour12Span.appendChild(hour12Text);
+            hour12Span.textContent = `${hour12}:${minute} ${amPm}`;
 
-            let hour24Span = document.createElement("span");
+            const hour24Span = document.createElement("span");
             hour24Span.classList.add("hour24-time");
-            let hour24Text = document.createTextNode(`${hour}:${minute}`);
-            hour24Span.appendChild(hour24Text);
+            hour24Span.textContent = `${hour}:${minute}`;
 
-            let dateText = document.createTextNode(`${month} ${day}, ${year} at `);
-            holder.appendChild(dateText);
             holder.appendChild(hour12Span);
             holder.appendChild(hour24Span);
 
             return holder
         }
 
-        function getEditedDateSpan(date) {
-            let dateSpan = getLocalDateSpan(date);
+        function getEditedDateElem(date) {
+            const dateElem = getLocalDateElem(date);
 
-            // <em>edited ${dateSpan}</em>
-            let em = document.createElement("em");
-            let editedText = document.createTextNode("edited ");
-            em.appendChild(editedText);
-            em.appendChild(dateSpan);
-            return em;
+            // <div>edited ${dateElem}</div>
+            let div = document.createElement("div");
+            div.textContent = "edited ";
+            div.appendChild(dateElem);
+            return div;
         }
 
         function applyBetterDate() {
-            let commentId = getCommentIdNumber(comment);
-
-            if (!(commentId in commentIdToInfo && commentIdToInfo[commentId].date)) {
+            if (!commentInfo.date || commentContent.querySelector(".better-date")) {
                 return;
             }
 
-            let metaDiv = $(comment).find("> .comment-content")
-                .children().eq(1)
-                .children().eq(0)
-                .children().eq(0)
-                .children().eq(0)
-                .children().eq(0);
+            const date = commentInfo.date;
 
-            let dateHolder = metaDiv.children("a").eq(0);
-
-            // don't add if the new date element already exists
-            if (dateHolder.find(".better-date:not(.incomplete)").length !== 0) {
-                return;
-            }
-
-            let origDate = dateHolder.children()[0];
+            const origDate = commentContent.querySelector(".comment-post-date");
             origDate.classList.add("worse-date");
 
-            let newDateIncomplete = dateHolder.find(".better-date.incomplete");
-            let newDateDisplay = newDateIncomplete.length > 0 ? newDateIncomplete[0] : origDate.cloneNode();
-            newDateDisplay.classList.remove("worse-date");
-            newDateDisplay.classList.add("better-date", "incomplete");
-            origDate.after(newDateDisplay);
+            const betterDate = getLocalDateElem(date);
+            betterDate.classList.add("better-date");
 
-            let utcTime = commentIdToInfo[commentId].date;
-            let date = new Date(utcTime);
-            newDateDisplay.textContent = "";
-            newDateDisplay.appendChild(getLocalDateSpan(date));
-            newDateDisplay.classList.remove("incomplete");
+            origDate.after(betterDate);
         }
 
         function applyBetterEditDate() {
-            let commentId = getCommentIdNumber(comment);
-
-            if (!(commentId in commentIdToInfo && commentIdToInfo[commentId].editedDate)) {
+            if (!commentInfo.editedDate || commentContent.querySelector(".better-edited-date")) {
                 return;
             }
 
-            const metaDiv = $(comment).find("> .comment-content")
-                .children().eq(1)
-                .children().eq(0)
-                .children().eq(0)
-                .children().eq(0)
-                .children().eq(0);
+            const date = commentInfo.editedDate;
 
-            const editedDateSpan = metaDiv.children("span")[0];
+            const origDate = commentContent.querySelector(".comment-edited");
+            origDate.classList.add("worse-edited-date");
 
-            // don't add if the new date element already exists
-            if (metaDiv.find(".better-edited-indicator:not(.incomplete)").length !== 0) {
-                return;
-            }
+            const betterDate = getEditedDateElem(date);
+            betterDate.classList.add("better-edited-date");
 
-            let newEditDateIncomplete = metaDiv.find(".better-edited-indicator.incomplete");
-            let newEditDateDisplay = newEditDateIncomplete.length > 0 ? newEditDateIncomplete[0] : editedDateSpan.cloneNode();
-            editedDateSpan.classList.add("edited-indicator");
-            newEditDateDisplay.classList.add("better-edited-indicator", "incomplete");
-            editedDateSpan.after(newEditDateDisplay);
-
-            let utcTime = commentIdToInfo[commentId].editedDate;
-            let editedDate = new Date(utcTime);
-            newEditDateDisplay.textContent = "";
-            newEditDateDisplay.appendChild(getEditedDateSpan(editedDate));
-            newEditDateDisplay.classList.remove("incomplete");
+            origDate.after(betterDate);
         }
 
         applyBetterDate();
         applyBetterEditDate();
     },
     onValueChange: function(value) {
-        $(`#${this.key}-css`).prop("disabled", !value);
+        document.getElementById(cssId(this.key)).disabled = !value;
         if (value) {
-            processAllComments();
+            optionManager.processAllComments();
         }
     },
 }
 
-let use24HourOption = {
+const use24HourOption = {
     key: "use24Hour",
     default: false,
     hovertext: "Use 24 hour time for the full date",
@@ -404,10 +365,10 @@ let use24HourOption = {
         this.onValueChange(value);
     },
     onValueChange: function(value) {
-        $(`#${this.key}-css`).prop("disabled", !value);
+        document.getElementById(cssId(this.key)).disabled = !value;
     },
 }
-
+/*
 let highlightNewOption = {
     key: "highlightNew",
     default: true,
@@ -840,8 +801,8 @@ let optionArray = [
     zenModeOption,
     // removeCommentsOption,
     // showHeartsOption,
-    // showFullDateOption,
-    // use24HourOption,
+    showFullDateOption,
+    use24HourOption,
     // highlightNewOption,
     // newTimeOption,
     // applyCommentStylingOption,

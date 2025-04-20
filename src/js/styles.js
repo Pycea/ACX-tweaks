@@ -57,29 +57,33 @@ const STYLES = {
     "showFullDate": {
         "css": `
             .comment-content .worse-date {
-                display: none !important;
+                display: none;
             }
 
             .comment-content .better-date {
-                display: initial !important;
+                display: block;
             }
 
-            .comment-content .edited-indicator {
-                display: none !important;
+            .comment-content .worse-edited-date {
+                display: none;
             }
 
-            .comment-content .better-edited-indicator {
-                display: initial !important;
+            .comment-content .better-edited-date {
+                display: block;
+            }
+
+            .better-edited-date div {
+                display: inline;
             }`,
     },
     "use24Hour": {
         "css": `
-            .hour24-time {
-                display: inline !important;
+            .better-date .hour24-time {
+                display: inline;
             }
 
-            .hour12-time {
-                display: none !important;
+            .better-date .hour12-time {
+                display: none;
             }`,
     },
     "addParentLinks": {
