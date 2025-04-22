@@ -12,7 +12,7 @@ function addStyle(key) {
     const style = document.createElement("style");
     style.id = cssId(key);
     style.textContent = css;
-    document.documentElement.appendChild(style);
+    document.documentElement.append(style);
 }
 
 
@@ -90,159 +90,78 @@ const removeCommentsOption = {
         document.getElementById(cssId(this.key)).disabled = !value;
     },
 }
-/*
-let showHeartsOption = {
+
+const showHeartsOption = {
     key: "showHearts",
     default: false,
     hovertext: "Add hearts back to comments. Only people using an extension that adds back hearts will be able to like comments or see them, so they won't have the activity they did before.",
-    heartContainer: $(
-        `<div class="reaction-container">
-            <svg role="img" width="24" height="24" viewBox="0 0 24 24" fill="#000000" stroke-width="1" stroke="#000" xmlns="http://www.w3.org/2000/svg" class="animation">
-                <g>
-                    <title></title>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart">
-                        <path d="M20.42 4.58a5.4 5.4 0 00-7.65 0l-.77.78-.77-.78a5.4 5.4 0 00-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z"></path>
-                    </svg>
-                </g>
-            </svg>
-            <svg role="img" width="14" height="14" viewBox="0 0 24 24" fill="transparent" stroke-width="1.5" stroke="#757575" xmlns="http://www.w3.org/2000/svg" style="height: 14px; width: 14px;">
-                <g>
-                    <title></title>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="transparent" stroke="#757575" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart">
-                        <path d="M20.42 4.58a5.4 5.4 0 00-7.65 0l-.77.78-.77-.78a5.4 5.4 0 00-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z"></path>
-                    </svg>
-                </g>
-            </svg>
-            <span class="like-count"></span>
-        </div>`
-    ),
     heartHtml: function(hearts, userReact, ownComment) {
-        let heartContainer = this.heartContainer[0].cloneNode(true);
-        heartContainer.getElementsByClassName("like-count")[0].textContent = hearts > 0 ? hearts : "";
-
-        // <span class="comment-heart">
-        //     <a class="like-button ${userReact ? "liked" : ""} ${ownComment ? "own-comment" : ""}">
-        //         ${heartContainer}
-        //     </a>
-        // </span>
-        let outer = document.createElement("span");
-        outer.classList.add("comment-heart");
-        let link = document.createElement("a");
-        link.classList.add("like-button");
-        if (userReact) link.classList.add("liked");
-        if (ownComment) link.classList.add("own-comment");
-        link.appendChild(heartContainer);
-        outer.appendChild(link);
-        return outer;
-    },
-    updateUserId: function() {
-        if (!this.userId) {
-            let userId = $("input[name=user_id]").val();
-            this.userId = userId ? parseInt(userId) : undefined;
-            debug("funcs_showHearts.updateUserId", "showHearts.updateUserId()", `userId=${this.userId}`);
+        const heartContainer = document.querySelector("#heart-template").content.cloneNode(true);
+        const likeButton = heartContainer.querySelector(".like-button");
+        const likeCount = heartContainer.querySelector(".like-count");
+        if (userReact) {
+            likeButton.classList.add("liked");
         }
+        if (ownComment) {
+            likeButton.classList.add("own-comment");
+        }
+        likeCount.textContent = hearts ? hearts : "";
+        return heartContainer;
     },
     onStart: function(value) {
         addStyle(this.key);
-        $(`#${this.key}-css`).prop("disabled", value);
-        this.updateUserId();
+        document.getElementById(cssId(this.key)).disabled = value;
+    },
+    processComment: function(comment) {
+        const commentId = comment.dataset.id;
+        const commentInfo = CommentManager.get(commentId);
+        const deleted = commentInfo.deleted;
+        const footer = comment.querySelector(":scope > .comment-content .comment-footer");
 
-        let that = this;
-        $(document).on("click", ".like-button", function() {
+        if (footer.querySelector(".comment-heart")) {
+            if (deleted) {
+                footer.querySelector(".comment-heart").remove();
+            }
+            return;
+        }
+
+        const hearts = commentInfo.hearts;
+        const userReact = commentInfo.userReact;
+        const ownComment = commentInfo.userId === PageInfo.userId;
+        const heartContainer = this.heartHtml(hearts, userReact, ownComment);
+        const likeButton = heartContainer.querySelector(".like-button");
+
+        likeButton.addEventListener("click", () => {
             debug("funcs_showHearts.onClick", "showHearts.onClick()");
-            that.updateUserId();
-            let comment = $(this).closest(".comment");
-            let commentId = getCommentIdNumber(comment);
+            const commentInfo = CommentManager.get(commentId);
 
             // no liking your own comments
-            let userId = commentIdToInfo[commentId]?.userId;
-            if (userId === that.userId) {
+            if (PageInfo.userId === commentInfo.userId) {
                 return;
             }
 
-            let hearts = commentIdToInfo[commentId]?.hearts;
-            hearts = hearts ? hearts : 0;
-            let userReact = !!commentIdToInfo[commentId]?.userReact;
+            const url = `https://www.astralcodexten.com/api/v1/comment/${commentId}/reaction`;
+            const method = commentInfo.userReact ? "DELETE" : "POST";
+            const data = {reaction: "❤"};
+            apiCall(url, method, data);
 
-            let method;
-            if (!userReact) {
-                debug("funcs_showHearts.onClick", "liking comment and increasing like count");
-                method = "POST";
-                hearts++;
-            } else {
-                debug("funcs_showHearts.onClick", "unliking comment and decreasing like count");
-                method = "DELETE";
-                hearts--;
-            }
+            CommentManager.toggleReaction(commentId);
+            likeButton.classList.toggle("liked");
+            likeButton.querySelector(".like-count").textContent =
+                commentInfo.hearts ? commentInfo.hearts : "";
 
-            $(this).toggleClass("liked");
-            userReact = !userReact;
-
-            comment.find("> .comment-content .like-count").text(hearts ? hearts : "");
-            if (commentIdToInfo[commentId]) {
-                commentIdToInfo[commentId].hearts = hearts;
-                commentIdToInfo[commentId].userReact = userReact;
-            }
-
-            let url = `https://www.astralcodexten.com/api/v1/comment/${commentId}/reaction`;
-            let data = {reaction: "❤"};
-            ajaxRequest(url, data, method, "text");
         });
-    },
-    onCommentChange: function(comment) {
-        if (!commentIdToInfo) {
-            return;
-        }
 
-        this.updateUserId();
-        let commentId = getCommentIdNumber(comment);
-        let userId = commentIdToInfo[commentId]?.userId;
-        let hearts = commentIdToInfo[commentId]?.hearts;
-        let userReact = commentIdToInfo[commentId]?.userReact;
-        let deleted = commentIdToInfo[commentId]?.deleted;
-        let ownComment = userId === this.userId;
-
-        if (!deleted) {
-            let actions = $(comment).find("> .comment-content .comment-actions");
-            if (actions.html() !== "") {
-                for (const childAction of actions.children()) {
-                    let text = $(childAction).text();
-                    if (text === "Reply") {
-                        $(childAction).addClass("action-reply");
-                    } else if (text === "Delete") {
-                        $(childAction).addClass("action-delete");
-                    }
-                }
-
-                let existingHeart = actions.find(".comment-heart");
-                existingHeart.remove();
-                actions.append(this.heartHtml(hearts, userReact, ownComment));
-            }
-        } else {
-            let actions = $(comment).find("> .comment-content .comment-actions");
-            actions.find(".comment-heart").remove();
-        }
-    },
-    onMutation: function(mutation) {
-        if (mutation.target.nodeName.toLowerCase() !== "td") {
-            return;
-        }
-
-        for (let i = 0; i < mutation.addedNodes.length; i++) {
-            let node = mutation.addedNodes[i];
-            if (node.classList.contains("comment-actions")) {
-                this.onCommentChange($(node).closest(".comment"));
-            }
-        }
+        footer.prepend(heartContainer);
     },
     onValueChange: function(value) {
-        $(`#${this.key}-css`).prop("disabled", value);
+        document.getElementById(cssId(this.key)).disabled = value;
         if (value) {
-            processAllComments();
+            optionManager.processAllComments(this.key);
         }
     },
 }
-*/
+
 const showFullDateOption = {
     key: "showFullDate",
     default: true,
@@ -297,8 +216,8 @@ const showFullDateOption = {
             hour24Span.classList.add("hour24-time");
             hour24Span.textContent = `${hour}:${minute}`;
 
-            holder.appendChild(hour12Span);
-            holder.appendChild(hour24Span);
+            holder.append(hour12Span);
+            holder.append(hour24Span);
 
             return holder
         }
@@ -347,7 +266,7 @@ const showFullDateOption = {
     onValueChange: function(value) {
         document.getElementById(cssId(this.key)).disabled = !value;
         if (value) {
-            optionManager.processAllComments();
+            optionManager.processAllComments(this.key);
         }
     },
 }
@@ -394,7 +313,7 @@ const highlightNewOption = {
             const newTag = document.createElement("div");
             newTag.classList.add("new-tag-text");
             newTag.textContent = "~new~";
-            header.appendChild(newTag);
+            header.append(newTag);
         } else {
             comment.classList.remove("new-comment");
             header.querySelector(".new-tag-text")?.remove();
@@ -402,7 +321,7 @@ const highlightNewOption = {
     },
     onValueChange: function(value) {
         if (value) {
-            optionManager.processAllComments();
+            optionManager.processAllComments(this.key);
             document.documentElement.classList.add("highlight-new");
         } else {
             document.documentElement.classList.remove("highlight-new");
@@ -419,7 +338,7 @@ const newTimeOption = {
     },
     onValueChange: function(value) {
         OPTIONS.highlightNew.updateNewTime(value);
-        optionManager.processAllComments();
+        optionManager.processAllComments(OPTIONS.highlightNew.key);
     },
 }
 
@@ -482,7 +401,7 @@ const applyCommentStylingOption = {
                 const newSpan = this.processCommentParagraph(span.innerHTML);
                 if (newSpan) {
                     span.classList.add("old-style");
-                    span.parentElement.appendChild(newSpan);
+                    span.parentElement.append(newSpan);
                 }
             }
         }, this);
@@ -490,7 +409,7 @@ const applyCommentStylingOption = {
     onValueChange: function(value) {
         document.getElementById(cssId(this.key)).disabled = !value;
         if (value) {
-            optionManager.processAllComments();
+            optionManager.processAllComments(this.key);
         }
     },
 }
@@ -529,7 +448,7 @@ const addParentLinksOption = {
         const parentLink = document.createElement("div");
         parentLink.classList.add("parent-link");
         parentLink.textContent = displayText;
-        footer.appendChild(parentLink);
+        footer.append(parentLink);
 
         parentLink.addEventListener("click", () => {
             scrollElement.scrollIntoView();
@@ -538,7 +457,7 @@ const addParentLinksOption = {
     onValueChange: function(value) {
         document.getElementById(cssId(this.key)).disabled = value;
         if (value) {
-            optionManager.processAllComments();
+            optionManager.processAllComments(this.key);
         }
     },
 }
@@ -576,7 +495,7 @@ const hideUsersOption = {
             .split(",")
             .map(x => x.trim())
             .filter(x => x));
-        optionManager.processAllComments();
+        optionManager.processAllComments(this.key);
     },
 }
 
@@ -667,7 +586,7 @@ const customCssOption = {
         const style = document.createElement("style");
         style.id = cssId(this.key);
         style.textContent = value;
-        document.documentElement.appendChild(style);
+        document.documentElement.append(style);
     },
     onValueChange: function(value) {
         document.getElementById(cssId(this.key)).textContent = value;
@@ -703,7 +622,7 @@ let optionArray = [
     darkModeOption,
     zenModeOption,
     removeCommentsOption,
-    // showHeartsOption,
+    showHeartsOption,
     showFullDateOption,
     use24HourOption,
     highlightNewOption,

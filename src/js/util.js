@@ -1,10 +1,10 @@
 "use strict";
 
 // DEBUG handles
-// ajax*
-//     ajaxCall: the request params
-//     ajaxResponse: the response given
-//     ajaxError: any errors encountered
+// fetch*
+//     fetchCall: the request params
+//     fetchResponse: the response given
+//     fetchError: any errors encountered
 
 function debug(category, ...debugStrings) {
     if (!optionManager.get(OptionKey.showDebug)) {
@@ -51,7 +51,7 @@ function mod(a, b) {
 function getPreloads() {
     const injectionScript = document.createElement("script");
     injectionScript.src = chrome.runtime.getURL("js/inject.js");
-    document.documentElement.appendChild(injectionScript);
+    document.documentElement.append(injectionScript);
     injectionScript.onload = () => injectionScript.remove();
 
     return new Promise((resolve) => {
@@ -84,23 +84,6 @@ function apiCall(url, method="GET", data={}, timeout=10) {
             debug("fetchError", error);
             throw error;
         });
-}
-
-function ajaxRequest(url, data={}, method="GET", dataType="text json") {
-    logFuncCall();
-    debug("ajaxCall", url, data, method, dataType);
-    return $.ajax({
-        url: url,
-        data: data,
-        dataType: dataType,
-        method: method,
-        success: function(data, status) {
-            debug("ajaxResponse", data, status);
-        },
-        error: function(jqXHR, error, exception) {
-            debug("ajaxError", error, exception);
-        },
-    });
 }
 
 async function loadTemplate(url) {

@@ -5,6 +5,7 @@
 //     optionInitial: initial option values
 //     optionGet: receive option change
 //     optionSet: setting option value
+// processCommentOption: each comment option run
 // processComment: each comment processed
 // keyPress*
 //     keyPressEvent: each key press
@@ -129,14 +130,25 @@ class OptionManager {
         }
     }
 
-    processAllComments() {
+    processAllComments(...optionKeys) {
         logFuncCall();
-        const commentHandlerObjects = Object.values(this.optionDict)
-            .filter(o => o.processComment && (this.optionShadow[o.key] || o.alwaysProcessComments));
+
+        let commentHandlerObjects;
+        if (optionKeys.length === 0) {
+            commentHandlerObjects = Object.values(this.optionDict)
+                .filter(o =>
+                    o.processComment &&
+                    (this.optionShadow[o.key] || o.alwaysProcessComments));
+        } else {
+            commentHandlerObjects = optionKeys.map(key => this.optionDict[key]);
+        }
 
         if (commentHandlerObjects.length === 0) {
             return;
         }
+
+        debug("processCommentOption", "Processing options",
+            commentHandlerObjects.map(o => o.key).join(", "));
 
         const comments = document.querySelectorAll(".comment");
         for (const comment of comments) {
@@ -145,6 +157,37 @@ class OptionManager {
                 debug("func_" + object.key + ".processComment", object.key + ".processComment()");
                 object.processComment(comment);
             }
+        }
+    }
+
+    processComment(commentId, ...optionKeys) {
+        logFuncCall();
+
+        let commentHandlerObjects;
+        if (optionKeys.length === 0) {
+            commentHandlerObjects = Object.values(this.optionDict)
+                .filter(o =>
+                    o.processComment &&
+                    (this.optionShadow[o.key] || o.alwaysProcessComments));
+        } else {
+            commentHandlerObjects = optionKeys.map(key => this.optionDict[key]);
+        }
+
+        if (commentHandlerObjects.length === 0) {
+            return;
+        }
+
+        debug("processCommentOption", "Processing single comment options",
+            commentHandlerObjects.map(o => o.key).join(", "));
+
+        const comment = document.querySelector(`[data-id="${commentId}"]`);
+        if (!comment) {
+            return;
+        }
+        debug("processComment", comment);
+        for (const object of  commentHandlerObjects) {
+            debug("func_" + object.key + ".processComment", object.key + ".processComment()");
+            object.processComment(comment);
         }
     }
 }
@@ -329,6 +372,18 @@ class CommentManager {
         CommentManager.commentIdToInfo[commentId].editedDate = editedDate;
     }
 
+    static toggleReaction(commentId) {
+        const info = CommentManager.commentIdToInfo[commentId];
+        if (info.userReact) {
+            debug("funcs_CommentManager.toggleReaction", "decreasing like count");
+            info.hearts--;
+        } else {
+            debug("funcs_CommentManager.toggleReaction", "increasing like count");
+            info.hearts++;
+        }
+        info.userReact = !info.userReact;
+    }
+
     static get(commentId) {
         return CommentManager.commentIdToInfo[commentId];
     }
@@ -473,7 +528,7 @@ class Comment {
 
         for (const childId of this.info.children) {
             const child = new Comment(childId);
-            this.childrenContainer.appendChild(child.baseElem);
+            this.childrenContainer.append(child.baseElem);
         }
     }
 
@@ -519,7 +574,7 @@ class Comment {
         });
 
         const newComment = new Comment(newCommentId);
-        this.childrenContainer.appendChild(newComment.baseElem);
+        this.childrenContainer.append(newComment.baseElem);
         this.textEditContainer.replaceChildren();
     }
 
@@ -542,8 +597,7 @@ class Comment {
             replyBase.remove();
         });
 
-        this.textEditContainer.replaceChildren();
-        this.textEditContainer.appendChild(replyTemplate);
+        this.textEditContainer.replaceChildren(replyTemplate);
     }
 
     editCommentApi(text) {
@@ -596,8 +650,7 @@ class Comment {
             this.footerElem.classList.remove("hidden");
         });
 
-        this.textEditContainer.replaceChildren();
-        this.textEditContainer.appendChild(editTemplate);
+        this.textEditContainer.replaceChildren(editTemplate);
         editInput.style.height = `${Math.min(Math.max(editInput.scrollHeight, 116), 500) + 2}px`;
     }
 
@@ -779,18 +832,18 @@ async function createComments() {
     const topLevelContainer = document.querySelector("#discussion .comments-page > .container");
     const commentListContainer = document.createElement("div");
     commentListContainer.className = "comment-list-container";
-    topLevelContainer.appendChild(commentListContainer);
+    topLevelContainer.append(commentListContainer);
     const commentList = document.createElement("div");
     commentList.className = "comment-list";
-    commentListContainer.appendChild(commentList);
+    commentListContainer.append(commentList);
     const commentListItems = document.createElement("div");
     commentListItems.className = "comment-list-items";
     commentListItems.id = "top-comment-container";
-    commentList.appendChild(commentListItems);
+    commentList.append(commentListItems);
 
     for (const commentId of CommentManager.topLevelComments) {
         const comment = new Comment(commentId);
-        commentListItems.appendChild(comment.baseElem);
+        commentListItems.append(comment.baseElem);
     }
 }
 
@@ -800,7 +853,7 @@ async function onLoad() {
 
     if (PageInfo.pageType === PageType.Post) {
         const template = await loadTemplate(chrome.runtime.getURL("data/templates.html"));
-        document.head.appendChild(template.content);
+        document.head.append(template.content);
         localStorageManager.set("lastViewedDate", new Date().toISOString());
         createComments();
         requestAnimationFrame(() => {

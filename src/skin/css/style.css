@@ -69,17 +69,8 @@ blockquote blockquote {
     position: absolute;
 }
 
-.comment-heart {
-    float: left;
-    order: -1;
-}
-
-.comment-heart:hover {
-    text-decoration: none !important;
-}
-
-.parent-link a {
-    cursor: pointer;
+.comment-footer div.comment-heart:hover {
+    text-decoration: none;
 }
 
 /* Fix substack issue where dropdowns have a scrollbar */
@@ -242,11 +233,11 @@ blockquote blockquote {
     display: none;
 }
 
-.comment-footer div {
+.comment-footer > div {
     cursor: pointer;
 }
 
-.comment-footer div:hover {
+.comment-footer > div:hover {
     text-decoration: underline;
 }
 
