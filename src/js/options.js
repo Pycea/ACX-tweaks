@@ -12,7 +12,7 @@ function addStyle(key) {
     const style = document.createElement("style");
     style.id = cssId(key);
     style.textContent = css;
-    document.documentElement.append(style);
+    document.documentElement.appendChild(style);
 }
 
 
@@ -216,8 +216,8 @@ const showFullDateOption = {
             hour24Span.classList.add("hour24-time");
             hour24Span.textContent = `${hour}:${minute}`;
 
-            holder.append(hour12Span);
-            holder.append(hour24Span);
+            holder.appendChild(hour12Span);
+            holder.appendChild(hour24Span);
 
             return holder
         }
@@ -313,7 +313,7 @@ const highlightNewOption = {
             const newTag = document.createElement("div");
             newTag.classList.add("new-tag-text");
             newTag.textContent = "~new~";
-            header.append(newTag);
+            header.appendChild(newTag);
         } else {
             comment.classList.remove("new-comment");
             header.querySelector(".new-tag-text")?.remove();
@@ -401,7 +401,7 @@ const applyCommentStylingOption = {
                 const newSpan = this.processCommentParagraph(span.innerHTML);
                 if (newSpan) {
                     span.classList.add("old-style");
-                    span.parentElement.append(newSpan);
+                    span.parentElement.appendChild(newSpan);
                 }
             }
         }, this);
@@ -448,7 +448,7 @@ const addParentLinksOption = {
         const parentLink = document.createElement("div");
         parentLink.classList.add("parent-link");
         parentLink.textContent = displayText;
-        footer.append(parentLink);
+        footer.appendChild(parentLink);
 
         parentLink.addEventListener("click", () => {
             scrollElement.scrollIntoView();
@@ -586,7 +586,7 @@ const customCssOption = {
         const style = document.createElement("style");
         style.id = cssId(this.key);
         style.textContent = value;
-        document.documentElement.append(style);
+        document.documentElement.appendChild(style);
     },
     onValueChange: function(value) {
         document.getElementById(cssId(this.key)).textContent = value;
@@ -616,7 +616,7 @@ const resetDataOption = {
 
 
 
-let optionArray = [
+const optionArray = [
     fixHeaderOption,
     useOldStylingOption,
     darkModeOption,

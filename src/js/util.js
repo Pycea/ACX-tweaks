@@ -44,6 +44,19 @@ function logFuncCall(verbose=false) {
     debug(logHandle, funcName + "()");
 }
 
+function testPerformance(operation) {
+    performance.clearMarks();
+    performance.clearMeasures();
+    document.body.offsetHeight;
+
+    performance.mark("start");
+    operation();
+    document.body.offsetHeight;
+    performance.mark("end");
+    performance.measure("domOp", "start", "end");
+    console.log(performance.getEntriesByName("domOp")[0]);
+}
+
 function mod(a, b) {
     return ((a % b) + b) % b;
 }
@@ -51,7 +64,7 @@ function mod(a, b) {
 function getPreloads() {
     const injectionScript = document.createElement("script");
     injectionScript.src = chrome.runtime.getURL("js/inject.js");
-    document.documentElement.append(injectionScript);
+    document.documentElement.appendChild(injectionScript);
     injectionScript.onload = () => injectionScript.remove();
 
     return new Promise((resolve) => {
@@ -112,7 +125,7 @@ async function getPostComments() {
 }
 
 function getPostName() {
-    let match = window.location.pathname.match(/\/p\/([^/]+)/);
+    const match = window.location.pathname.match(/\/p\/([^/]+)/);
     if (match) {
         return match[1];
     }

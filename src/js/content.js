@@ -524,7 +524,7 @@ class Comment {
 
         for (const childId of this.info.children) {
             const child = new Comment(childId);
-            this.childrenContainer.append(child.baseElem);
+            this.childrenContainer.appendChild(child.baseElem);
         }
     }
 
@@ -570,7 +570,7 @@ class Comment {
         });
 
         const newComment = new Comment(newCommentId);
-        this.childrenContainer.append(newComment.baseElem);
+        this.childrenContainer.appendChild(newComment.baseElem);
         optionManager.processComment(newComment.baseElem);
         this.textEditContainer.replaceChildren();
     }
@@ -839,23 +839,24 @@ async function onStart() {
 
 // Setup once the DOM is loaded
 
-async function createComments() {
+function createComments() {
     const topLevelContainer = document.querySelector("#discussion .comments-page > .container");
     const commentListContainer = document.createElement("div");
     commentListContainer.className = "comment-list-container";
-    topLevelContainer.append(commentListContainer);
     const commentList = document.createElement("div");
     commentList.className = "comment-list";
-    commentListContainer.append(commentList);
+    commentListContainer.appendChild(commentList);
     const commentListItems = document.createElement("div");
     commentListItems.className = "comment-list-items";
     commentListItems.id = "top-comment-container";
-    commentList.append(commentListItems);
+    commentList.appendChild(commentListItems);
 
     for (const commentId of CommentManager.topLevelComments) {
         const comment = new Comment(commentId);
-        commentListItems.append(comment.baseElem);
+        commentListItems.appendChild(comment.baseElem);
     }
+
+    topLevelContainer.appendChild(commentListContainer);
 }
 
 async function onLoad() {
@@ -864,7 +865,7 @@ async function onLoad() {
 
     if (PageInfo.pageType === PageType.Post) {
         const template = await loadTemplate(chrome.runtime.getURL("data/templates.html"));
-        document.head.append(template.content);
+        document.head.appendChild(template.content);
         localStorageManager.set("lastViewedDate", new Date().toISOString());
         createComments();
         requestAnimationFrame(() => {
