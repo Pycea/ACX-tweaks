@@ -519,7 +519,8 @@ class Comment {
         }
 
         if (this.info.deleted) {
-            this.headerElem.insertBefore(username, userProfileLink);
+            const profileContainer = this.headerElem.querySelector(".user-profile-link-container");
+            profileContainer.insertBefore(username, userProfileLink);
             userProfileLink.remove();
             this.baseElem.classList.add("deleted");
         }
@@ -594,9 +595,11 @@ class Comment {
             () => this.postReply());
         cancelReplyButton.addEventListener("click", () => {
             replyBase.remove();
+            this.baseElem.focus();
         });
 
         this.textEditContainer.replaceChildren(replyTemplate);
+        replyInput.focus();
     }
 
     editCommentApi(text) {
@@ -659,10 +662,12 @@ class Comment {
             editBase.remove();
             this.bodyElem.classList.remove("hidden");
             this.footerElem.classList.remove("hidden");
+            this.baseElem.focus();
         });
 
         this.textEditContainer.replaceChildren(editTemplate);
         editInput.style.height = `${Math.min(Math.max(editInput.scrollHeight, 116), 500) + 2}px`;
+        editInput.focus();
     }
 
     deleteCommentApi() {
@@ -842,7 +847,9 @@ async function onStart() {
 // Setup once the DOM is loaded
 
 function createComments() {
-    const topLevelContainer = document.querySelector("#discussion .comments-page > .container");
+    const discussion = document.querySelector("#discussion");
+    discussion.tabIndex = -1;
+    const topLevelContainer = discussion.querySelector(".comments-page > .container");
     const commentListContainer = document.createElement("div");
     commentListContainer.className = "comment-list-container";
     const commentList = document.createElement("div");

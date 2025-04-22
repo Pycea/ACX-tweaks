@@ -83,6 +83,15 @@ blockquote blockquote {
 
 /* Recreation of substack ui */
 
+.post a:focus-visible,
+.comment-header a:focus-visible,
+.comment-footer button:focus-visible,
+.comment-body a:focus-visible,
+.text-input-buttons button:focus-visible {
+    outline: #0053b3 auto 1px;
+    outline-offset: 2px;
+}
+
 .text-input-buttons button {
     display: flex;
     align-items: center;
@@ -165,6 +174,10 @@ blockquote blockquote {
     gap: 6px;
 }
 
+.comment-header a {
+    display: block;
+}
+
 .comment-header div {
     color: var(--color-fg-secondary);
     font-size: 13px;
@@ -221,23 +234,26 @@ blockquote blockquote {
     display: flex;
     padding-top: 8px;
     gap: 16px;
+}
+
+.comment-footer.hidden {
+    display: none;
+}
+.comment-footer > button {
+    padding-inline: 0;
+    padding-block: 0;
     font-size: 11px;
     font-family: var(--font-family-meta);
     font-weight: 500;
     color: var(--color-fg-secondary);
     line-height: 20px;
     text-transform: uppercase;
-}
-
-.comment-footer.hidden {
-    display: none;
-}
-
-.comment-footer > div {
+    background: none;
+    border: none;
     cursor: pointer;
 }
 
-.comment-footer > div:hover {
+.comment-footer > button:hover {
     text-decoration: underline;
 }
 

@@ -441,13 +441,14 @@ const addParentLinksOption = {
         // <div class="parent-link">
         //     ${displayText}
         // </div>
-        const parentLink = document.createElement("div");
+        const parentLink = document.createElement("button");
         parentLink.classList.add("parent-link");
         parentLink.textContent = displayText;
         footer.appendChild(parentLink);
 
         parentLink.addEventListener("click", () => {
             scrollElement.scrollIntoView();
+            scrollElement.focus({preventScroll: true});
         });
     },
     onValueChange: function(value) {

@@ -1,5 +1,5 @@
 <template id="comment-template">
-    <div class="comment">
+    <div class="comment" tabindex="-1">
         <div class="comment-content">
             <div class="profile">
                 <div class="profile-icon">
@@ -10,19 +10,23 @@
             </div>
             <div class="comment-main">
                 <div class="comment-header">
-                    <a class="user-profile-link">
-                        <div class="username"></div>
-                    </a>
-                    <a class="comment-post-date-link">
-                        <div class="comment-post-date"></div>
-                    </a>
+                    <div class="user-profile-link-container">
+                        <a class="user-profile-link">
+                            <div class="username"></div>
+                        </a>
+                    </div>
+                    <div class="comment-post-date-link-container">
+                        <a class="comment-post-date-link">
+                            <div class="comment-post-date"></div>
+                        </a>
+                    </div>
                     <div class="comment-edited"></div>
                 </div>
                 <div class="comment-body"></div>
                 <div class="comment-footer">
-                    <div class="reply">Reply</div>
-                    <div class="edit">Edit</div>
-                    <div class="delete">Delete</div>
+                    <button class="comment-action reply">Reply</button>
+                    <button class="comment-action edit">Edit</button>
+                    <button class="comment-action delete">Delete</button>
                 </div>
                 <div class="text-edit-container"></div>
             </div>

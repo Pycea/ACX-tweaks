@@ -354,6 +354,10 @@ const STYLES = {
                 display: initial;
             }
 
+            .comment-header a {
+                display: inline-block;
+            }
+
             .comment-header div {
                 font-size: 12px;
             }
@@ -387,6 +391,7 @@ const STYLES = {
 
             .comment .comment-body {
                 margin-top: 10px;
+                overflow-y: visible;
             }
 
             .comment-body p {
@@ -394,18 +399,32 @@ const STYLES = {
                 color: #333;
             }
 
+            .comment-body a {
+                color: #0066cc;
+                text-decoration: underline;
+            }
+
+            .comment-body a:hover {
+                color: #ff4b33;
+            }
+
 
 
             /* Comment actions */
 
             .comment-footer {
-                padding-bottom: 3px;
+                gap: 12px;
+            }
+
+            .comment-footer button {
+                margin-top: 4px;
+                margin-bottom: 7px;
                 color: #888 !important;
                 font-family: Georgia, "Bitstream Charter", serif;
                 font-size: 12px;
+                line-height: normal;
                 text-transform: capitalize;
                 text-decoration: underline;
-                gap: 12px;
             }
 
             .text-input-container {
