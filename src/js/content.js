@@ -861,6 +861,22 @@ function createComments() {
     topLevelContainer.appendChild(commentListContainer);
 }
 
+function fillCommentCounts() {
+    const numComments = Object.keys(CommentManager.commentIdToInfo).length;
+    const commentCountHeader = document.createElement("div");
+    commentCountHeader.classList.add("label");
+    commentCountHeader.textContent = numComments;
+    const commentCountFooter = commentCountHeader.cloneNode(true);
+    const headerCount = document.querySelector(".post-header .post-ufi-comment-button");
+    const footerCount = document.querySelector(".post-footer .post-ufi-comment-button");
+    headerCount.classList.add("has-label");
+    headerCount.classList.remove("no-label");
+    footerCount.classList.add("has-label");
+    footerCount.classList.remove("no-label");
+    headerCount.appendChild(commentCountHeader);
+    footerCount.appendChild(commentCountFooter);
+}
+
 async function onLoad() {
     logFuncCall();
     debug("pageEvent", "event: onLoad");
@@ -870,6 +886,7 @@ async function onLoad() {
         document.head.appendChild(template.content);
         localStorageManager.set("lastViewedDate", new Date().toISOString());
         createComments();
+        fillCommentCounts();
         requestAnimationFrame(() => {
             optionManager.processAllComments();
             const savedY = sessionStorage.getItem("scrollY");
