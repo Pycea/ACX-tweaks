@@ -810,14 +810,14 @@ function addKeyListener() {
                 return;
             }
 
-            const parent = $(comments[index]).parent().parent().closest(".comment");
-            if (parent.length === 0) {
+            const parent = comments[index].parentElement.parentElement;
+            if (!parent.classList.contains("comment")) {
                 debug("keyPressBinary", "already at top level comment");
                 return;
             }
 
             debug("keyPressBinary", "found parent comment");
-            parent[0].scrollIntoView();
+            parent.scrollIntoView();
             return;
         }
 

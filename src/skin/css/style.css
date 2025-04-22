@@ -138,7 +138,7 @@ blockquote blockquote {
 }
 
 .comment {
-    scroll-margin-top: 8px;
+    scroll-margin-top: 6px;
 }
 
 .comment.hidden {
