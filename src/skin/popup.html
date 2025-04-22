@@ -112,6 +112,7 @@
         }
 
         #newTime,
+        #collapseMod,
         #nextCommentKey,
         #prevCommentKey,
         #nextUnreadKey,
@@ -121,6 +122,7 @@
         }
 
         #hideUsers,
+        #autoCollapseDepth,
         #showDebug,
         #customCss {
             margin-left: 4px;
@@ -131,6 +133,10 @@
         }
 
         #newTimeNumber {
+            width: 3em;
+        }
+
+        #autoCollapseDepthNumber {
             width: 3em;
         }
 
@@ -356,6 +362,14 @@
         <div id="addParentLinks" class="option">
             <input type="checkbox" id="addParentLinksCheck" class="trigger check">
             <label for="addParentLinksCheck">Add parent links</label>
+        </div>
+        <div id="autoCollapseDepth" class="option">
+            <input type="number" id="autoCollapseDepthNumber" class="trigger text">
+            <label for="autoCollapseDepthNumber">Auto collapse depth</label>
+        </div>
+        <div id="collapseMod" class="option">
+            <input type="checkbox" id="collapseModCheck" class="trigger check">
+            <label for="collapseModCheck">Apply to multiples of auto collapse depth</label>
         </div>
         <div id="hideUsers" class="option">
             <input type="text" id="hideUsersText" class="trigger text">

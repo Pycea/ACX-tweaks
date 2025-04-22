@@ -462,6 +462,29 @@ const addParentLinksOption = {
     },
 }
 
+const autoCollapseDepthOption = {
+    key: "autoCollapseDepth",
+    default: 8,
+    hovertext: "Automatically collapse comments beyond the given depth. Set to 0 to collapse top level comments, or a negative number to keep all expanded.",
+    processComment: function(comment) {
+        const depth = parseInt(comment.dataset.depth);
+        const collapseDepth = parseInt(optionManager.get(this.key));
+        const collapseMod = optionManager.get(OptionKey.collapseMod);
+        const collapse =
+            collapseDepth < 0 ? false :
+                collapseDepth === 0 ? collapseMod || depth === 0 :
+                    (collapseMod && depth > 0 && depth % collapseDepth === 0 ||
+                        collapseDepth === depth);
+        comment.classList.toggle("collapsed", collapse);
+    }
+}
+
+const collapseModOption = {
+    key: "collapseMod",
+    default: true,
+    hovertext: "If true and auto collapse isn't negative, collapses children of every nth level nested comment. If auto collapse is 5, then collapses children of levels 5, 10, etc. If false, only children of level 5 are collapsed.",
+}
+
 const hideUsersOption = {
     key: "hideUsers",
     default: "",
@@ -629,6 +652,8 @@ const optionArray = [
     newTimeOption,
     applyCommentStylingOption,
     addParentLinksOption,
+    autoCollapseDepthOption,
+    collapseModOption,
     hideUsersOption,
     allowKeyboardShortcutsOption,
     smoothScrollOption,

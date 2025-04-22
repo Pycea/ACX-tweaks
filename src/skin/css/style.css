@@ -139,7 +139,7 @@ blockquote blockquote {
 .comment-content {
     display: flex;
     gap: 12px;
-    padding-bottom: 12px;
+    padding-bottom: 8px;
 }
 
 .profile {
@@ -258,10 +258,6 @@ blockquote blockquote {
     top: 36px;
     bottom: 0;
     cursor: pointer;
-}
-
-.children:empty + .collapser {
-    display: none;
 }
 
 .collapser .line {

@@ -385,8 +385,9 @@ class CommentManager {
 }
 
 class Comment {
-    constructor(id) {
+    constructor(id, depth=0) {
         this.id = id;
+        this.depth = depth;
         this.info = CommentManager.get(this.id);
 
         const commentTemplate = document.querySelector("#comment-template").content.cloneNode(true);
@@ -480,6 +481,7 @@ class Comment {
         const commentEdited = this.contentElem.querySelector(".comment-edited");
 
         this.baseElem.dataset.id = this.id;
+        this.baseElem.dataset.depth = this.depth;
         this.baseElem.id = this.id;
         profileImage.src = this.info.userPhoto;
         profileImage.alt = `${this.info.username}'s avatar`;
@@ -523,7 +525,7 @@ class Comment {
         }
 
         for (const childId of this.info.children) {
-            const child = new Comment(childId);
+            const child = new Comment(childId, this.depth + 1);
             this.childrenContainer.appendChild(child.baseElem);
         }
     }
@@ -872,7 +874,7 @@ async function onLoad() {
             optionManager.processAllComments();
             const savedY = sessionStorage.getItem("scrollY");
             if (savedY) {
-                window.scrollTo({top: parseInt(savedY)});
+                window.scrollTo({top: parseInt(savedY), behavior: "instant"});
             }
         });
     }
