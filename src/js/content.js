@@ -160,7 +160,7 @@ class OptionManager {
         }
     }
 
-    processComment(commentId, ...optionKeys) {
+    processComment(comment, ...optionKeys) {
         logFuncCall();
 
         let commentHandlerObjects;
@@ -179,11 +179,6 @@ class OptionManager {
 
         debug("processCommentOption", "Processing single comment options",
             commentHandlerObjects.map(o => o.key).join(", "));
-
-        const comment = document.querySelector(`[data-id="${commentId}"]`);
-        if (!comment) {
-            return;
-        }
         debug("processComment", comment);
         for (const object of  commentHandlerObjects) {
             debug("func_" + object.key + ".processComment", object.key + ".processComment()");
@@ -397,6 +392,7 @@ class Comment {
         const commentTemplate = document.querySelector("#comment-template").content.cloneNode(true);
         this.baseElem = commentTemplate.querySelector(".comment");
         this.contentElem = this.baseElem.querySelector(":scope > .comment-content");
+        this.headerElem = this.contentElem.querySelector(".comment-header");
         this.bodyElem = this.contentElem.querySelector(".comment-body");
         this.footerElem = this.contentElem.querySelector(".comment-footer");
         this.textEditContainer = this.contentElem.querySelector(".text-edit-container");
@@ -484,6 +480,7 @@ class Comment {
         const commentEdited = this.contentElem.querySelector(".comment-edited");
 
         this.baseElem.dataset.id = this.id;
+        this.baseElem.id = this.id;
         profileImage.src = this.info.userPhoto;
         profileImage.alt = `${this.info.username}'s avatar`;
         userProfileLink.href = this.info.userProfileUrl;
@@ -520,8 +517,7 @@ class Comment {
         }
 
         if (this.info.deleted) {
-            this.contentElem.querySelector(".comment-header")
-                .insertBefore(username, userProfileLink);
+            this.headerElem.insertBefore(username, userProfileLink);
             userProfileLink.remove();
             this.baseElem.classList.add("deleted");
         }
@@ -575,6 +571,7 @@ class Comment {
 
         const newComment = new Comment(newCommentId);
         this.childrenContainer.append(newComment.baseElem);
+        optionManager.processComment(newComment.baseElem);
         this.textEditContainer.replaceChildren();
     }
 
@@ -624,6 +621,18 @@ class Comment {
         const editDate = new Date(data.edited.date);
         CommentManager.editComment(this.id, body, editDate);
         this.bodyElem.innerHTML = Comment.formatBody(body);
+
+        const editedElem = header.querySelector(".comment-edited");
+
+        if (!editedElem) {
+            const newEditedElem = document.createElement("div");
+            newEditedElem.classList.add("comment-edited");
+            newEditedElem.textContent = "Edited";
+            newEditedElem.setAttribute("title", Comment.formatDateLong(editDate));
+            this.headerElem.querySelector(".comment-post-date-link").after(newEditedElem);
+        }
+
+        optionManager.processComment(this.baseElem);
         this.textEditContainer.replaceChildren();
         this.bodyElem.classList.remove("hidden");
         this.footerElem.classList.remove("hidden");
@@ -683,6 +692,8 @@ class Comment {
         deletedUsername.textContent = "Comment deleted";
         userProfileLink.replaceWith(deletedUsername);
         profileImage.src = CommentManager.getAvatarUrl(null, null);
+        this.footerElem.querySelector(".edit").remove();
+        this.footerElem.querySelector(".delete").remove();
     }
 }
 
