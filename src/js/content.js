@@ -904,11 +904,11 @@ async function doAllSetup() {
     optionManager = new OptionManager(OPTION_KEY, OPTIONS);
     await optionManager.init();
 
+    onStart();
+
     localStorageManager = new LocalStorageManager("acx-local-data-test", getPostName());
     const preloads = await getPreloads();
     PageInfo.init(preloads, localStorageManager);
-
-    onStart();
 
     if (PageInfo.pageType === PageType.Post) {
         CommentManager.init(await getPostComments());

@@ -292,11 +292,7 @@ const highlightNewOption = {
         this.newCommentCutoff = new Date(PageInfo.loadDate - deltaMs);
     },
     onStart: function(value) {
-        if (value) {
-            document.documentElement.classList.add("highlight-new");
-        } else {
-            document.documentElement.classList.remove("highlight-new");
-        }
+        document.documentElement.classList.toggle("highlight-new", value);
     },
     processComment: function(comment) {
         const commentId = comment.dataset.id;
