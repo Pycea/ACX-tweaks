@@ -367,6 +367,7 @@ const STYLES = {
                 margin-bottom: 2px;
                 font-family: Verdana, sans-serif;
                 font-weight: bold;
+                line-height: 24px;
                 color: black;
                 text-decoration: none;
             }

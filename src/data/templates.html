@@ -4,7 +4,10 @@
             <div class="profile">
                 <div class="profile-icon">
                     <a class="profile-link">
-                        <img class="profile-image">
+                        <picture class="profile-picture">
+                            <source class="profile-image-source" type="image/webp" sizes="32px">
+                            <img class="profile-image" draggable="false">
+                        </picture>
                     </a>
                 </div>
             </div>
@@ -41,7 +44,10 @@
 <template id="reply-template">
     <div class="reply-container">
         <div class="profile-icon">
-            <img class="profile-image">
+            <picture class="profile-picture">
+                <source class="profile-image-source" type="image/webp" sizes="32px">
+                <img class="profile-image" draggable="false">
+            </picture>
         </div>
         <div class="text-input-container">
             <textarea class="text-input" rows="5" placeholder="Write a comment..."></textarea>

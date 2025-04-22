@@ -299,14 +299,18 @@ class CommentManager {
         }
     }
 
-    static getAvatarUrl(baseUrl, userId) {
+    static getAvatarUrl(baseUrl, userId, size=32, webp=true) {
         const avatarColors = ["purple", "yellow", "orange", "green", "black"];
         if (!baseUrl) {
             const color = userId ? avatarColors[userId % avatarColors.length] : "default-light";
             baseUrl = `https://substack.com/img/avatars/${color}.png`;
         }
 
-        return `https://substackcdn.com/image/fetch/w_32,h_32,c_fill,f_auto,q_auto:good,fl_progressive:steep/${encodeURI(baseUrl)}`;
+        const format = webp ? "f_webp" : "f_auto";
+        const sizeParam = `w_${size},h_${size}`;
+        const prefix = `https://substackcdn.com/image/fetch/${sizeParam},c_fill,${format},q_auto:good,fl_progressive:steep/`;
+
+        return prefix + encodeURI(baseUrl);
     }
 
     static getProfileUrl(userId, username) {
@@ -340,7 +344,7 @@ class CommentManager {
             commentId,
             userId,
             username,
-            userPhoto: CommentManager.getAvatarUrl(userPhoto, userId),
+            userPhoto,
             userProfileUrl: CommentManager.getProfileUrl(userId, username),
             ancestorPath,
             parent: parseInt(ancestorPath.split(".").at(-1)) || null,
@@ -472,8 +476,24 @@ class Comment {
         return paragraphs.map(p => `<p><span>${p}</span></p>`).join("");
     }
 
+    static createProfilePicture(picture, url, userId) {
+        const sizes = [32, 64, 96];
+        const sourceSrcset = [];
+        const imgSrcset = [];
+        for (const size of sizes) {
+            sourceSrcset.push(CommentManager.getAvatarUrl(url, userId, size, true) + ` ${size}w`);
+            imgSrcset.push(CommentManager.getAvatarUrl(url, userId, size, false) + ` ${size}w`);
+        }
+
+        picture.querySelector("source").srcset = sourceSrcset.join(", ");
+        const img = picture.querySelector("img");
+        img.srcset = imgSrcset.join(", ");
+        img.src = CommentManager.getAvatarUrl(userPhoto, userId, 96, false);
+    }
+
     fillCommentElem() {    
-        const profileImage = this.contentElem.querySelector(".profile-image");
+        const picture = this.contentElem.querySelector(".profile-picture");
+        const profileImage = picture.querySelector(".profile-image");
         const userProfileLink = this.contentElem.querySelector(".user-profile-link");
         const username = this.contentElem.querySelector(".username");
         const commentPostDateLink = this.contentElem.querySelector(".comment-post-date-link");
@@ -483,7 +503,8 @@ class Comment {
         this.baseElem.dataset.id = this.id;
         this.baseElem.dataset.depth = this.depth;
         this.baseElem.id = this.id;
-        profileImage.src = this.info.userPhoto;
+
+        Comment.createProfilePicture(picture, this.info.userPhoto, this.info.userId);
         profileImage.alt = `${this.info.username}'s avatar`;
         userProfileLink.href = this.info.userProfileUrl;
         username.textContent = this.info.username || "Comment deleted";
@@ -581,12 +602,13 @@ class Comment {
     replyButtonClick() {
         const replyTemplate = document.querySelector("#reply-template").content.cloneNode(true);
         const replyBase = replyTemplate.querySelector(".reply-container");
-        const profileImage = replyBase.querySelector(".profile-image");
+        const picture = replyTemplate.querySelector(".profile-picture");
+        const profileImage = picture.querySelector(".profile-image");
         const replyInput = replyBase.querySelector(".text-input");
         const postReplyButton = replyBase.querySelector(".reply-post");
         const cancelReplyButton = replyBase.querySelector(".reply-cancel");
 
-        profileImage.src = CommentManager.getAvatarUrl(PageInfo.avatarUrl, PageInfo.userId);
+        Comment.createProfilePicture(picture, this.info.userPhoto, this.info.userId);
         profileImage.alt = `${PageInfo.username}'s avatar`;
         replyInput.addEventListener("input", () => {
             postReplyButton.disabled = replyInput.value === "";
