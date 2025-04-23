@@ -735,6 +735,14 @@ let localStorageManager;
 
 // called when the page is first loaded
 
+function addFontLinks() {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.type = "text/css";
+    link.href = "https://fonts.googleapis.com/css?family=Raleway";
+    document.head.appendChild(link);
+}
+
 function addKeyListener() {
     logFuncCall();
 
@@ -858,6 +866,7 @@ async function onStart() {
     chrome.storage.onChanged.addListener((changes, namespace) => {
         optionManager.processOptionChange(changes, namespace)
     });
+    addFontLinks();
     addKeyListener();
     history.scrollRestoration = "manual";
     window.addEventListener("beforeunload", () => {
