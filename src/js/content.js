@@ -871,6 +871,7 @@ async function onStart() {
     history.scrollRestoration = "manual";
     window.addEventListener("beforeunload", () => {
         sessionStorage.setItem("scrollY", window.scrollY);
+        sessionStorage.setItem("lastPost", location.pathname);
     });
 }
 
@@ -928,7 +929,8 @@ async function onLoad() {
         requestAnimationFrame(() => {
             optionManager.processAllComments();
             const savedY = sessionStorage.getItem("scrollY");
-            if (savedY) {
+            const lastPost = sessionStorage.getItem("lastPost");
+            if (savedY && lastPost === location.pathname) {
                 window.scrollTo({top: parseInt(savedY), behavior: "instant"});
             }
         });

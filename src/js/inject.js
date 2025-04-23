@@ -4,3 +4,7 @@ addEventListener("DOMContentLoaded", () => {
         preloads: window._preloads
     }, "https://www.astralcodexten.com");
 });
+
+history.pushState = function(_, _, url) {
+    location.href = url;
+};
