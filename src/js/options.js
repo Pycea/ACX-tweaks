@@ -129,17 +129,17 @@ const showHeartsOption = {
         const userReact = commentInfo.userReact;
         const ownComment = commentInfo.userId === PageInfo.userId;
         const heartContainer = this.heartHtml(hearts, userReact, ownComment);
-        const likeButton = heartContainer.querySelector(".like-button");
+        const commentHeart = heartContainer.querySelector(".comment-heart");
+        const likeButton = commentHeart.querySelector(".like-button");
 
-        likeButton.addEventListener("click", () => {
+        // disable your own comment like button
+        if (PageInfo.userId === commentInfo.userId) {
+            commentHeart.disabled = true;
+        }
+
+        commentHeart.addEventListener("click", () => {
             debug("funcs_showHearts.onClick", "showHearts.onClick()");
             const commentInfo = CommentManager.get(commentId);
-
-            // no liking your own comments
-            if (PageInfo.userId === commentInfo.userId) {
-                return;
-            }
-
             const url = `https://www.astralcodexten.com/api/v1/comment/${commentId}/reaction`;
             const method = commentInfo.userReact ? "DELETE" : "POST";
             const data = {reaction: "❤"};

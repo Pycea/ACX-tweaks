@@ -60,17 +60,22 @@ blockquote blockquote {
     cursor: default;
 }
 
-.like-button .reaction-container > svg {
-    position: relative;
-    top: 3px; /* I give up */
+.like-button .reaction-container {
+    display: flex;
+    align-items: center;
 }
 
 .like-button .reaction-container > svg.animation {
     position: absolute;
 }
 
-.comment-footer div.comment-heart:hover {
+.comment-footer button.comment-heart,
+.comment-footer button.comment-heart:hover {
     text-decoration: none;
+}
+
+.like-button .like-count:not(:empty) {
+    padding-left: 4px;
 }
 
 /* Fix substack issue where dropdowns have a scrollbar */
@@ -255,6 +260,10 @@ blockquote blockquote {
 
 .comment-footer > button:hover {
     text-decoration: underline;
+}
+
+.comment-footer span {
+    color: var(--color-fg-secondary);
 }
 
 .children {

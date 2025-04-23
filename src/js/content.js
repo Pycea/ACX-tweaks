@@ -488,7 +488,7 @@ class Comment {
         picture.querySelector("source").srcset = sourceSrcset.join(", ");
         const img = picture.querySelector("img");
         img.srcset = imgSrcset.join(", ");
-        img.src = CommentManager.getAvatarUrl(userPhoto, userId, 96, false);
+        img.src = CommentManager.getAvatarUrl(url, userId, 96, false);
     }
 
     fillCommentElem() {    
