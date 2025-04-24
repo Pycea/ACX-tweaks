@@ -65,10 +65,23 @@ const darkModeOption = {
     hovertext: "Make this popup dark mode (does not apply to blog itself). To make the page dark, use an extension like Dark Reader.",
 }
 
+const removePromptsOption = {
+    key: "removePrompts",
+    default: true,
+    hovertext: "Remove prompts to subscribe or share",
+    onStart: function(value) {
+        addStyle(this.key);
+        this.onValueChange(value);
+    },
+    onValueChange: function(value) {
+        document.getElementById(cssId(this.key)).disabled = !value;
+    },
+}
+
 const zenModeOption = {
     key: "zenMode",
     default: false,
-    hovertext: "Remove like, share, and subscribe clutter (use separate option below to disable comments)",
+    hovertext: "Remove all like, share, and other clutter (use separate option below to disable comments)",
     onStart: function(value) {
         addStyle(this.key);
         this.onValueChange(value);
@@ -640,6 +653,7 @@ const optionArray = [
     fixHeaderOption,
     useOldStylingOption,
     darkModeOption,
+    removePromptsOption,
     zenModeOption,
     removeCommentsOption,
     showHeartsOption,

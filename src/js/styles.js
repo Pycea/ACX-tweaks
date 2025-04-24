@@ -1,21 +1,30 @@
 "use strict";
 
 const STYLES = {
-    "fixHeader": {
-        "css": `
+    fixHeader: {
+        css: `
             .main-menu > * {
                 position: relative !important;
                 top: 0 !important;
             }`,
     },
-    "zenMode": {
-        "css": `
+    removePrompts: {
+        css: `
+            [data-testid="noncontributor-cta-button"],
+            .available-content ~ *:not(.post-footer),
+            .subscribe-footer {
+                display: none;
+            }
+        `,
+    },
+    zenMode: {
+        css: `
             [data-testid="noncontributor-cta-button"],
             .post-ufi,
             .available-content ~ *,
             .single-post-section,
-            .publication-footer,
-            .subscribe-footer {
+            .subscribe-footer,
+            .publication-footer {
                 display: none;
             }
 
@@ -25,22 +34,22 @@ const STYLES = {
             }
         `,
     },
-    "removeComments": {
-        "css": `
+    removeComments: {
+        css: `
             #discussion {
                 display: none;
             }
         `,
     },
-    "showHearts": {
-        "css": `
+    showHearts: {
+        css: `
             .comment-heart {
                 display: none;
             }
         `,
     },
-    "showFullDate": {
-        "css": `
+    showFullDate: {
+        css: `
             .comment-content .worse-date {
                 display: none;
             }
@@ -61,8 +70,8 @@ const STYLES = {
                 display: inline;
             }`,
     },
-    "use24Hour": {
-        "css": `
+    use24Hour: {
+        css: `
             .comment-header .hour24-time {
                 display: inline;
             }
@@ -71,14 +80,14 @@ const STYLES = {
                 display: none;
             }`,
     },
-    "addParentLinks": {
-        "css": `
+    addParentLinks: {
+        css: `
             .parent-link {
                 display: none;
             }`,
     },
-    "applyCommentStyling": {
-        "css": `
+    applyCommentStyling: {
+        css: `
             .comment-body span.new-style {
                 display: inline;
             }
@@ -87,15 +96,15 @@ const STYLES = {
                 display: none;
             }`,
     },
-    "smoothScroll": {
-        "css": `
+    smoothScroll: {
+        css: `
             html {
                 scroll-behavior: smooth;
             }
         `,
     },
-    "useOldStyling": {
-        "css": `
+    useOldStyling: {
+        css: `
             /* Global vars for responsive sizing */
 
             :root {

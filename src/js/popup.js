@@ -223,11 +223,7 @@ function addDependencies() {
     const showFullDateCheck = document.querySelector("#showFullDateCheck");
     const use24HourCheck = document.querySelector("#use24HourCheck");
     showFullDateCheck.addEventListener("change", () => {
-        if (!showFullDateCheck.checked) {
-            use24HourCheck.disabled = true;
-        } else {
-            use24HourCheck.disabled = false;
-        }
+        use24HourCheck.disabled = !showFullDateCheck.checked;
     });
 
     if (!showFullDateCheck.checked) {
@@ -288,11 +284,7 @@ function addDependencies() {
     // dark mode option
     const darkModeCheck = document.querySelector("#darkModeCheck");
     darkModeCheck.addEventListener("change", () => {
-        if (darkModeCheck.checked) {
-            document.body.classList.add("dark");
-        } else {
-            document.body.classList.remove("dark");
-        }
+        document.body.classList.toggle("dark", darkModeCheck.checked);
     });
 
     if (!darkModeCheck.checked) {
