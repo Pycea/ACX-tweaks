@@ -246,6 +246,7 @@ const STYLES = {
             }
 
             .main-menu > :first-child > :first-child > :first-child {
+                flex-basis: 90px !important;
                 flex-grow: 1 !important;
                 transform: translateY(6px);
             }
