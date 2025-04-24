@@ -608,7 +608,7 @@ class Comment {
         const postReplyButton = replyBase.querySelector(".reply-post");
         const cancelReplyButton = replyBase.querySelector(".reply-cancel");
 
-        Comment.createProfilePicture(picture, this.info.userPhoto, this.info.userId);
+        Comment.createProfilePicture(picture, PageInfo.avatarUrl, PageInfo.userId);
         profileImage.alt = `${PageInfo.username}'s avatar`;
         replyInput.addEventListener("input", () => {
             postReplyButton.disabled = replyInput.value === "";
@@ -649,7 +649,7 @@ class Comment {
         CommentManager.editComment(this.id, body, editDate);
         this.bodyElem.innerHTML = Comment.formatBody(body);
 
-        const editedElem = header.querySelector(".comment-edited");
+        const editedElem = this.headerElem.querySelector(".comment-edited");
 
         if (!editedElem) {
             const newEditedElem = document.createElement("div");
