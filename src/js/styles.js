@@ -131,25 +131,6 @@ const STYLES = {
 
 
 
-            /* Main page */
-
-            .home-page {
-                display: flex;
-            }
-
-            .home-page > div:first-of-type > div {
-                margin: 0 20px;
-                width: 100%;
-                padding: 0;
-            }
-
-            .overflow-list-container {
-                background: #fff;
-            }
-
-
-
-
             /* General look */
 
             html {
@@ -179,6 +160,7 @@ const STYLES = {
             #main {
                 overflow: hidden;
                 max-width: min(1242px, 100%);
+                min-height: 0;
                 box-shadow: var(--main-shadow);
                 border-radius: var(--main-radius);
                 background: none;
@@ -186,8 +168,42 @@ const STYLES = {
             }
 
             #main > div:nth-child(2):not(.home-page) {
+                display: block;
                 padding: 0 var(--sidebar-margin);
                 background-color: #e4e4e4;
+            }
+
+
+
+            /* Main page */
+
+            .home-page {
+                display: flex;
+            }
+
+            .home-page > div:first-of-type > div {
+                margin: 0 20px;
+                width: 100%;
+                padding: 0;
+            }
+
+            .overflow-list-container {
+                background: #fff;
+            }
+
+
+
+            /* Comments page */
+
+            #main > div > .comments-page {
+                padding: 10px;
+                background: #f0f0f0;
+            }
+
+            #main > div > .comments-page > .container > a {
+                margin-top: 0;
+                margin-left: 0;
+                font: 16px Georgia, "Bitstream Charter", serif;
             }
 
 
@@ -197,6 +213,18 @@ const STYLES = {
             #dialog6 > div > div > div,
             #dialog18 > div > div > div {
                 background-color: #e0e0e0;
+            }
+
+            article.post > :nth-child(4) > :first-child button:hover {
+                background: #bbb8;
+            }
+
+            article.post > :nth-child(4) > :first-child button > div > div {
+                background: #e2e2e2;
+            }
+
+            article.post > :nth-child(4) > :first-child button > div > div.active-Yh0Zwm {
+                background: #555;
             }
 
 
@@ -214,7 +242,7 @@ const STYLES = {
                 gap: 30px;
                 box-sizing: border-box;
                 height: var(--header-height) !important;
-                padding: 10px;
+                padding: 12px;
             }
 
             .main-menu > :first-child > :first-child > :first-child {
@@ -313,7 +341,8 @@ const STYLES = {
 
             /* Post content */
 
-            .single-post-container {
+            .single-post-container,
+            #main > div > .comments-page {
                 padding: 10px;
                 border-left: 1px solid #ddd;
                 border-right: 1px solid #ddd;
@@ -368,6 +397,10 @@ const STYLES = {
                 font-style: italic;
             }
 
+            .typography .markup .tweet {
+                background-color: #fff;
+            }
+
 
 
             /* Comments container */
@@ -377,7 +410,8 @@ const STYLES = {
                 padding-bottom: 0;
             }
 
-            #discussion > :first-child > h4 {
+            #discussion > :first-child > h4,
+            #main > div > .comments-page > .container > :first-child > div {
                 margin-top: 0;
                 font: 16px Georgia, "Bitstream Charter", serif;
                 font-weight: normal;
@@ -526,7 +560,7 @@ const STYLES = {
             }
 
             .comment-body i {
-                display: none;
+                font: italic 12px/24px Verdana, sans-serif;
             }
 
 
