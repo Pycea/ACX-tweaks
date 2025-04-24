@@ -8,15 +8,6 @@ const STYLES = {
                 top: 0 !important;
             }`,
     },
-    removePrompts: {
-        css: `
-            [data-testid="noncontributor-cta-button"],
-            .available-content ~ *:not(.post-footer),
-            .subscribe-footer {
-                display: none;
-            }
-        `,
-    },
     zenMode: {
         css: `
             [data-testid="noncontributor-cta-button"],

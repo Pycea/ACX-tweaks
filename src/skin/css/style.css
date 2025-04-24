@@ -78,13 +78,12 @@ blockquote blockquote {
     padding-left: 4px;
 }
 
-/* Fix substack issue where dropdowns have a scrollbar */
-
-.dropdown-menu > .dropdown-menu-wrapper > li > a {
-    width: initial !important;
+/* Remove substack ads */
+[data-testid="noncontributor-cta-button"],
+.available-content ~ *:not(.post-footer),
+.subscribe-footer {
+    display: none;
 }
-
-
 
 /* Recreation of substack ui */
 
