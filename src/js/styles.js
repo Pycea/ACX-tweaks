@@ -309,7 +309,7 @@ const STYLES = {
 
             .post-title {
                 margin-bottom: 10px;
-                font: 16px/3em Georgia, "Bitstream Charter", serif;
+                font: 16px/1.3em Georgia, "Bitstream Charter", serif;
                 font-weight: normal;
                 text-transform: uppercase;
                 letter-spacing: 1px;
@@ -327,7 +327,7 @@ const STYLES = {
                 border: 1px solid #eee;
                 padding: 5px 7px;
                 background: #f9f9f9;
-                font-size: 10px Verdana, sans-serif;
+                font: 10px Verdana, sans-serif;
                 text-transform: uppercase;
                 letter-spacing: 1px;
                 text-shadow: 1px 1px 1px #fff;

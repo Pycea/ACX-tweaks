@@ -880,6 +880,9 @@ async function onStart() {
 
 function createComments() {
     const discussion = document.querySelector("#discussion");
+    if (!discussion) {
+        throw new Error("Cannot find comment container, aborting");
+    }
     discussion.tabIndex = -1;
     const topLevelContainer = discussion.querySelector(".comments-page > .container");
     const commentListContainer = document.createElement("div");
@@ -961,4 +964,16 @@ async function doAllSetup() {
     }
 }
 
-doAllSetup();
+const runPaths = [
+    /^\/$/,
+    /^\/p\//,
+    /^\/archive$/,
+    /^\/about$/,
+];
+
+for (const path of runPaths) {
+    if (path.test(location.pathname)) {
+        doAllSetup();
+        break;
+    }
+}
