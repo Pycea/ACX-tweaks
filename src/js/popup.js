@@ -81,7 +81,7 @@ function addHovertext(optionElem) {
     const tooltip = document.createElement("span");
     tooltip.id = `${id}-tooltip`;
     tooltip.className = "tooltip";
-    tooltip.textContent = OPTIONS[id].hovertext;
+    tooltip.innerHTML = OPTIONS[id].hovertext;
     tooltip.style.display = "none";
     optionElem.appendChild(icon);
     document.getElementById("wrapper").appendChild(tooltip);
@@ -190,7 +190,7 @@ function createResetHandler() {
         const width = button.getBoundingClientRect().width;
         button.classList.add("verify");
         button.textContent = "Are you sure?";
-        button.style.width = width;
+        button.style.width = `${width}px`;
     }
 
     // on the second click, clear the data

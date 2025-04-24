@@ -6,12 +6,17 @@ const STYLES = {
             .main-menu > * {
                 position: relative !important;
                 top: 0 !important;
+            }
+
+            .main-menu > :nth-child(2) {
+                display: none;
             }`,
     },
     zenMode: {
         css: `
             [data-testid="noncontributor-cta-button"],
-            .post-ufi,
+            .post-header .post-ufi,
+            .post-footer .post-ufi,
             .available-content ~ *,
             .single-post-section,
             .subscribe-footer,
@@ -230,6 +235,11 @@ const STYLES = {
 
 
             /* Topbar */
+
+            .main-menu > * {
+                position: relative !important;
+                top: 0 !important;
+            }
 
             .main-menu > :first-child > :first-child {
                 border: none;
