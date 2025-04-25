@@ -25,6 +25,7 @@
 const PageType = Object.freeze({
     "Main": "Main",
     "Post": "Post",
+    "Comments": "Comments",
     "Unknown": "Unknown",
 });
 
@@ -237,7 +238,15 @@ class PageInfo {
         PageInfo.username = preloads.user?.name;
         PageInfo.avatarUrl = preloads.user?.photo_url;
 
-        PageInfo.pageType = preloads.post ? PageType.Post : PageType.Main;
+        if (/\/p\/.*\/comment/.test(location.pathname)) {
+            PageInfo.pageType = PageType.Comments;
+        } else if (/\/p\//.test(location.pathname)) {
+            PageInfo.pageType = PageType.Post;
+        } else if (location.pathname === "/") {
+            PageInfo.pageType = PageType.Main;
+        } else {
+            PageInfo.pageType = PageType.Unknown;
+        }
 
         PageInfo.postId = preloads.post?.id;
         PageInfo.postName = preloads.post?.slug;
@@ -508,7 +517,7 @@ class Comment {
         profileImage.alt = `${this.info.username}'s avatar`;
         userProfileLink.href = this.info.userProfileUrl;
         username.textContent = this.info.username || "Comment deleted";
-        commentPostDateLink.href = `${PageInfo.postName}/comment/${this.id}`;
+        commentPostDateLink.href = `/p/${PageInfo.postName}/comment/${this.id}`;
         commentPostDate.textContent = Comment.formatDateShort(this.info.date);
         commentPostDate.setAttribute("title", Comment.formatDateLong(this.info.date));
         if (this.info.editedDate) {
@@ -754,14 +763,6 @@ let localStorageManager;
 
 // called when the page is first loaded
 
-function addFontLinks() {
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.type = "text/css";
-    link.href = "https://fonts.googleapis.com/css?family=Raleway";
-    document.head.appendChild(link);
-}
-
 function addKeyListener() {
     logFuncCall();
 
@@ -885,7 +886,6 @@ async function onStart() {
     chrome.storage.onChanged.addListener((changes, namespace) => {
         optionManager.processOptionChange(changes, namespace)
     });
-    addFontLinks();
     addKeyListener();
     history.scrollRestoration = "manual";
     window.addEventListener("beforeunload", () => {
@@ -898,31 +898,44 @@ async function onStart() {
 // Setup once the DOM is loaded
 
 function createComments() {
-    const discussion = document.querySelector("#discussion");
-    if (!discussion) {
-        throw new Error("Cannot find comment container, aborting");
+    let commentListContainer;
+    let commentListItems;
+    if (PageInfo.pageType === PageType.Post) {
+        const discussion = document.querySelector("#discussion");
+        if (!discussion) {
+            throw new Error("Cannot find comment container, aborting");
+        }
+        discussion.tabIndex = -1;
+        const topLevelContainer = discussion.querySelector(".comments-page > .container");
+        commentListContainer = document.createElement("div");
+        commentListContainer.className = "comment-list-container";
+        const commentList = document.createElement("div");
+        commentList.className = "comment-list";
+        commentListContainer.appendChild(commentList);
+        commentListItems = document.createElement("div");
+        commentListItems.className = "comment-list-items";
+        commentListItems.id = "top-comment-container";
+        commentList.appendChild(commentListItems);
+        topLevelContainer.appendChild(commentListContainer);
+    } else if (PageInfo.pageType === PageType.Comments) {
+        commentListContainer = document.querySelector(".comment-list-container");
+        commentListItems = commentListContainer.querySelector(":scope > * > .comment-list-items");
+        commentListItems.replaceChildren();
     }
-    discussion.tabIndex = -1;
-    const topLevelContainer = discussion.querySelector(".comments-page > .container");
-    const commentListContainer = document.createElement("div");
-    commentListContainer.className = "comment-list-container";
-    const commentList = document.createElement("div");
-    commentList.className = "comment-list";
-    commentListContainer.appendChild(commentList);
-    const commentListItems = document.createElement("div");
-    commentListItems.className = "comment-list-items";
-    commentListItems.id = "top-comment-container";
-    commentList.appendChild(commentListItems);
 
     for (const commentId of CommentManager.topLevelComments) {
         const comment = new Comment(commentId);
         commentListItems.appendChild(comment.baseElem);
     }
 
-    topLevelContainer.appendChild(commentListContainer);
+    commentListContainer.classList.add("visible");
 }
 
 function fillCommentCounts() {
+    if (PageInfo.pageType !== PageType.Post) {
+        return;
+    }
+
     const numComments = Object.keys(CommentManager.commentIdToInfo).length;
     const commentCountHeader = document.createElement("div");
     commentCountHeader.classList.add("label");
@@ -957,10 +970,11 @@ async function onLoad() {
     logFuncCall();
     debug("pageEvent", "event: onLoad");
 
-    if (PageInfo.pageType === PageType.Post) {
+    localStorageManager.set("lastViewedDate", new Date().toISOString());
+
+    if ([PageType.Post, PageType.Comments].includes(PageInfo.pageType)) {
         const template = await loadTemplate(chrome.runtime.getURL("data/templates.html"));
         document.head.appendChild(template.content);
-        localStorageManager.set("lastViewedDate", new Date().toISOString());
         createComments();
         fillCommentCounts();
         requestAnimationFrame(() => {
@@ -985,6 +999,8 @@ async function doAllSetup() {
 
     if (PageInfo.pageType === PageType.Post) {
         CommentManager.init(await getPostComments());
+    } else if (PageInfo.pageType === PageType.Comments) {
+        CommentManager.init(preloads.initialComments);
     }
 
     if (document.readyState === "loading") {

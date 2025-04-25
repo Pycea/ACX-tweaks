@@ -134,6 +134,11 @@ const STYLES = {
                 }
             }
 
+            @font-face {
+                font-family: "Raleway";
+                src: url(${chrome.runtime.getURL("font/Raleway.ttf")}) format("opentype");
+            }
+
 
 
             /* General look */
@@ -164,6 +169,7 @@ const STYLES = {
 
             #main {
                 overflow: hidden;
+                width: 100%;
                 max-width: min(1242px, 100%);
                 min-height: 0;
                 box-shadow: var(--main-shadow);
@@ -242,22 +248,19 @@ const STYLES = {
             }
 
             .main-menu > :first-child > :first-child {
+                align-items: center;
+                gap: 30px;
+                transition: unset;
                 border: none;
+                box-sizing: border-box;
+                height: var(--header-height) !important;
+                padding: 12px;
                 background: linear-gradient(to bottom, #8babe8 0%, #4f73c1 100%);
                 text-decoration: none;
             }
 
-            .main-menu > :first-child > :first-child {
-                align-items: center;
-                gap: 30px;
-                box-sizing: border-box;
-                height: var(--header-height) !important;
-                padding: 12px;
-            }
-
             .main-menu > :first-child > :first-child > :first-child {
-                flex-basis: 90px !important;
-                flex-grow: 1 !important;
+                flex: 1 90px !important;
                 transform: translateY(6px);
             }
 
@@ -393,7 +396,7 @@ const STYLES = {
             }
 
             article .available-content blockquote,
-            #discussion .comment blockquote {
+            .comment-list-container .comment blockquote {
                 margin: 0 2em;
                 border-left: 4px solid #ddd;
                 padding: 0 1em;
@@ -401,7 +404,7 @@ const STYLES = {
             }
 
             article .available-content blockquote p,
-            #discussion blockquote {
+            .comment-list-container blockquote {
                 margin-left: 0;
                 line-height: 24px;
                 font-family: Georgia, "Bitstream Charter", serif;

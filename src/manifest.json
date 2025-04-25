@@ -25,7 +25,13 @@
     ],
     "web_accessible_resources": [
         {
-            "resources": ["icons/", "data/empty_comments.json", "data/templates.html", "js/inject.js"],
+            "resources": [
+                "icons/",
+                "data/empty_comments.json",
+                "data/templates.html",
+                "js/inject.js",
+                "font/Raleway.ttf"
+            ],
             "matches": [
                 "https://www.astralcodexten.com/*"
             ]

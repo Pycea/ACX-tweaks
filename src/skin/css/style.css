@@ -135,6 +135,14 @@ blockquote blockquote {
     background-color: var(--color-button-secondary-bg-hover);
 }
 
+.comment-list-container {
+    display: none;
+}
+
+.comment-list-container.visible {
+    display: block;
+}
+
 .comment-list-items {
     margin-top: -12px;
 }
