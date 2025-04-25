@@ -565,15 +565,27 @@ class Comment {
         const replyInput = this.textEditContainer.querySelector(".reply-container .text-input");
         const postReplyButton =
             this.textEditContainer.querySelector(".reply-container .reply-post");
+        const errorElem = this.textEditContainer.querySelector(".comment-error");
         const body = replyInput.value;
+        replyInput.disabled = true;
         postReplyButton.disabled = true;
+        errorElem.classList.remove("visible");
 
         let data;
+        let error;
         try {
             data = await this.postCommentApi(body);
-        } catch(error) {
-            debug("commentActionReply", "reply failed", error);
+            error = data.errors?.[0]?.msg;
+        } catch {
+            error = "Post reply failed";
+        }
+
+        if (error) {
+            debug("commentActionReply", "reply failed:", error);
+            replyInput.disabled = false;
             postReplyButton.disabled = false;
+            errorElem.textContent = error;
+            errorElem.classList.add("visible");
             return;
         }
 
@@ -632,15 +644,21 @@ class Comment {
     async editComment() {
         const editInput = this.textEditContainer.querySelector(".edit-container .text-input");
         const postEditButton = this.textEditContainer.querySelector(".edit-container .edit-post");
+        const errorElem = this.textEditContainer.querySelector(".comment-error");
         const body = editInput.value;
+        editInput.disabled = true;
         postEditButton.disabled = true;
+        errorElem.classList.remove("visible");
 
         let data;
         try {
             data = await this.editCommentApi(body);
         } catch (error) {
             debug("commentActionEdit", "edit failed", error);
+            editInput.disabled = false;
             postEditButton.disabled = false;
+            errorElem.textContent = "Edit post failed";
+            errorElem.classList.add("visible");
             return;
         }
 
@@ -708,9 +726,10 @@ class Comment {
         const profileImage = this.contentElem.querySelector(".profile-image");
 
         try {
-            this.deleteCommentApi();
+            await this.deleteCommentApi();
         } catch (error) {
             debug("commentActionDelete", "delete failed", error);
+            alert("Post deletion failed");
             return;
         }
 

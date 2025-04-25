@@ -3,12 +3,10 @@
         <div class="comment-content">
             <div class="profile">
                 <div class="profile-icon">
-                    <a class="profile-link">
-                        <picture class="profile-picture">
-                            <source class="profile-image-source" type="image/webp" sizes="32px">
-                            <img class="profile-image" draggable="false">
-                        </picture>
-                    </a>
+                    <picture class="profile-picture">
+                        <source class="profile-image-source" type="image/webp" sizes="32px">
+                        <img class="profile-image" draggable="false">
+                    </picture>
                 </div>
             </div>
             <div class="comment-main">
@@ -51,6 +49,7 @@
         </div>
         <div class="text-input-container">
             <textarea class="text-input" rows="5" placeholder="Write a comment..."></textarea>
+            <div class="comment-error"></div>
             <div class="text-input-buttons">
                 <button class="reply-post primary" disabled>Reply</button>
                 <button class="reply-cancel secondary">Cancel</button>
@@ -63,6 +62,7 @@
     <div class="edit-container">
         <div class="text-input-container">
             <textarea class="text-input"></textarea>
+            <div class="comment-error"></div>
             <div class="text-input-buttons">
                 <button class="edit-post primary">Save</button>
                 <button class="edit-cancel secondary">Cancel</button>

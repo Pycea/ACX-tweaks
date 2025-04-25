@@ -80,10 +80,12 @@ blockquote blockquote {
 
 /* Remove substack ads */
 [data-testid="noncontributor-cta-button"],
-.available-content ~ *:not(.post-footer),
+.available-content ~ *:not(.post-footer):not([data-testid="paywall"]),
 .subscribe-footer {
     display: none;
 }
+
+
 
 /* Recreation of substack ui */
 
@@ -99,14 +101,14 @@ blockquote blockquote {
 .text-input-buttons button {
     display: flex;
     align-items: center;
+    transition: var(--animate-hover);
+    border: 1px solid transparent;
+    border-radius: 8px;
     height: 40px;
     padding: 16px;
     font-size: 15px;
     font-weight: 600;
-    border: 1px solid transparent;
-    border-radius: 8px;
     cursor: pointer;
-    transition: var(--animate-hover);
 }
 
 .text-input-buttons button.primary {
@@ -120,8 +122,8 @@ blockquote blockquote {
 
 .text-input-buttons button.primary:disabled {
     background-color: var(--color-button-disabled-bg);
-    color: var(--color-button-disabled-fg);
     cursor: default;
+    color: var(--color-button-disabled-fg);
 }
 
 .text-input-buttons button.secondary {
@@ -160,11 +162,19 @@ blockquote blockquote {
     flex-direction: column;
 }
 
-.profile-image {
+.profile-icon {
+    overflow: hidden;
     width: 32px;
+    height: 32px;
+}
+
+.profile-image {
+    display: flex;
     border-radius: 32px;
     outline: 1px solid var(--color-utility-detail);
     outline-offset: -1px;
+    width: 32px;
+    height: 32px;
 }
 
 .comment-main {
@@ -183,10 +193,8 @@ blockquote blockquote {
 }
 
 .comment-header div {
+    font: 13px/20px var(--font-family-text);
     color: var(--color-fg-secondary);
-    font-size: 13px;
-    font-family: var(--font-family-text);
-    line-height: 20px;
 }
 
 .comment-header .user-profile-link {
@@ -203,13 +211,13 @@ blockquote blockquote {
 }
 
 .deleted > .comment-content .comment-header .username {
-    color: #7b8086;
     font-weight: 400;
+    color: #7b8086;
 }
 
 .comment-post-date-link {
-    text-decoration: none;
     cursor: pointer;
+    text-decoration: none;
 }
 
 .comment-post-date-link:hover {
@@ -217,8 +225,8 @@ blockquote blockquote {
 }
 
 .comment-edit {
-    font-style: italic;
     cursor: pointer;
+    font-style: italic;
 }
 
 .comment-edit:hover {
@@ -234,27 +242,41 @@ blockquote blockquote {
     display: none;
 }
 
+.comment .comment-error {
+    display: none;
+    align-self: flex-start;
+    border: 1px solid rgba(235, 87, 87, 0.2);
+    border-radius: 4px;
+    padding: 2px 6px;
+    background-color: rgba(235, 87, 87, 0.2);
+    font-size: 11px;
+    font-weight: 500;
+    color: #c53e41;
+}
+
+.comment .comment-error.visible {
+    display: inline-block;
+}
+
 .comment-footer {
     display: flex;
-    padding-top: 8px;
     gap: 16px;
+    padding-top: 8px;
 }
 
 .comment-footer.hidden {
     display: none;
 }
 .comment-footer > button {
+    border: none;
     padding-inline: 0;
     padding-block: 0;
-    font-size: 11px;
-    font-family: var(--font-family-meta);
+    background: none;
+    cursor: pointer;
+    font: 11px/20px var(--font-family-meta);
     font-weight: 500;
     color: var(--color-fg-secondary);
-    line-height: 20px;
     text-transform: uppercase;
-    background: none;
-    border: none;
-    cursor: pointer;
 }
 
 .comment-footer > button:hover {
@@ -266,8 +288,8 @@ blockquote blockquote {
 }
 
 .children {
-    padding-left: 32px;
     margin-bottom: 16px;
+    padding-left: 32px;
 }
 
 .children:empty,
@@ -278,17 +300,17 @@ blockquote blockquote {
 .collapser {
     display: flex;
     position: absolute;
-    width: 32px;
     top: 36px;
     bottom: 0;
+    width: 32px;
     cursor: pointer;
 }
 
 .collapser .line {
-    background-color: var(--color-bg-tertiary);
-    height: 100%;
-    width: 1px;
     margin: 0 auto;
+    width: 1px;
+    height: 100%;
+    background-color: var(--color-bg-tertiary);
 }
 
 .collapser:hover .line {
@@ -323,20 +345,23 @@ blockquote blockquote {
 }
 
 .text-input {
-    box-sizing: border-box;
-    padding: 8px 12px;
-    min-height: 40px;
     resize: vertical;
-    border-radius: 8px;
-    font: 15px var(--font-family-text);
-    line-height: 20px;
-    background-color: var(--color-bg-primary);
-    color: var(--color-fg-primary);
     border: var(--border-default);
+    border-radius: 8px;
+    box-sizing: border-box;
+    min-height: 40px;
+    padding: 8px 12px;
+    background-color: var(--color-bg-primary);
+    font: 15px/20px var(--font-family-text);
+    color: var(--color-fg-primary);
 }
 
 .text-input:focus-within {
     border: var(--border-focus);
+}
+
+.text-input:disabled {
+    cursor: not-allowed;
 }
 
 .text-input-buttons {

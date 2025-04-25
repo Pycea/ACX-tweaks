@@ -17,7 +17,7 @@ const STYLES = {
             [data-testid="noncontributor-cta-button"],
             .post-header .post-ufi,
             .post-footer .post-ufi,
-            .available-content ~ *,
+            .available-content ~ *:not([data-testid="paywall"]),
             .single-post-section,
             .subscribe-footer,
             .publication-footer {
@@ -484,12 +484,18 @@ const STYLES = {
                 background: none;
             }
 
+            .profile-icon {
+                width: 41px;
+                height: 41px;
+            }
+
             .profile-image {
                 position: relative;
                 border-radius: 0px;
                 outline: none;
                 width: 41px;
                 height: 41px;
+                font: 12px Verdana, sans-serif;
             }
 
             .collapser {
