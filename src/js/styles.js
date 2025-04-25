@@ -623,6 +623,36 @@ const STYLES = {
                 color: #333;
             }
 
+            .text-input-buttons button {
+                border-radius: 4px;
+                height: fit-content;
+                padding: 7px 20px;
+                font: unset;
+                font-size: 14px;
+            }
+
+            .text-input-buttons button.primary {
+                background-color: #0675c4;
+            }
+
+            .text-input-buttons button.primary:hover {
+                background-color: #055d9c;
+            }
+
+            .text-input-buttons button.primary:disabled {
+                border-color: #dcdcde;
+                background-color: #0000;
+                color: #a7aaad;
+            }
+
+            .text-input-buttons button.secondary {
+                background-color: #ddd;
+            }
+
+            .text-input-buttons button.secondary:hover {
+                background-color: #ccc;
+            }
+
 
 
             /* New comments */
