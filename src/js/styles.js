@@ -456,6 +456,10 @@ const STYLES = {
                 width: 41px;
             }
 
+
+
+            /* Comment element */
+
             .comment-list-items .comment {
                 margin-top: 0;
             }
@@ -476,6 +480,14 @@ const STYLES = {
                 border-radius: 10px;
                 padding: 4px 10px;
                 background: #fafafa;
+            }
+
+            .comment.selected > .comment-content::before {
+                content: unset;
+            }
+
+            .comment.selected > .comment-content .comment-main {
+                background: #de912d2c;
             }
 
             .comment-content .comment-header {
