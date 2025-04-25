@@ -502,7 +502,7 @@ class Comment {
 
         this.baseElem.dataset.id = this.id;
         this.baseElem.dataset.depth = this.depth;
-        this.baseElem.id = this.id;
+        this.baseElem.id = `comment-${this.id}`;
 
         Comment.createProfilePicture(picture, this.info.userPhoto, this.info.userId);
         profileImage.alt = `${this.info.username}'s avatar`;
@@ -919,6 +919,20 @@ function fillCommentCounts() {
     footerCount.appendChild(commentCountFooter);
 }
 
+function handleScroll() {
+    if (location.hash) {
+        const elem = document.querySelector(location.hash);
+        elem?.scrollIntoView({behavior: "instant"});
+        return;
+    }
+
+    const savedY = sessionStorage.getItem("scrollY");
+    const lastPost = sessionStorage.getItem("lastPost");
+    if (savedY && lastPost === location.pathname) {
+        window.scrollTo({top: parseInt(savedY), behavior: "instant"});
+    }
+}
+
 async function onLoad() {
     logFuncCall();
     debug("pageEvent", "event: onLoad");
@@ -931,11 +945,7 @@ async function onLoad() {
         fillCommentCounts();
         requestAnimationFrame(() => {
             optionManager.processAllComments();
-            const savedY = sessionStorage.getItem("scrollY");
-            const lastPost = sessionStorage.getItem("lastPost");
-            if (savedY && lastPost === location.pathname) {
-                window.scrollTo({top: parseInt(savedY), behavior: "instant"});
-            }
+            handleScroll();
         });
     }
 }

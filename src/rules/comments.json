@@ -1,20 +1,41 @@
 [
     {
-        "id" : 1,
+        "id": 1,
         "priority": 1,
-        "action" : { "type" : "redirect", "redirect": { "extensionPath": "/data/empty_comments.json" } },
-        "condition" : {
-            "urlFilter" : "||astralcodexten.com/api/v1/post/*/comments*",
-            "resourceTypes" : ["xmlhttprequest"]
+        "action": {
+            "type": "redirect",
+            "redirect": {
+                "extensionPath": "/data/empty_comments.json"
+            }
+        },
+        "condition": {
+            "urlFilter": "||astralcodexten.com/api/v1/post/*/comments*",
+            "resourceTypes": ["xmlhttprequest"]
         }
     },
     {
-        "id" : 2,
+        "id": 2,
         "priority": 1,
-        "action" : { "type" : "allow" },
-        "condition" : {
-            "urlFilter" : "||astralcodexten.com/api/v1/post/*/comments?block=false*",
-            "resourceTypes" : ["xmlhttprequest"]
+        "action": {
+            "type" : "allow"
+        },
+        "condition": {
+            "urlFilter": "||astralcodexten.com/api/v1/post/*/comments?block=false*",
+            "resourceTypes": ["xmlhttprequest"]
+        }
+    },
+    {
+        "id": 3,
+        "priority": 1,
+        "action": {
+            "type": "redirect",
+            "redirect": {
+                "regexSubstitution": "https://www.astralcodexten.com/p/\\1"
+            }
+        },
+        "condition": {
+            "regexFilter": "^https?://www.astralcodexten.com/p/([^/]+)/comments\\b",
+            "resourceTypes": ["main_frame"]
         }
     }
 ]
