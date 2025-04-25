@@ -614,6 +614,10 @@ const STYLES = {
                 color: #888 !important;
             }
 
+            .comment.collapsed > .comment-content .comment-footer {
+                transform: none;
+            }
+
             .text-input-container {
                 margin-bottom: 4px;
             }

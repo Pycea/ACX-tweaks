@@ -295,6 +295,10 @@ blockquote blockquote {
     color: var(--color-fg-secondary);
 }
 
+.comment.collapsed > .comment-content .comment-footer {
+    transform: translateY(5px);
+}
+
 .children {
     margin-bottom: 16px;
     padding-left: 32px;
@@ -325,7 +329,6 @@ blockquote blockquote {
     background-color: var(--color-fg-tertiary);
 }
 
-.comment.collapsed > .comment-main,
 .comment.collapsed > .children {
     display: none;
 }
