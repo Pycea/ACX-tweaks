@@ -351,7 +351,7 @@ const applyCommentStylingOption = {
         const container = document.createElement("span");
         container.classList.add("new-style");
 
-        const italicPattern = /(?<!\w)([_*])((?:\w)[^*_]*?(?!\w))\1(?!\w)/g;
+        const italicPattern = /(?<![a-z0-9])([_*])((?:[a-z0-9])[^*_]*?(?<=[a-z0-9]))\1(?![a-z0-9])/gi;
         const formattedLinkPattern = /\[([^\]]+)\]\(<a\s+href=["']([^"']+)["'][^>]*>.*?<\/a>\)/g;
         const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
         const blockquotePattern = /^((&gt;\s*)+)/;
