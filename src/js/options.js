@@ -628,7 +628,7 @@ const resetDataOption = {
     },
     onValueChange: function(value) {
         if (value) {
-            window.localStorage.removeItem(LOCAL_DATA_KEY);
+            localStorageManager.resetData();
             optionManager.set(this.key, false);
         }
     },

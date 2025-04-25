@@ -195,7 +195,7 @@ function createResetHandler() {
 
     // on the second click, clear the data
     function secondClick(button) {
-        button.classList.removeClass("verify");
+        button.classList.remove("verify");
         button.textContent = "Reset all data";
 
         // reset options to defaults

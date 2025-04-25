@@ -22,6 +22,8 @@
 // OPTIONS loaded from options.js
 // STYLES loaded from styles.js
 
+const LOCAL_DATA_KEY = "acx-local-data-test";
+
 const PageType = Object.freeze({
     "Main": "Main",
     "Post": "Post",
@@ -217,7 +219,13 @@ class LocalStorageManager {
     }
 
     get(key) {
+        logFuncCall();
         return this.localStorageData[this.postName]?.[key];
+    }
+
+    resetData() {
+        logFuncCall();
+        window.localStorage.removeItem(this.localStorageKey);
     }
 }
 
@@ -993,7 +1001,7 @@ async function doAllSetup() {
 
     onStart();
 
-    localStorageManager = new LocalStorageManager("acx-local-data-test", getPostName());
+    localStorageManager = new LocalStorageManager(LOCAL_DATA_KEY, getPostName());
     const preloads = await getPreloads();
     PageInfo.init(preloads, localStorageManager);
 
