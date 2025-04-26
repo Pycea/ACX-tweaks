@@ -9,7 +9,7 @@
 // processComment: each comment processed
 // keyPress*
 //     keyPressEvent: each key press
-//     keyPressBinary: binary search internals
+//     keyPressSearch: key press search internals
 // pageEvent: related to page events (onStart and onLoad)
 // commentAction*
 //     commentActionReply: replying to comments
@@ -790,13 +790,17 @@ function addKeyListener() {
         }
     }
 
+    function isHidden(element) {
+        return !element.offsetParent;
+    }
+
     function inView(element) {
         return element.getBoundingClientRect().top > -5;
     }
 
     function atEntry(element) {
         // scrolling isn't pixel perfect, so include some buffer room
-        return Math.abs(element.getBoundingClientRect().top) < 15;
+        return element && Math.abs(element.getBoundingClientRect().top) < 10;
     }
 
     document.addEventListener("keydown", function(event) {
@@ -821,68 +825,53 @@ function addKeyListener() {
         let comments;
         const commentContainer = document.querySelector("#top-comment-container");
         if ([KeyCommand.PrevComment, KeyCommand.NextComment, KeyCommand.Parent].includes(command)) {
-            comments = commentContainer.querySelectorAll(".comment:not(.hidden)");
+            comments = [...commentContainer.querySelectorAll(".comment:not(.hidden)")];
         } else {
-            comments = commentContainer.querySelectorAll(".new-comment:not(.hidden)");
+            comments = [...commentContainer.querySelectorAll(".new-comment:not(.hidden)")];
         }
+
+        comments = comments.filter(comment => !isHidden(comment));
 
         if (comments.length === 0) {
             return;
         }
 
-        let min = -1;
-        let max = comments.length;
-
-        while (max - min > 1) {
-            const mid = Math.floor((min + max) / 2);
-            debug("keyPressBinary", `${min} ${mid} ${max}`);
-            if (inView(comments[mid])) {
-                max = mid;
-            } else {
-                min = mid;
+        let index = comments.length;
+        for (const [loopIndex, comment] of comments.entries()) {
+            if (inView(comment)) {
+                index = loopIndex;
+                break;
             }
-            debug("keyPressBinary", `    mid is now ${mid}`);
         }
 
-        let index;
         if (command === KeyCommand.PrevComment || command === KeyCommand.PrevUnread) {
-            index = min;
-            index = mod(index, comments.length);
-            debug("keyPressBinary", `going backwards, index is min, now ${index}`);
-            if (atEntry(comments[index])) {
-                index--;
-                debug("keyPressBinary", `At entry, decrementing to ${index}`);
-            }
+            debug("keyPressSearch", `going backwards, index is ${index}`);
+            index--;
         } else if (command === KeyCommand.NextComment || command === KeyCommand.NextUnread) {
-            index = max;
-            index = mod(index, comments.length);
-            debug("keyPressBinary", `going forwards, index is max, now ${index}`);
+            debug("keyPressSearch", `going forwards, index ${index}`);
             if (atEntry(comments[index])) {
                 index++;
-                debug("keyPressBinary", `At entry, incrementing to ${index}`);
+                debug("keyPressSearch", `At entry, incrementing to ${index}`);
             }
         } else if (command === KeyCommand.Parent) {
-            index = max;
-            debug("keyPressBinary", `getting parent, index is max, now ${index}`);
-            if (index < 0 || index >= comments.length) {
+            debug("keyPressSearch", `getting parent, index is ${index}`);
+
+            if (atEntry(comments[index])) {
+                debug("keyPressSearch", "at entry, scrolling to parent");
+                const parent = comments[index].parentElement.closest(".comment");
+                parent?.scrollIntoView();
                 return;
             }
 
-            const parent = comments[index].parentElement.parentElement;
-            if (!parent.classList.contains("comment")) {
-                debug("keyPressBinary", "already at top level comment");
-                return;
-            }
-
-            debug("keyPressBinary", "found parent comment");
-            parent.scrollIntoView();
+            debug("keyPressSearch", "scrolling to top of comment");
+            comments[index - 1]?.scrollIntoView();
             return;
         }
 
         // wrap around at the top and bottom
         index = mod(index, comments.length);
 
-        debug("keyPressBinary", `index is ${index}`, comments[index]);
+        debug("keyPressSearch", `index is ${index}`, comments[index]);
         comments[index].scrollIntoView();
     });
 }
