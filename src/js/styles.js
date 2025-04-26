@@ -112,8 +112,10 @@ const STYLES = {
                 --main-radius: 6px;
                 --main-shadow: 0 0px 8px 1px rgba(0, 0, 0, 0.75);
                 --header-height: 152px;
+                --header-gap: 30px;
                 --header-icon-size: 60px;
                 --title-font-size: 64px;
+
             }
 
             @media screen and (max-width: 1200px) {
@@ -129,6 +131,7 @@ const STYLES = {
                     --main-radius: 0;
                     --main-shadow: none;
                     --header-height: 112px;
+                    --header-gap: 20px;
                     --header-icon-size: 40px;
                     --title-font-size: 32px;
                 }
@@ -249,7 +252,7 @@ const STYLES = {
 
             .main-menu > :first-child > :first-child {
                 align-items: center;
-                gap: 30px;
+                gap: var(--header-gap);
                 transition: unset;
                 border: none;
                 box-sizing: border-box;
@@ -260,12 +263,10 @@ const STYLES = {
             }
 
             .main-menu > :first-child > :first-child > :first-child {
-                flex: 1 90px !important;
+                display: flex;
+                flex: 1 calc(var(--header-icon-size) + var(--header-gap)) !important;
+                justify-content: end;
                 transform: translateY(6px);
-            }
-
-            .main-menu > :first-child > :first-child > :first-child > a > div {
-                justify-self: end;
             }
 
             .main-menu > :first-child > :first-child > :first-child img,
@@ -463,7 +464,7 @@ const STYLES = {
 
             /* Comment element */
 
-            .comment-list-items .comment {
+            #discussion .comment-list-items .comment {
                 margin-top: 0;
             }
 
@@ -472,7 +473,7 @@ const STYLES = {
                 padding-left: calc(41px + 12px);
             }
 
-            .comment-content {
+            .comment .comment-content {
                 padding-bottom: 12px;
             }
 
@@ -499,12 +500,12 @@ const STYLES = {
                 background: none;
             }
 
-            .profile-icon {
+            div.profile-icon {
                 width: 41px;
                 height: 41px;
             }
 
-            .profile-image {
+            .profile-picture .profile-image {
                 position: relative;
                 border-radius: 0px;
                 outline: none;
@@ -513,18 +514,18 @@ const STYLES = {
                 font: 12px Verdana, sans-serif;
             }
 
-            .collapser {
+            .comment .collapser {
                 top: 41px;
                 padding-top: 8px;
                 width: 41px;
                 height: calc(100% - 41px - 12px - 8px);
             }
 
-            .collapser .line {
+            .comment .collapser .line {
                 background-color: #ccc;
             }
 
-            .collapser:hover .line {
+            .comment .collapser:hover .line {
                 box-shadow: inset 1px 0 #aaa;
             }
 
@@ -532,19 +533,19 @@ const STYLES = {
 
             /* Comment meta */
 
-            .comment-header {
+            .comment-main .comment-header {
                 display: initial;
             }
 
-            .comment-header a {
+            .comment-main .comment-header a {
                 display: inline-block;
             }
 
-            .comment-header div {
+            .comment-main .comment-header div {
                 font-size: 12px;
             }
 
-            .comment-header .username {
+            .comment-main .comment-header .username {
                 display: block;
                 margin-bottom: 2px;
                 line-height: 24px;
@@ -554,15 +555,15 @@ const STYLES = {
                 color: black;
             }
 
-            .comment-header .user-profile-link .username:after {
+            .comment-main .comment-header .user-profile-link .username:after {
                 content: " says:";
                 font-weight: normal;
                 font-style: italic;
                 color: #333;
             }
 
-            .comment-header .comment-post-date,
-            .comment-header .comment-edited {
+            .comment-main .comment-header .comment-post-date,
+            .comment-main .comment-header .comment-edited {
                 font-family: Georgia, "Bitstream Charter", serif;
                 text-decoration: none;
                 color: #888;
@@ -572,26 +573,26 @@ const STYLES = {
 
             /* Comment content */
 
-            .comment .comment-body {
+            .comment .comment-content .comment-body {
                 overflow-y: visible;
                 margin-top: 10px;
             }
 
-            .comment-body p {
+            .comment-content .comment-body p {
                 font: 12px/24px Verdana, sans-serif;
                 color: #333;
             }
 
-            .comment-body a {
+            .comment-content .comment-body a {
                 color: #0066cc;
                 text-decoration: underline;
             }
 
-            .comment-body a:hover {
+            .comment-content .comment-body a:hover {
                 color: #ff4b33;
             }
 
-            .comment-body i {
+            .comment-content .comment-body i {
                 font: italic 12px/24px Verdana, sans-serif;
             }
 
@@ -599,11 +600,11 @@ const STYLES = {
 
             /* Comment actions */
 
-            .comment-footer {
+            .comment-main .comment-footer {
                 gap: 12px;
             }
 
-            .comment-footer button {
+            .comment-main .comment-footer > button {
                 margin-top: 4px;
                 margin-bottom: 7px;
                 font-size: 12px;
@@ -611,10 +612,11 @@ const STYLES = {
                 font-family: Georgia, "Bitstream Charter", serif;
                 text-transform: capitalize;
                 text-decoration: underline;
+                text-decoration-thickness: 1px;
                 color: #888 !important;
             }
 
-            .comment.collapsed > .comment-content .comment-footer {
+            .comment.collapsed > .comment-content .comment-main .comment-footer {
                 transform: none;
             }
 
@@ -627,7 +629,7 @@ const STYLES = {
                 color: #333;
             }
 
-            .text-input-buttons button {
+            .text-input-container .text-input-buttons button {
                 border-radius: 4px;
                 height: fit-content;
                 padding: 7px 20px;
@@ -635,25 +637,25 @@ const STYLES = {
                 font-size: 14px;
             }
 
-            .text-input-buttons button.primary {
+            .text-input-container .text-input-buttons button.primary {
                 background-color: #0675c4;
             }
 
-            .text-input-buttons button.primary:hover {
+            .text-input-container .text-input-buttons button.primary:hover {
                 background-color: #055d9c;
             }
 
-            .text-input-buttons button.primary:disabled {
+            .text-input-container .text-input-buttons button.primary:disabled {
                 border-color: #dcdcde;
                 background-color: #0000;
                 color: #a7aaad;
             }
 
-            .text-input-buttons button.secondary {
+            .text-input-container .text-input-buttons button.secondary {
                 background-color: #ddd;
             }
 
-            .text-input-buttons button.secondary:hover {
+            .text-input-container .text-input-buttons button.secondary:hover {
                 background-color: #ccc;
             }
 

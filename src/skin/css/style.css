@@ -336,7 +336,6 @@ blockquote blockquote {
 .reply-container,
 .edit-container {
     display: flex;
-    flex-grow: 1;
     gap: 12px;
 }
 
