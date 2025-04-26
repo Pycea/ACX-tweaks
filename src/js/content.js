@@ -646,7 +646,7 @@ class Comment {
             () => this.postReply());
         cancelReplyButton.addEventListener("click", () => {
             replyBase.remove();
-            this.baseElem.focus();
+            this.baseElem.focus(true);
         });
 
         this.textEditContainer.replaceChildren(replyTemplate);
@@ -821,9 +821,9 @@ function addKeyListener() {
         let comments;
         const commentContainer = document.querySelector("#top-comment-container");
         if ([KeyCommand.PrevComment, KeyCommand.NextComment, KeyCommand.Parent].includes(command)) {
-            comments = commentContainer.querySelectorAll(".comment");
+            comments = commentContainer.querySelectorAll(".comment:not(.hidden)");
         } else {
-            comments = commentContainer.querySelectorAll(".new-comment");
+            comments = commentContainer.querySelectorAll(".new-comment:not(.hidden)");
         }
 
         if (comments.length === 0) {
