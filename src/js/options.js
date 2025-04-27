@@ -289,7 +289,8 @@ const highlightNewOption = {
     default: true,
     hovertext: "Highlight comments that you haven't seen yet",
     updateNewTime: function(deltaMs) {
-        this.newCommentCutoff = new Date(PageInfo.loadDate - deltaMs);
+        const loadDate = PageInfo.loadDate ?? new Date();
+        this.newCommentCutoff = new Date(loadDate - deltaMs);
     },
     onStart: function(value) {
         document.documentElement.classList.toggle("highlight-new", value);
