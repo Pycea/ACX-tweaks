@@ -948,6 +948,15 @@ function fillCommentCounts() {
     footerCount.appendChild(commentCountFooter);
 }
 
+function reverseComments() {
+    const commentContainer = document.querySelector(".comment-list-items");
+    const children = commentContainer.querySelectorAll(".children:not(:empty)");
+    children.forEach((elem) => {
+        elem.append(...[...elem.childNodes].reverse());
+    })
+    commentContainer.append(...[...commentContainer.childNodes].reverse());
+}
+
 function addSortButton() {
     const selector = PageInfo.pageType === PageType.Post ?
         "#comments-for-scroll" : ".comment-list-container";
@@ -961,13 +970,17 @@ function addSortButton() {
     commentContainer.before(toggleTemplate);
 
     sortOldButton.addEventListener("click", () => {
-        document.documentElement.classList.remove("reverse-comments");
+        if (sortOldButton.dataset.selected === "false") {
+            reverseComments();
+        }
         sortOldButton.dataset.selected = true;
         sortNewButton.dataset.selected = false;
     });
 
     sortNewButton.addEventListener("click", () => {
-        document.documentElement.classList.add("reverse-comments");
+        if (sortNewButton.dataset.selected === "false") {
+            reverseComments();
+        }
         sortOldButton.dataset.selected = false;
         sortNewButton.dataset.selected = true;
     });

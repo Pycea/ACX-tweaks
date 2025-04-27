@@ -124,17 +124,6 @@ blockquote blockquote {
     outline-offset: -1px;
 }
 
-.comment-list-items,
-.children {
-    display: flex;
-    flex-direction: column;
-}
-
-.reverse-comments .comment-list-items,
-.reverse-comments .children {
-    flex-direction: column-reverse;
-}
-
 .return-to-thread-link {
     margin: 0;
 }
