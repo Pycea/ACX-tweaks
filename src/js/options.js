@@ -58,7 +58,10 @@ const useOldStylingOption = {
         if (value) {
             const numComments = Object.keys(CommentManager.commentIdToInfo).length;
             const responseList = document.querySelector("#discussion > :first-child > h4");
-            responseList.innerHTML = `${numComments} responses to <em>${PageInfo.postTitle}</em>`;
+            if (responseList) {
+                responseList.innerHTML =
+                    `${numComments} responses to <em>${PageInfo.postTitle}</em>`;
+            }
         }
     },
     onValueChange: function(value) {

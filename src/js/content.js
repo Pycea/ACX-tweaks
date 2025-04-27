@@ -1076,8 +1076,9 @@ async function doAllSetup() {
 const runPaths = [
     /^\/$/,
     /^\/p\//,
-    /^\/archive$/,
     /^\/about$/,
+    /^\/archive$/,
+    /^\/recommendations$/,
 ];
 
 for (const path of runPaths) {

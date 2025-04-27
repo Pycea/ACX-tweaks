@@ -167,6 +167,7 @@ const STYLES = {
 
             #entry .container {
                 margin: 0;
+                box-sizing: border-box;
                 width: 100%;
             }
 
@@ -730,6 +731,12 @@ const STYLES = {
 
 
             /* Other cleanup */
+
+            .recommendations-page-container {
+                margin-top: 0;
+                margin-bottom: 0;
+                padding: 20px 0;
+            }
 
             .publication-footer {
                 position: relative;
