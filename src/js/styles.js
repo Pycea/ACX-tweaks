@@ -482,6 +482,10 @@ const STYLES = {
                 margin-bottom: 16px;
             }
 
+            [data-test-id="comment-input"] form div {
+                font-size: 14px !important;
+            }
+
             [data-test-id="comment-input"] form > div:first-child,
             [data-test-id="comment-input"] form > div:first-child div,
             [data-test-id="comment-input"] form img {
@@ -489,6 +493,11 @@ const STYLES = {
                 outline: none;
                 height: 41px;
                 width: 41px;
+            }
+
+            [data-test-id="comment-input"] textarea:focus-visible {
+                overflow: unset;
+                box-shadow: none;
             }
 
 
@@ -659,6 +668,7 @@ const STYLES = {
                 color: #333;
             }
 
+            [data-test-id="comment-input"] button,
             .text-input-container .text-input-buttons button {
                 border-radius: 4px;
                 height: fit-content;
@@ -667,24 +677,29 @@ const STYLES = {
                 font-size: 14px;
             }
 
+            [data-test-id="comment-input"] button[type="submit"],
             .text-input-container .text-input-buttons button.primary {
                 background-color: #0675c4;
             }
 
+            [data-test-id="comment-input"] button[type="submit"]:hover,
             .text-input-container .text-input-buttons button.primary:hover {
                 background-color: #055d9c;
             }
 
+            [data-test-id="comment-input"] button[type="submit"]:disabled,
             .text-input-container .text-input-buttons button.primary:disabled {
                 border-color: #dcdcde;
                 background-color: #0000;
                 color: #a7aaad;
             }
 
+            [data-test-id="comment-input"] button[type="button"],
             .text-input-container .text-input-buttons button.secondary {
                 background-color: #ddd;
             }
 
+            [data-test-id="comment-input"] button[type="button"]:hover,
             .text-input-container .text-input-buttons button.secondary:hover {
                 background-color: #ccc;
             }

@@ -138,7 +138,9 @@ blockquote blockquote {
 .comment-header a:focus-visible,
 .comment-footer button:focus-visible,
 .comment-body a:focus-visible,
-.text-input-buttons button:focus-visible {
+.text-input-buttons button:focus-visible,
+[data-test-id="comment-input"] button:focus-visible {
+    box-shadow: none;
     outline: #0053b3 auto 1px;
     outline-offset: 2px;
 }
