@@ -222,10 +222,20 @@ const STYLES = {
 
 
 
-            /* Dialogs */
+            /* Buttons and dialogs */
+
+            .post-ufi .post-ufi-button.style-button:hover {
+                background-color: #e0e0e0;
+            }
 
             #dialog6 > div > div > div,
-            #dialog18 > div > div > div {
+            #dialog12 > div > div > div,
+            #dialog14 > div > div > div,
+            #dialog16 > div > div > div,
+            #dialog18 > div > div > div,
+            #dialog20 > div > div > div,
+            #dialog22 > div > div > div,
+            #dialog24 > div > div > div {
                 background-color: #e0e0e0;
             }
 
@@ -469,7 +479,6 @@ const STYLES = {
             }
 
             .comment-list-items .comment .children {
-                margin-bottom: 0;
                 padding-left: calc(41px + 12px);
             }
 

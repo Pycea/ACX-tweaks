@@ -948,6 +948,31 @@ function fillCommentCounts() {
     footerCount.appendChild(commentCountFooter);
 }
 
+function addSortButton() {
+    const selector = PageInfo.pageType === PageType.Post ?
+        "#comments-for-scroll" : ".comment-list-container";
+    const commentContainer = document.querySelector(selector);
+
+    const toggleTemplate = document.querySelector("#comment-toggle-templage").content.cloneNode(true);
+    const sortOldButton = toggleTemplate.querySelector(".sort-old");
+    const sortNewButton = toggleTemplate.querySelector(".sort-new");
+
+    sortOldButton.dataset.selected = true;
+    commentContainer.before(toggleTemplate);
+
+    sortOldButton.addEventListener("click", () => {
+        document.documentElement.classList.remove("reverse-comments");
+        sortOldButton.dataset.selected = true;
+        sortNewButton.dataset.selected = false;
+    });
+
+    sortNewButton.addEventListener("click", () => {
+        document.documentElement.classList.add("reverse-comments");
+        sortOldButton.dataset.selected = false;
+        sortNewButton.dataset.selected = true;
+    });
+}
+
 function handleScroll() {
     if (location.hash) {
         const elem = document.querySelector(location.hash);
@@ -974,6 +999,7 @@ async function onLoad() {
         document.head.appendChild(template.content);
         createComments();
         fillCommentCounts();
+        addSortButton();
         requestAnimationFrame(() => {
             optionManager.processAllComments();
             handleScroll();

@@ -69,8 +69,8 @@ blockquote blockquote {
     position: absolute;
 }
 
-.comment-footer button.comment-heart,
-.comment-footer button.comment-heart:hover {
+.comment-main .comment-footer button.comment-heart,
+.comment-main .comment-footer button.comment-heart:hover {
     text-decoration: none;
 }
 
@@ -83,6 +83,60 @@ blockquote blockquote {
 .available-content ~ *:not(.post-footer):not([data-testid="paywall"]),
 .subscribe-footer {
     display: none;
+}
+
+/* Comment ordering */
+
+.comment-toggle-container {
+    display: flex;
+    align-items: center;
+}
+
+.comment-toggle {
+    margin-right: 10px;
+    font-size: 16px;
+}
+
+.segmented-control {
+    display: flex;
+    gap: 3px;
+    border: 1px solid #cbd5e3;
+    border-radius: 6px;
+    background-color: #d4dfed;
+}
+
+.segmented-control button {
+    margin: -1px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 5px 10px;
+    background-color: #0000;
+    cursor: pointer;
+}
+
+.segmented-control button[data-selected="true"] {
+    border: 1px solid #888;
+    background-color: #edf3fd;
+}
+
+.segmented-control button:focus-visible {
+    outline: 2px solid #0053b3;
+    outline-offset: -1px;
+}
+
+.comment-list-items,
+.children {
+    display: flex;
+    flex-direction: column;
+}
+
+.reverse-comments .comment-list-items,
+.reverse-comments .children {
+    flex-direction: column-reverse;
+}
+
+.return-to-thread-link {
+    margin: 0;
 }
 
 
@@ -300,7 +354,6 @@ blockquote blockquote {
 }
 
 .children {
-    margin-bottom: 16px;
     padding-left: 32px;
 }
 
