@@ -32,6 +32,7 @@ const PageType = Object.freeze({
 });
 
 const KeyCommand = Object.freeze({
+    "JumpCommentsKey": "JumpCommentsKey",
     "PrevComment": "PrevComment",
     "NextComment": "NextComment",
     "PrevUnread": "PrevUnread",
@@ -791,7 +792,9 @@ function addKeyListener() {
     logFuncCall();
 
     function getKeyCommand(event) {
-        if (isMatchingKeyEvent(optionManager.get(OptionKey.prevCommentKey), event)) {
+        if (isMatchingKeyEvent(optionManager.get(OptionKey.jumpCommentsKey), event)) {
+            return KeyCommand.JumpCommentsKey;
+        } else if (isMatchingKeyEvent(optionManager.get(OptionKey.prevCommentKey), event)) {
             return KeyCommand.PrevComment;
         } else if (isMatchingKeyEvent(optionManager.get(OptionKey.nextCommentKey), event)) {
             return KeyCommand.NextComment;
@@ -835,6 +838,11 @@ function addKeyListener() {
         const command = getKeyCommand(event);
 
         if (command === KeyCommand.Unknown) {
+            return;
+        }
+
+        if (command === KeyCommand.JumpCommentsKey) {
+            document.querySelector("#discussion")?.scrollIntoView();
             return;
         }
 

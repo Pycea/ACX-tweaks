@@ -545,6 +545,18 @@ const smoothScrollOption = {
     },
 }
 
+const jumpCommentsKeyOption = {
+    key: "jumpCommentsKey",
+    default: {
+        "key": 67,
+        "control": false,
+        "alt": false,
+        "shift": false,
+        "meta": false,
+    },
+    hovertext: "Key/key combo to jump to the start of the comment section (click the box to set)",
+}
+
 const prevCommentKeyOption = {
     key: "prevCommentKey",
     default: {
@@ -661,6 +673,7 @@ const optionArray = [
     hideUsersOption,
     allowKeyboardShortcutsOption,
     smoothScrollOption,
+    jumpCommentsKeyOption,
     prevCommentKeyOption,
     nextCommentKeyOption,
     prevUnreadKeyOption,

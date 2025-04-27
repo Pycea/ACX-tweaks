@@ -251,12 +251,14 @@ function addDependencies() {
     const shortcutsCheck = document.querySelector("#allowKeyboardShortcutsCheck");
     shortcutsCheck.addEventListener("change", () => {
         if (!shortcutsCheck.checked) {
+            document.querySelector("#jumpCommentsKeyText").disabled = true;
             document.querySelector("#prevCommentKeyText").disabled = true;
             document.querySelector("#nextCommentKeyText").disabled = true;
             document.querySelector("#prevUnreadKeyText").disabled = true;
             document.querySelector("#nextUnreadKeyText").disabled = true;
             document.querySelector("#parentKeyText").disabled = true;
         } else {
+            document.querySelector("#jumpCommentsKeyText").disabled = false;
             document.querySelector("#prevCommentKeyText").disabled = false;
             document.querySelector("#nextCommentKeyText").disabled = false;
             document.querySelector("#prevUnreadKeyText").disabled = false;
@@ -266,6 +268,7 @@ function addDependencies() {
     });
 
     if (!shortcutsCheck.checked) {
+        document.querySelector("#jumpCommentsKeyText").disabled = true;
         document.querySelector("#prevCommentKeyText").disabled = true;
         document.querySelector("#nextCommentKeyText").disabled = true;
         document.querySelector("#prevUnreadKeyText").disabled = true;
