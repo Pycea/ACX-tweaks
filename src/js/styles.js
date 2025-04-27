@@ -448,6 +448,10 @@ const STYLES = {
                 margin-bottom: 12px;
             }
 
+            #entry .comments-page .comment-toggle-container {
+                margin-bottom: 12px;
+            }
+
             .comment-toggle-container .comment-toggle {
                 font: 14px Verdana, sans-serif;
             }
@@ -509,7 +513,8 @@ const STYLES = {
 
             /* Comment element */
 
-            #discussion .comment-list-items .comment {
+            #discussion .comment-list-items .comment,
+            .comments-page .comment-list-items .comment {
                 margin-top: 0;
             }
 
