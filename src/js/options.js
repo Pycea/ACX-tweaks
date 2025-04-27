@@ -461,7 +461,7 @@ const addParentLinksOption = {
 
 const autoCollapseDepthOption = {
     key: "autoCollapseDepth",
-    default: 8,
+    default: "",
     hovertext: "Automatically collapse comments beyond the given depth. Set to 0 to collapse top level comments, or a negative number to keep all expanded.",
     processComment: function(comment) {
         const depth = parseInt(comment.dataset.depth);
