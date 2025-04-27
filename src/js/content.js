@@ -22,7 +22,7 @@
 // OPTIONS loaded from options.js
 // STYLES loaded from styles.js
 
-const LOCAL_DATA_KEY = "acx-local-data-test";
+const LOCAL_DATA_KEY = "acx-local-data";
 
 const PageType = Object.freeze({
     "Main": "Main",
@@ -215,8 +215,12 @@ class LocalStorageManager {
 
     save() {
         logFuncCall();
-        window.localStorage.setItem(this.localStorageKey,
-            JSON.stringify(this.localStorageData));
+        try {
+            window.localStorage.setItem(this.localStorageKey,
+                JSON.stringify(this.localStorageData));
+        } catch {
+            console.error("Ran out of local storage space");
+        }
     }
 
     set(key, value) {
