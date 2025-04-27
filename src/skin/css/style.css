@@ -148,6 +148,7 @@ blockquote blockquote {
 .text-input-buttons button {
     display: flex;
     align-items: center;
+    justify-content: center;
     transition: var(--animate-hover);
     border: 1px solid transparent;
     border-radius: 8px;
@@ -180,6 +181,29 @@ blockquote blockquote {
 
 .text-input-buttons button.secondary:hover {
     background-color: var(--color-button-secondary-bg-hover);
+}
+
+.text-input-buttons .spinner .button-text {
+    display: none;
+}
+
+.text-input-buttons .spinner-animate {
+    display: none;
+}
+
+.text-input-buttons .spinner .spinner-animate {
+    display: block;
+    animation: 2s cubic-bezier(0.65, 0, 0.35, 1) infinite spin;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(-45deg);
+    }
+
+    100% {
+        transform: rotate(675deg);
+    }
 }
 
 .comment-list-container {

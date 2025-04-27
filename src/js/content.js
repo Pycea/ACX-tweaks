@@ -586,6 +586,8 @@ class Comment {
         const body = replyInput.value;
         replyInput.disabled = true;
         postReplyButton.disabled = true;
+        postReplyButton.style.width = `${postReplyButton.getBoundingClientRect().width}px`;
+        postReplyButton.classList.add("spinner");
         errorElem.classList.remove("visible");
 
         let data;
@@ -601,6 +603,7 @@ class Comment {
             debug("commentActionReply", "reply failed:", error);
             replyInput.disabled = false;
             postReplyButton.disabled = false;
+            postReplyButton.classList.remove("spinner");
             errorElem.textContent = error;
             errorElem.classList.add("visible");
             return;
@@ -665,6 +668,8 @@ class Comment {
         const body = editInput.value;
         editInput.disabled = true;
         postEditButton.disabled = true;
+        postEditButton.style.width = `${postEditButton.getBoundingClientRect().width}px`;
+        postEditButton.classList.add("spinner");
         errorElem.classList.remove("visible");
 
         let data;
@@ -674,6 +679,7 @@ class Comment {
             debug("commentActionEdit", "edit failed", error);
             editInput.disabled = false;
             postEditButton.disabled = false;
+            postEditButton.classList.remove("spinner");
             errorElem.textContent = "Edit post failed";
             errorElem.classList.add("visible");
             return;

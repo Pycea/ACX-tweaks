@@ -495,6 +495,11 @@ const STYLES = {
                 width: 41px;
             }
 
+            [data-test-id="comment-input"] button[type="submit"]:disabled {
+                background-color: #ddd;
+                color: transparent;
+            }
+
             [data-test-id="comment-input"] textarea:focus-visible {
                 overflow: unset;
                 box-shadow: none;
@@ -671,7 +676,7 @@ const STYLES = {
             [data-test-id="comment-input"] button,
             .text-input-container .text-input-buttons button {
                 border-radius: 4px;
-                height: fit-content;
+                height: 32px;
                 padding: 7px 20px;
                 font: unset;
                 font-size: 14px;
@@ -687,10 +692,9 @@ const STYLES = {
                 background-color: #055d9c;
             }
 
-            [data-test-id="comment-input"] button[type="submit"]:disabled,
             .text-input-container .text-input-buttons button.primary:disabled {
                 border-color: #dcdcde;
-                background-color: #0000;
+                background-color: #ddd;
                 color: #a7aaad;
             }
 
