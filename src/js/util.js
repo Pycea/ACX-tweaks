@@ -48,6 +48,15 @@ function mod(a, b) {
     return ((a % b) + b) % b;
 }
 
+function htmlEscape(string) {
+    return string
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&apos;");
+}
+
 function getPreloads() {
     const injectionScript = document.createElement("script");
     injectionScript.src = chrome.runtime.getURL("js/inject.js");
@@ -267,17 +276,4 @@ function getKeyPress() {
             resolve(getKeyDictFromEvent(null));
         }, {once: true});
     });
-}
-
-class StringRecognizer {
-    constructor(string) {
-        this.string = string;
-        this.soFar = " ".repeat(string.length);
-    }
-
-    nextInput(char) {
-        this.soFar += char;
-        this.soFar = this.soFar.substring(1);
-        return this.soFar === this.string;
-    }
 }

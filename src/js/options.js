@@ -60,7 +60,7 @@ const useOldStylingOption = {
             const responseList = document.querySelector("#discussion > :first-child > h4");
             if (responseList) {
                 responseList.innerHTML =
-                    `${numComments} responses to <em>${PageInfo.postTitle}</em>`;
+                    `${numComments} responses to <em>${htmlEscape(PageInfo.postTitle)}</em>`;
             }
         }
     },
@@ -393,14 +393,13 @@ const applyCommentStylingOption = {
     },
     processComment: function(comment) {
         const commentId = comment.dataset.id;
-        const body = CommentManager.get(commentId).body
+        const body = CommentManager.get(commentId).body;
         // quick first pass to rule out cases where formatting isn't needed
         if (!/[\[*_>]/.test(body)) {
             return;
         }
 
         const commentBody = comment.querySelector(":scope > .comment-content .comment-body");
-        CommentManager.get()
         commentBody.querySelectorAll("p span").forEach((span) => {
             // only process the text once
             if (span.parentElement.children.length === 1) {
