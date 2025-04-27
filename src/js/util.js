@@ -44,19 +44,6 @@ function logFuncCall(verbose=false) {
     debug(logHandle, funcName + "()");
 }
 
-function testPerformance(operation) {
-    performance.clearMarks();
-    performance.clearMeasures();
-    document.body.offsetHeight;
-
-    performance.mark("start");
-    operation();
-    document.body.offsetHeight;
-    performance.mark("end");
-    performance.measure("domOp", "start", "end");
-    console.log(performance.getEntriesByName("domOp")[0]);
-}
-
 function mod(a, b) {
     return ((a % b) + b) % b;
 }
@@ -119,7 +106,7 @@ async function getPostComments() {
     logFuncCall();
     const postData = await getPostData();
     const postId = postData.id;
-    const url = `https://www.astralcodexten.com/api/v1/post/${postId}/comments?block=false&token=&all_comments=true`;
+    const url = `https://www.astralcodexten.com/api/v1/post/${postId}/comments?block=false&sort=oldest_first&all_comments=true`;
     const data = await apiCall(url);
     return data.comments;
 }
