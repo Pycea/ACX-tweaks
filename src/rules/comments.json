@@ -30,11 +30,11 @@
         "action": {
             "type": "redirect",
             "redirect": {
-                "regexSubstitution": "https://www.astralcodexten.com/p/\\1"
+                "regexSubstitution": "https://www.astralcodexten.com/p/\\1\\2"
             }
         },
         "condition": {
-            "regexFilter": "^https?://www.astralcodexten.com/p/([^/]+)/comments\\b",
+            "regexFilter": "^https?://www.astralcodexten.com/p/([^/]+)/comments\\b(.*)",
             "resourceTypes": ["main_frame"]
         }
     }
