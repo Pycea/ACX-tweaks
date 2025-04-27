@@ -1011,7 +1011,9 @@ async function onLoad() {
     logFuncCall();
     debug("pageEvent", "event: onLoad");
 
-    localStorageManager.set("lastViewedDate", new Date().toISOString());
+    if (PageInfo.pageType === PageType.Post) {
+        localStorageManager.set("lastViewedDate", new Date().toISOString());
+    }
 
     if ([PageType.Post, PageType.Comments].includes(PageInfo.pageType)) {
         const template = await loadTemplate(chrome.runtime.getURL("data/templates.html"));
