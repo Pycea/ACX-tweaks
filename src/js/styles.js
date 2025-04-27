@@ -442,6 +442,7 @@ const STYLES = {
                 font-weight: normal;
                 letter-spacing: 1px;
                 text-transform: uppercase;
+                -webkit-font-smoothing: auto;
             }
 
             #discussion > :first-child > h4 {

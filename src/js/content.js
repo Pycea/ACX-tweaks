@@ -85,6 +85,15 @@ class OptionManager {
         }
     }
 
+    runOnLoadHandlers() {
+        for (const [key, option] of Object.entries(this.optionDict)) {
+            if (option.onLoad) {
+                debug("funcs_" + key + ".onLoad", key + ".onLoad()");
+                option.onLoad(this.optionShadow[key]);
+            }
+        }
+    }
+
     set(key, value) {
         logFuncCall();
         debug("optionSet", `Changing option ${key}, `,
@@ -258,6 +267,7 @@ class PageInfo {
 
         PageInfo.postId = preloads.post?.id;
         PageInfo.postName = preloads.post?.slug;
+        PageInfo.postTitle = preloads.post?.title;
 
         PageInfo.loadDate = new Date();
         const dateString = localStorageManager.get("lastViewedDate");
@@ -1019,6 +1029,7 @@ async function onLoad() {
         const template = await loadTemplate(chrome.runtime.getURL("data/templates.html"));
         document.head.appendChild(template.content);
         createComments();
+        optionManager.runOnLoadHandlers();
         fillCommentCounts();
         addSortButton();
         requestAnimationFrame(() => {

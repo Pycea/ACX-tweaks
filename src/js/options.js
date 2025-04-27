@@ -54,6 +54,13 @@ const useOldStylingOption = {
         addStyle(this.key);
         this.onValueChange(value);
     },
+    onLoad: function(value) {
+        if (value) {
+            const numComments = Object.keys(CommentManager.commentIdToInfo).length;
+            const responseList = document.querySelector("#discussion > :first-child > h4");
+            responseList.innerHTML = `${numComments} responses to <em>${PageInfo.postTitle}</em>`;
+        }
+    },
     onValueChange: function(value) {
         document.getElementById(cssId(this.key)).disabled = !value;
     },
@@ -289,8 +296,7 @@ const highlightNewOption = {
     default: true,
     hovertext: "Highlight comments that you haven't seen yet",
     updateNewTime: function(deltaMs) {
-        const loadDate = PageInfo.loadDate ?? new Date();
-        this.newCommentCutoff = new Date(loadDate - deltaMs);
+        this.newCommentCutoff = new Date(PageInfo.loadDate - deltaMs);
     },
     onStart: function(value) {
         document.documentElement.classList.toggle("highlight-new", value);
@@ -330,7 +336,7 @@ const newTimeOption = {
     key: "newTime",
     default: 0,
     hovertext: "Mark comments posted within the given time range as new",
-    onStart: function(value) {
+    onLoad: function(value) {
         OPTIONS.highlightNew.updateNewTime(value);
     },
     onValueChange: function(value) {
