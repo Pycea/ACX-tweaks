@@ -444,6 +444,27 @@ const STYLES = {
                 text-transform: uppercase;
             }
 
+            #discussion > :first-child > h4 {
+                margin-bottom: 12px;
+            }
+
+            .comment-toggle-container .comment-toggle {
+                font: 14px Verdana, sans-serif;
+            }
+
+            .comment-toggle-container .segmented-control {
+                border-color: #ddd;
+                background-color: #e8e8e8;
+            }
+
+            .comment-toggle-container .segmented-control button[data-selected="true"] {
+                background-color: #fff;
+            }
+
+            .comment-toggle-container button {
+                font: 12px Verdana, sans-serif;
+            }
+
             .comments-page > .container {
                 box-sizing: border-box;
                 border: 1px solid #d5d5d5;

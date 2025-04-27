@@ -89,6 +89,8 @@ blockquote blockquote {
 
 .comment-toggle-container {
     display: flex;
+    flex-direction: row;
+    gap: 0;
     align-items: center;
 }
 

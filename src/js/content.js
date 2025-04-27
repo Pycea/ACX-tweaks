@@ -970,7 +970,7 @@ function addSortButton() {
     commentContainer.before(toggleTemplate);
 
     sortOldButton.addEventListener("click", () => {
-        if (sortOldButton.dataset.selected === "false") {
+        if (sortOldButton.dataset.selected !== "true") {
             reverseComments();
         }
         sortOldButton.dataset.selected = true;
@@ -978,7 +978,7 @@ function addSortButton() {
     });
 
     sortNewButton.addEventListener("click", () => {
-        if (sortNewButton.dataset.selected === "false") {
+        if (sortNewButton.dataset.selected !== "true") {
             reverseComments();
         }
         sortOldButton.dataset.selected = false;
