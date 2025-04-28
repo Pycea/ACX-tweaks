@@ -10,6 +10,12 @@ const STYLES = {
 
             .main-menu > :nth-child(2) {
                 display: none;
+            }
+
+            .mobile-footer-ufi {
+                position: relative !important;
+                transform: none !important;
+                border-bottom: var(--border-default-themed);
             }`,
     },
     zenMode: {
@@ -17,6 +23,7 @@ const STYLES = {
             [data-testid="noncontributor-cta-button"],
             .post-header .post-ufi,
             .post-footer .post-ufi,
+            .mobile-footer-ufi,
             .available-content ~ *:not([data-testid="paywall"]),
             .single-post-section,
             .subscribe-footer,
