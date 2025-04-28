@@ -22,7 +22,9 @@
         }
 
         .heading {
-            margin-left: 4px;
+            margin-bottom: 2px;
+            margin-left: 2px;
+            font-size: 13px;
             font-weight: bold;
         }
 
@@ -104,7 +106,7 @@
         }
 
         .spacer {
-            height: 10px;
+            height: 8px;
         }
 
         #use24Hour {
@@ -122,6 +124,7 @@
             margin-left: 26px;
         }
 
+        #defaultSort,
         #hideUsers,
         #autoCollapseDepth,
         #showDebug,
@@ -137,8 +140,12 @@
             width: 3em;
         }
 
+        #autoCollapseDepth {
+            margin-top: 2px;
+        }
+
         #autoCollapseDepthNumber {
-            width: 3em;
+            width: 2.5em;
         }
 
         #known-issues {
@@ -398,17 +405,17 @@
 
         <!-- General settings -->
         <div class="heading">General</div>
-        <div id="fixHeader" class="option">
-            <input type="checkbox" id="fixHeaderCheck" class="trigger check">
-            <label for="fixHeaderCheck">Fix header</label>
+        <div id="darkMode" class="option">
+            <input type="checkbox" id="darkModeCheck"  class="trigger check">
+            <label for="darkModeCheck">Popup dark mode</label>
         </div>
         <div id="useOldStyling" class="option">
             <input type="checkbox" id="useOldStylingCheck" class="trigger check">
             <label for="useOldStylingCheck">Use old styling</label>
         </div>
-        <div id="darkMode" class="option">
-            <input type="checkbox" id="darkModeCheck"  class="trigger check">
-            <label for="darkModeCheck">Popup dark mode</label>
+        <div id="fixHeader" class="option">
+            <input type="checkbox" id="fixHeaderCheck" class="trigger check">
+            <label for="fixHeaderCheck">Fix header</label>
         </div>
         <div id="zenMode" class="option">
             <input type="checkbox" id="zenModeCheck"  class="trigger check">
@@ -422,23 +429,7 @@
         <div class="spacer"></div>
 
         <!-- Things applied to comments -->
-        <div class="heading">Comments</div>
-        <div id="removeComments" class="option">
-            <input type="checkbox" id="removeCommentsCheck" class="trigger check">
-            <label for="removeCommentsCheck">Remove comments</label>
-        </div>
-        <div id="showHearts" class="option">
-            <input type="checkbox" id="showHeartsCheck" class="trigger check">
-            <label for="showHeartsCheck">Show hearts</label>
-        </div>
-        <div id="showFullDate" class="option">
-            <input type="checkbox" id="showFullDateCheck" class="trigger check">
-            <label for="showFullDateCheck">Show full comment date</label>
-        </div>
-        <div id="use24Hour" class="option">
-            <input type="checkbox" id="use24HourCheck" class="trigger check">
-            <label for="use24HourCheck">Use 24 hour time</label>
-        </div>
+        <div class="heading">Comment Formatting</div>
         <div id="highlightNew" class="option">
             <input type="checkbox" id="highlightNewCheck" class="trigger check">
             <label for="highlightNewCheck">Highlight new comments</label>
@@ -451,6 +442,30 @@
                 <option value="1">Mins</option></select>
             <label>New comment time range</label>
         </div>
+        <div id="applyCommentStyling" class="option">
+            <input type="checkbox" id="applyCommentStylingCheck" class="trigger check">
+            <label for="applyCommentStylingCheck">Apply comment styling</label>
+        </div>
+        <div id="showFullDate" class="option">
+            <input type="checkbox" id="showFullDateCheck" class="trigger check">
+            <label for="showFullDateCheck">Show full comment date</label>
+        </div>
+        <div id="use24Hour" class="option">
+            <input type="checkbox" id="use24HourCheck" class="trigger check">
+            <label for="use24HourCheck">Use 24 hour time</label>
+        </div>
+        <div id="showHearts" class="option">
+            <input type="checkbox" id="showHeartsCheck" class="trigger check">
+            <label for="showHeartsCheck">Show hearts</label>
+        </div>
+        <div id="addParentLinks" class="option">
+            <input type="checkbox" id="addParentLinksCheck" class="trigger check">
+            <label for="addParentLinksCheck">Add parent links</label>
+        </div>
+
+        <div class="spacer"></div>
+
+        <div class="heading">Comment Visibility</div>
         <div id="defaultSort" class="option">
             <select id="defaultSortSelect" class="trigger select">
                 <option value="OldFirst">Old first</option>
@@ -458,14 +473,6 @@
                 <option value="PostDefault">Post default</option>
             </select>
             <label>Default comment sorting</label>
-        </div>
-        <div id="applyCommentStyling" class="option">
-            <input type="checkbox" id="applyCommentStylingCheck" class="trigger check">
-            <label for="applyCommentStylingCheck">Apply comment styling</label>
-        </div>
-        <div id="addParentLinks" class="option">
-            <input type="checkbox" id="addParentLinksCheck" class="trigger check">
-            <label for="addParentLinksCheck">Add parent links</label>
         </div>
         <div id="autoCollapseDepth" class="option">
             <input type="number" id="autoCollapseDepthNumber" class="trigger text">
@@ -478,6 +485,10 @@
         <div id="hideUsers" class="option">
             <input type="text" id="hideUsersText" class="trigger text">
             <label for="hideUsersText">Hide user comments</label>
+        </div>
+        <div id="removeComments" class="option">
+            <input type="checkbox" id="removeCommentsCheck" class="trigger check">
+            <label for="removeCommentsCheck">Remove comments</label>
         </div>
 
         <div id="keyboardShortcutSpacer" class="spacer"></div>
@@ -501,6 +512,10 @@
                 <input type="text" size="10" id="jumpCommentsKeyText" class="trigger key">
                 <label for="jumpCommentsKeyText">Jump to comment section</label>
             </div>
+            <div id="parentKey" class="option">
+                <input type="text" size="10" id="parentKeyText" class="trigger key">
+                <label for="parentKeyText">Jump to parent comment</label>
+            </div>
             <div id="prevCommentKey" class="option">
                 <input type="text" size="10" id="prevCommentKeyText" class="trigger key">
                 <label for="prevCommentKeyText">Jump to previous comment</label>
@@ -516,10 +531,6 @@
             <div id="nextUnreadKey" class="option">
                 <input type="text" size="10" id="nextUnreadKeyText" class="trigger key">
                 <label for="nextUnreadKeyText">Jump to next unread</label>
-            </div>
-            <div id="parentKey" class="option">
-                <input type="text" size="10" id="parentKeyText" class="trigger key">
-                <label for="parentKeyText">Jump to parent comment</label>
             </div>
         </div>
 

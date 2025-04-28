@@ -29,28 +29,24 @@ function addStyle(key) {
 //     hovertext: <string>,
 //     onStart: function(value) { ... },
 //     onLoad: function() { ... },
+//     onPreload: function() { ... },
 //     processComment: function(comment) { ... },
 //     onValueChange: function(value) { ... },
 // }
 //
 // Run order on page load:
 //     onStart() handlers
+//     load _preloads from page and PageInfo.init()
+//     onPreload() handlers
 //     processAllComments()
 //         processComment() handlers for any existing comments
 //     onLoad() handlers
 
-const fixHeaderOption = {
-    key: "fixHeader",
-    default: true,
-    hovertext: "Keep the header fixed, so it doesn't keep appearing when scrolling up",
-    onStart: function(value) {
-        addStyle(this.key);
-        this.onValueChange(value);
-    },
-    onValueChange: function(value) {
-        document.getElementById(cssId(this.key)).disabled = !value;
-    },
-}
+const darkModeOption = {
+    key: "darkMode",
+    default: window.matchMedia("(prefers-color-scheme: dark)").matches,
+    hovertext: "Make this popup dark mode (does not apply to blog itself). To make the page dark, use an extension like Dark Reader.",
+};
 
 const useOldStylingOption = {
     key: "useOldStyling",
@@ -73,13 +69,20 @@ const useOldStylingOption = {
     onValueChange: function(value) {
         document.getElementById(cssId(this.key)).disabled = !value;
     },
-}
+};
 
-const darkModeOption = {
-    key: "darkMode",
-    default: window.matchMedia("(prefers-color-scheme: dark)").matches,
-    hovertext: "Make this popup dark mode (does not apply to blog itself). To make the page dark, use an extension like Dark Reader.",
-}
+const fixHeaderOption = {
+    key: "fixHeader",
+    default: true,
+    hovertext: "Keep the header fixed, so it doesn't keep appearing when scrolling up",
+    onStart: function(value) {
+        addStyle(this.key);
+        this.onValueChange(value);
+    },
+    onValueChange: function(value) {
+        document.getElementById(cssId(this.key)).disabled = !value;
+    },
+};
 
 const zenModeOption = {
     key: "zenMode",
@@ -92,12 +95,12 @@ const zenModeOption = {
     onValueChange: function(value) {
         document.getElementById(cssId(this.key)).disabled = !value;
     },
-}
+};
 
-const removeCommentsOption = {
-    key: "removeComments",
-    default: false,
-    hovertext: "Completely remove the comments section from posts",
+const smoothScrollOption = {
+    key: "smoothScroll",
+    default: !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    hovertext: "Smoothly scroll when moving between comments (uncheck this to disable the animation and jump directly to the comment)",
     onStart: function(value) {
         addStyle(this.key);
         this.onValueChange(value);
@@ -105,92 +108,133 @@ const removeCommentsOption = {
     onValueChange: function(value) {
         document.getElementById(cssId(this.key)).disabled = !value;
     },
-}
+};
 
-const showHeartsOption = {
-    key: "showHearts",
-    default: false,
-    hovertext: "Add hearts back to comments. Only people using an extension that adds back hearts will be able to like comments or see them, so they won't have the activity they did before.",
-    heartHtml: function(hearts, userReact, ownComment) {
-        const heartContainer = document.querySelector("#heart-template").content.cloneNode(true);
-        const likeButton = heartContainer.querySelector(".like-button");
-        const likeCount = heartContainer.querySelector(".like-count");
-        if (userReact) {
-            likeButton.classList.add("liked");
-        }
-        if (ownComment) {
-            likeButton.classList.add("own-comment");
-        }
-        likeCount.textContent = hearts ? hearts : "";
-        return heartContainer;
+
+const highlightNewOption = {
+    key: "highlightNew",
+    default: true,
+    hovertext: "Highlight comments that you haven't seen yet",
+    updateNewTime: function(deltaMs) {
+        this.newCommentCutoff = new Date(PageInfo.loadDate - deltaMs);
     },
     onStart: function(value) {
-        addStyle(this.key);
-        document.getElementById(cssId(this.key)).disabled = value;
+        document.documentElement.classList.toggle("highlight-new", value);
     },
     processComment: function(comment) {
         const commentId = comment.dataset.id;
         const commentInfo = CommentManager.get(commentId);
-        const deleted = commentInfo.deleted;
-        const footer = comment.querySelector(":scope > .comment-content .comment-footer");
+        const commentDate = commentInfo.editedDate || commentInfo.date;
+        const commentSeen = PageInfo.lastViewedDate && commentDate <= PageInfo.lastViewedDate;
+        const header = comment.querySelector(":scope > .comment-content .comment-header");
 
-        if (footer.querySelector(".comment-heart")) {
-            if (deleted) {
-                footer.querySelector(".comment-heart").remove();
+        if (!commentSeen || commentDate && commentDate >= this.newCommentCutoff) {
+            if (header.querySelector(".new-tag-text")) {
+                return;
             }
+            comment.classList.add("new-comment");
+            const newTag = document.createElement("div");
+            newTag.classList.add("new-tag-text");
+            newTag.textContent = "~new~";
+            header.appendChild(newTag);
+        } else {
+            comment.classList.remove("new-comment");
+            header.querySelector(".new-tag-text")?.remove();
+        }
+    },
+    onValueChange: function(value) {
+        if (value) {
+            optionManager.processAllComments(this.key);
+            document.documentElement.classList.add("highlight-new");
+        } else {
+            document.documentElement.classList.remove("highlight-new");
+        }
+    },
+};
+
+const newTimeOption = {
+    key: "newTime",
+    default: 0,
+    hovertext: "Mark comments posted within the given time range as new",
+    onLoad: function(value) {
+        OPTIONS.highlightNew.updateNewTime(value);
+    },
+    onValueChange: function(value) {
+        OPTIONS.highlightNew.updateNewTime(value);
+        optionManager.processAllComments(OPTIONS.highlightNew.key);
+    },
+};
+
+const applyCommentStylingOption = {
+    key: "applyCommentStyling",
+    default: true,
+    hovertext: "Apply basic styling to comments (italics, block quotes, and Markdown style text links)",
+    processCommentParagraph: function(innerHtml) {
+        // skip paragraphs with no formatting
+        if (!/[\[*_]|^&gt;/.test(innerHtml)) {
+            return null;
+        }
+
+        const container = document.createElement("span");
+        container.classList.add("new-style");
+
+        const italicPattern = /(?<![a-z0-9])([_*])((?:[a-z0-9])[^*_]*?(?<=[a-z0-9]))\1(?![a-z0-9])/gi;
+        const formattedLinkPattern = /\[([^\]]+)\]\(<a\s+href=["']([^"']+)["'][^>]*>.*?<\/a>\)/g;
+        const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
+        const blockquotePattern = /^((&gt;\s*)+)/;
+
+        innerHtml = innerHtml.replace(italicPattern, "<em>$2</em>");
+        innerHtml = innerHtml.replace(formattedLinkPattern, (_, text, href) => {
+            return `<a href='${href}' target='_blank' rel='noreferrer'>${text}</a>`;
+        });
+        innerHtml = innerHtml.replace(linkPattern, (_, text, href) => {
+            if (!/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(href)) {
+                href = `https://${href}`;
+            }
+            return `<a href='${href}' target='_blank' rel='noreferrer'>${text}</a>`;
+        });
+
+        const match = innerHtml.match(blockquotePattern);
+        if (match) {
+            const depth = match[0].match(/&gt;\s*/g).length;
+            const content = `${innerHtml.slice(match[0].length)}`;
+            innerHtml = "<blockquote>".repeat(depth) + content + "</blockquote>".repeat(depth);
+        }
+
+        container.innerHTML = innerHtml;
+        return container;
+    },
+    onStart: function(value) {
+        addStyle(this.key);
+        document.getElementById(cssId(this.key)).disabled = !value;
+    },
+    processComment: function(comment) {
+        const commentId = comment.dataset.id;
+        const body = CommentManager.get(commentId).body;
+        // quick first pass to rule out cases where formatting isn't needed
+        if (!/[\[*_>]/.test(body)) {
             return;
         }
 
-        const hearts = commentInfo.hearts;
-        const userReact = commentInfo.userReact;
-        const ownComment = commentInfo.userId === PageInfo.userId;
-        const heartContainer = this.heartHtml(hearts, userReact, ownComment);
-        const commentHeart = heartContainer.querySelector(".comment-heart");
-        const likeButton = commentHeart.querySelector(".like-button");
-
-        // disable your own comment like button
-        if (PageInfo.userId === commentInfo.userId) {
-            commentHeart.disabled = true;
-        }
-
-        commentHeart.addEventListener("click", async () => {
-            debug("funcs_showHearts.onClick", "showHearts.onClick()");
-            const commentInfo = CommentManager.get(commentId);
-            const url = `https://www.astralcodexten.com/api/v1/comment/${commentId}/reaction`;
-            const method = commentInfo.userReact ? "DELETE" : "POST";
-            const data = {reaction: "❤"};
-
-            let response;
-            let error;
-            try {
-                response = await apiCall(url, method, data);
-                error = response.error;
-            } catch {
-                error = "Error liking post";
+        const commentBody = comment.querySelector(":scope > .comment-content .comment-body");
+        commentBody.querySelectorAll("p span").forEach((span) => {
+            // only process the text once
+            if (span.parentElement.children.length === 1) {
+                const newSpan = this.processCommentParagraph(span.innerHTML);
+                if (newSpan) {
+                    span.classList.add("old-style");
+                    span.parentElement.appendChild(newSpan);
+                }
             }
-
-            if (error) {
-                debug("commentActionLike", "like failed", error);
-                alert(error);
-                return;
-            }
-
-            CommentManager.toggleReaction(commentId);
-            likeButton.classList.toggle("liked");
-            likeButton.querySelector(".like-count").textContent =
-                commentInfo.hearts ? commentInfo.hearts : "";
-
-        });
-
-        footer.prepend(heartContainer);
+        }, this);
     },
     onValueChange: function(value) {
-        document.getElementById(cssId(this.key)).disabled = value;
+        document.getElementById(cssId(this.key)).disabled = !value;
         if (value) {
             optionManager.processAllComments(this.key);
         }
     },
-}
+};
 
 const showFullDateOption = {
     key: "showFullDate",
@@ -299,7 +343,7 @@ const showFullDateOption = {
             optionManager.processAllComments(this.key);
         }
     },
-}
+};
 
 const use24HourOption = {
     key: "use24Hour",
@@ -312,141 +356,92 @@ const use24HourOption = {
     onValueChange: function(value) {
         document.getElementById(cssId(this.key)).disabled = !value;
     },
-}
+};
 
-const highlightNewOption = {
-    key: "highlightNew",
-    default: true,
-    hovertext: "Highlight comments that you haven't seen yet",
-    updateNewTime: function(deltaMs) {
-        this.newCommentCutoff = new Date(PageInfo.loadDate - deltaMs);
+const showHeartsOption = {
+    key: "showHearts",
+    default: false,
+    hovertext: "Add hearts back to comments. Only people using an extension that adds back hearts will be able to like comments or see them, so they won't have the activity they did before.",
+    heartHtml: function(hearts, userReact, ownComment) {
+        const heartContainer = document.querySelector("#heart-template").content.cloneNode(true);
+        const likeButton = heartContainer.querySelector(".like-button");
+        const likeCount = heartContainer.querySelector(".like-count");
+        if (userReact) {
+            likeButton.classList.add("liked");
+        }
+        if (ownComment) {
+            likeButton.classList.add("own-comment");
+        }
+        likeCount.textContent = hearts ? hearts : "";
+        return heartContainer;
     },
     onStart: function(value) {
-        document.documentElement.classList.toggle("highlight-new", value);
+        addStyle(this.key);
+        document.getElementById(cssId(this.key)).disabled = value;
     },
     processComment: function(comment) {
         const commentId = comment.dataset.id;
         const commentInfo = CommentManager.get(commentId);
-        const commentDate = commentInfo.editedDate || commentInfo.date;
-        const commentSeen = PageInfo.lastViewedDate && commentDate <= PageInfo.lastViewedDate;
-        const header = comment.querySelector(":scope > .comment-content .comment-header");
+        const deleted = commentInfo.deleted;
+        const footer = comment.querySelector(":scope > .comment-content .comment-footer");
 
-        if (!commentSeen || commentDate && commentDate >= this.newCommentCutoff) {
-            if (header.querySelector(".new-tag-text")) {
-                return;
+        if (footer.querySelector(".comment-heart")) {
+            if (deleted) {
+                footer.querySelector(".comment-heart").remove();
             }
-            comment.classList.add("new-comment");
-            const newTag = document.createElement("div");
-            newTag.classList.add("new-tag-text");
-            newTag.textContent = "~new~";
-            header.appendChild(newTag);
-        } else {
-            comment.classList.remove("new-comment");
-            header.querySelector(".new-tag-text")?.remove();
-        }
-    },
-    onValueChange: function(value) {
-        if (value) {
-            optionManager.processAllComments(this.key);
-            document.documentElement.classList.add("highlight-new");
-        } else {
-            document.documentElement.classList.remove("highlight-new");
-        }
-    },
-}
-
-const newTimeOption = {
-    key: "newTime",
-    default: 0,
-    hovertext: "Mark comments posted within the given time range as new",
-    onLoad: function(value) {
-        OPTIONS.highlightNew.updateNewTime(value);
-    },
-    onValueChange: function(value) {
-        OPTIONS.highlightNew.updateNewTime(value);
-        optionManager.processAllComments(OPTIONS.highlightNew.key);
-    },
-}
-
-const defaultSortOption = {
-    key: "defaultSort",
-    default: SortOrder.OldFirst,
-    hovertext: "Default ordering for comments. Post default is the ordering specified by Substack, which is old first for most posts, and new first for open threads.",
-    onPreload: function(value) {
-        PageInfo.commentSort = value === SortOrder.PostDefault ? PageInfo.defaultSort : value;
-    },
-}
-
-const applyCommentStylingOption = {
-    key: "applyCommentStyling",
-    default: true,
-    hovertext: "Apply basic styling to comments (italics, block quotes, and Markdown style text links)",
-    processCommentParagraph: function(innerHtml) {
-        // skip paragraphs with no formatting
-        if (!/[\[*_]|^&gt;/.test(innerHtml)) {
-            return null;
-        }
-
-        const container = document.createElement("span");
-        container.classList.add("new-style");
-
-        const italicPattern = /(?<![a-z0-9])([_*])((?:[a-z0-9])[^*_]*?(?<=[a-z0-9]))\1(?![a-z0-9])/gi;
-        const formattedLinkPattern = /\[([^\]]+)\]\(<a\s+href=["']([^"']+)["'][^>]*>.*?<\/a>\)/g;
-        const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
-        const blockquotePattern = /^((&gt;\s*)+)/;
-
-        innerHtml = innerHtml.replace(italicPattern, "<em>$2</em>");
-        innerHtml = innerHtml.replace(formattedLinkPattern, (_, text, href) => {
-            return `<a href='${href}' target='_blank' rel='noreferrer'>${text}</a>`;
-        });
-        innerHtml = innerHtml.replace(linkPattern, (_, text, href) => {
-            if (!/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(href)) {
-                href = `https://${href}`;
-            }
-            return `<a href='${href}' target='_blank' rel='noreferrer'>${text}</a>`;
-        });
-
-        const match = innerHtml.match(blockquotePattern);
-        if (match) {
-            const depth = match[0].match(/&gt;\s*/g).length;
-            const content = `${innerHtml.slice(match[0].length)}`;
-            innerHtml = "<blockquote>".repeat(depth) + content + "</blockquote>".repeat(depth);
-        }
-
-        container.innerHTML = innerHtml;
-        return container;
-    },
-    onStart: function(value) {
-        addStyle(this.key);
-        document.getElementById(cssId(this.key)).disabled = !value;
-    },
-    processComment: function(comment) {
-        const commentId = comment.dataset.id;
-        const body = CommentManager.get(commentId).body;
-        // quick first pass to rule out cases where formatting isn't needed
-        if (!/[\[*_>]/.test(body)) {
             return;
         }
 
-        const commentBody = comment.querySelector(":scope > .comment-content .comment-body");
-        commentBody.querySelectorAll("p span").forEach((span) => {
-            // only process the text once
-            if (span.parentElement.children.length === 1) {
-                const newSpan = this.processCommentParagraph(span.innerHTML);
-                if (newSpan) {
-                    span.classList.add("old-style");
-                    span.parentElement.appendChild(newSpan);
-                }
+        const hearts = commentInfo.hearts;
+        const userReact = commentInfo.userReact;
+        const ownComment = commentInfo.userId === PageInfo.userId;
+        const heartContainer = this.heartHtml(hearts, userReact, ownComment);
+        const commentHeart = heartContainer.querySelector(".comment-heart");
+        const likeButton = commentHeart.querySelector(".like-button");
+
+        // disable your own comment like button
+        if (PageInfo.userId === commentInfo.userId) {
+            commentHeart.disabled = true;
+        }
+
+        commentHeart.addEventListener("click", async () => {
+            debug("funcs_showHearts.onClick", "showHearts.onClick()");
+            const commentInfo = CommentManager.get(commentId);
+            const url = `https://www.astralcodexten.com/api/v1/comment/${commentId}/reaction`;
+            const method = commentInfo.userReact ? "DELETE" : "POST";
+            const data = {reaction: "❤"};
+
+            let response;
+            let error;
+            try {
+                response = await apiCall(url, method, data);
+                error = response.error;
+            } catch {
+                error = "Error liking post";
             }
-        }, this);
+
+            if (error) {
+                debug("commentActionLike", "like failed", error);
+                alert(error);
+                return;
+            }
+
+            CommentManager.toggleReaction(commentId);
+            likeButton.classList.toggle("liked");
+            likeButton.querySelector(".like-count").textContent =
+                commentInfo.hearts ? commentInfo.hearts : "";
+
+        });
+
+        footer.prepend(heartContainer);
     },
     onValueChange: function(value) {
-        document.getElementById(cssId(this.key)).disabled = !value;
+        document.getElementById(cssId(this.key)).disabled = value;
         if (value) {
             optionManager.processAllComments(this.key);
         }
     },
-}
+};
 
 const addParentLinksOption = {
     key: "addParentLinks",
@@ -495,7 +490,17 @@ const addParentLinksOption = {
             optionManager.processAllComments(this.key);
         }
     },
-}
+};
+
+
+const defaultSortOption = {
+    key: "defaultSort",
+    default: SortOrder.OldFirst,
+    hovertext: "Default ordering for comments. Post default is the ordering specified by Substack, which is old first for most posts, and new first for open threads.",
+    onPreload: function(value) {
+        PageInfo.commentSort = value === SortOrder.PostDefault ? PageInfo.defaultSort : value;
+    },
+};
 
 const autoCollapseDepthOption = {
     key: "autoCollapseDepth",
@@ -512,13 +517,13 @@ const autoCollapseDepthOption = {
                         collapseDepth === depth);
         comment.classList.toggle("collapsed", collapse);
     }
-}
+};
 
 const collapseModOption = {
     key: "collapseMod",
     default: true,
     hovertext: "If true and auto collapse isn't negative, collapses children of every nth level nested comment. If auto collapse is 5, then collapses children of levels 5, 10, etc. If false, only children of level 5 are collapsed.",
-}
+};
 
 const hideUsersOption = {
     key: "hideUsers",
@@ -555,18 +560,12 @@ const hideUsersOption = {
             .filter(x => x));
         optionManager.processAllComments(this.key);
     },
-}
+};
 
-const allowKeyboardShortcutsOption = {
-    key: "allowKeyboardShortcuts",
-    default: true,
-    hovertext: "Enable keyboard shortcuts for the various actions below",
-}
-
-const smoothScrollOption = {
-    key: "smoothScroll",
-    default: !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
-    hovertext: "Smoothly scroll when moving between comments (uncheck this to disable the animation and jump directly to the comment)",
+const removeCommentsOption = {
+    key: "removeComments",
+    default: false,
+    hovertext: "Completely remove the comments section from posts",
     onStart: function(value) {
         addStyle(this.key);
         this.onValueChange(value);
@@ -574,7 +573,14 @@ const smoothScrollOption = {
     onValueChange: function(value) {
         document.getElementById(cssId(this.key)).disabled = !value;
     },
-}
+};
+
+
+const allowKeyboardShortcutsOption = {
+    key: "allowKeyboardShortcuts",
+    default: true,
+    hovertext: "Enable keyboard shortcuts for the various actions below",
+};
 
 const jumpCommentsKeyOption = {
     key: "jumpCommentsKey",
@@ -586,55 +592,7 @@ const jumpCommentsKeyOption = {
         "meta": false,
     },
     hovertext: "Key/key combo to jump to the start of the comment section (click the box to set)",
-}
-
-const prevCommentKeyOption = {
-    key: "prevCommentKey",
-    default: {
-        "key": 73,
-        "control": false,
-        "alt": false,
-        "shift": false,
-        "meta": false,
-    },
-    hovertext: "Key/key combo to jump to the previous comment (click the box to set)",
-}
-
-const nextCommentKeyOption = {
-    key: "nextCommentKey",
-    default: {
-        "key": 85,
-        "control": false,
-        "alt": false,
-        "shift": false,
-        "meta": false,
-    },
-    hovertext: "Key/key combo to jump to the next comment (click the box to set)",
-}
-
-const prevUnreadKeyOption = {
-    key: "prevUnreadKey",
-    default: {
-        "key": 75,
-        "control": false,
-        "alt": false,
-        "shift": false,
-        "meta": false,
-    },
-    hovertext: "Key/key combo to jump to the previous new comment (click the box to set)",
-}
-
-const nextUnreadKeyOption = {
-    key: "nextUnreadKey",
-    default: {
-        "key": 74,
-        "control": false,
-        "alt": false,
-        "shift": false,
-        "meta": false,
-    },
-    hovertext: "Key/key combo to jump to the next new comment (click the box to set)",
-}
+};
 
 const parentKeyOption = {
     key: "parentKey",
@@ -646,7 +604,56 @@ const parentKeyOption = {
         "meta": false,
     },
     hovertext: "Key/key combo to jump to the parent of the current comment (click the box to set)",
-}
+};
+
+const prevCommentKeyOption = {
+    key: "prevCommentKey",
+    default: {
+        "key": 73,
+        "control": false,
+        "alt": false,
+        "shift": false,
+        "meta": false,
+    },
+    hovertext: "Key/key combo to jump to the previous comment (click the box to set)",
+};
+
+const nextCommentKeyOption = {
+    key: "nextCommentKey",
+    default: {
+        "key": 85,
+        "control": false,
+        "alt": false,
+        "shift": false,
+        "meta": false,
+    },
+    hovertext: "Key/key combo to jump to the next comment (click the box to set)",
+};
+
+const prevUnreadKeyOption = {
+    key: "prevUnreadKey",
+    default: {
+        "key": 75,
+        "control": false,
+        "alt": false,
+        "shift": false,
+        "meta": false,
+    },
+    hovertext: "Key/key combo to jump to the previous new comment (click the box to set)",
+};
+
+const nextUnreadKeyOption = {
+    key: "nextUnreadKey",
+    default: {
+        "key": 74,
+        "control": false,
+        "alt": false,
+        "shift": false,
+        "meta": false,
+    },
+    hovertext: "Key/key combo to jump to the next new comment (click the box to set)",
+};
+
 
 const customCssOption = {
     key: "customCss",
@@ -661,13 +668,14 @@ const customCssOption = {
     onValueChange: function(value) {
         document.getElementById(cssId(this.key)).textContent = value;
     },
-}
+};
 
 const showDebugOption = {
     key: "showDebug",
     default: "",
     hovertext: "Show matching debugging output in the console (use <code>\"*\"</code> for all)",
-}
+};
+
 
 const resetDataOption = {
     key: "resetData",
@@ -682,37 +690,42 @@ const resetDataOption = {
             optionManager.set(this.key, false);
         }
     },
-}
+};
 
 
 
 const optionArray = [
-    fixHeaderOption,
-    useOldStylingOption,
     darkModeOption,
+    useOldStylingOption,
+    fixHeaderOption,
     zenModeOption,
-    removeCommentsOption,
-    showHeartsOption,
-    showFullDateOption,
-    use24HourOption,
+    smoothScrollOption,
+
     highlightNewOption,
     newTimeOption,
-    defaultSortOption,
     applyCommentStylingOption,
+    showFullDateOption,
+    use24HourOption,
+    showHeartsOption,
     addParentLinksOption,
+
+    defaultSortOption,
     autoCollapseDepthOption,
     collapseModOption,
     hideUsersOption,
+    removeCommentsOption,
+
     allowKeyboardShortcutsOption,
-    smoothScrollOption,
     jumpCommentsKeyOption,
+    parentKeyOption,
     prevCommentKeyOption,
     nextCommentKeyOption,
     prevUnreadKeyOption,
     nextUnreadKeyOption,
-    parentKeyOption,
+
     customCssOption,
     showDebugOption,
+
     resetDataOption,
 ];
 
