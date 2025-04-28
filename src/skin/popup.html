@@ -291,6 +291,101 @@
             filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(157deg) brightness(102%) contrast(101%);
         }
 
+        .hidden {
+            display: none;
+        }
+
+
+
+        /* Mobile styling */
+
+        body.mobile {
+            font-size: 20px;
+            width: 100%;
+            overflow-wrap: normal;
+        }
+
+        .mobile #wrapper div {
+            white-space: unset;
+        }
+
+        .mobile .heading {
+            margin-top: 20px;
+            font-size: 24px;
+        }
+
+        .mobile .option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .mobile #keyboardShortcutSpacer,
+        .mobile #keyboardShortcutHeading,
+        .mobile #allowKeyboardShortcuts,
+        .mobile #shortcutToggle,
+        .mobile #shortcutHolder {
+            display: none;
+        }
+
+        .mobile #use24Hour {
+            margin-left: 41px;
+        }
+
+        .mobile #newTime,
+        .mobile #collapseMod {
+            margin-left: 45px;
+        }
+
+        .mobile input[type="checkbox"] {
+            width: 30px;
+            height: 30px;
+            min-width: 30px;
+            min-height: 30px;
+        }
+
+        .mobile input[type="text"],
+        .mobile input[type="number"],
+        .mobile textarea {
+            width: 200px;
+            height: 30px;
+            font-size: 20px;
+        }
+
+        .mobile select {
+            padding: 5px !important;
+            font-size: 20px;
+        }
+
+        .mobile .caret-icon {
+            height: 15px;
+            width: 15px;
+        }
+
+        .mobile .help-icon {
+            width: 30px;
+            height: 30px;
+            margin: 0;
+            margin-left: 10px;
+        }
+
+        .mobile #resetData {
+            display: block;
+        }
+
+        .mobile #resetDataButton {
+            padding: 10px 20px;
+            font-size: 20px;
+        }
+
+        .mobile #version {
+            font-size: 20px;
+        }
+
+        .mobile .tooltip {
+            font-size: 20px;
+        }
     </style>
 
     <script type="text/javascript" src="../js/options.js"></script>
@@ -377,10 +472,10 @@
             <label for="hideUsersText">Hide user comments</label>
         </div>
 
-        <div class="spacer"></div>
+        <div id="keyboardShortcutSpacer" class="spacer"></div>
 
         <!-- keyboard shortcuts -->
-        <div class="heading">Keyboard shortcuts</div>
+        <div id="keyboardShortcutHeading" class="heading">Keyboard shortcuts</div>
         <div id="allowKeyboardShortcuts" class="option">
             <input type="checkbox" id="allowKeyboardShortcutsCheck" class="trigger check">
             <label for="allowKeyboardShortcutsCheck">Allow keyboard shortcuts</label>

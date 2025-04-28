@@ -3,6 +3,8 @@
 // cache of the current options
 let optionShadow;
 
+const isMobile = navigator.userAgent.includes("Android");
+
 async function loadInitialOptionValues() {
     const result = await chrome.storage.local.get([OPTION_KEY]);
     if (result[OPTION_KEY]) {
@@ -80,14 +82,13 @@ function addHovertext(optionElem) {
     icon.className = "help-icon";
     const tooltip = document.createElement("span");
     tooltip.id = `${id}-tooltip`;
-    tooltip.className = "tooltip";
+    tooltip.classList.add("tooltip", "hidden");
     tooltip.innerHTML = OPTIONS[id].hovertext;
-    tooltip.style.display = "none";
     optionElem.appendChild(icon);
     document.getElementById("wrapper").appendChild(tooltip);
 
-    icon.addEventListener("mouseenter", () => {
-        tooltip.style.display = "block";
+    function showTooltip() {
+        tooltip.classList.remove("hidden");
         const windowHeight = window.innerHeight;
         const iconSpace = 15;
         const tooltipHeight = tooltip.getBoundingClientRect().height + 2 * iconSpace;
@@ -103,11 +104,35 @@ function addHovertext(optionElem) {
         } else {
             tooltip.style.top = "8px";
         }
-    });
+    }
 
-    icon.addEventListener("mouseleave", () => {
-        tooltip.style.display = "none";
-    });
+    function hideTooltip() {
+        tooltip.classList.add("hidden");
+    }
+
+    function hideAllTooltips() {
+        document.querySelectorAll(".tooltip").forEach(e => e.classList.add("hidden"));
+    }
+
+    if (isMobile) {
+        icon.addEventListener("touchend", (event) => {
+            if (tooltip.classList.contains("hidden")) {
+                hideAllTooltips();
+                showTooltip();
+            } else {
+                hideTooltip();
+            }
+            event.stopPropagation();
+        });
+
+        document.addEventListener("touchend", () => {
+            hideAllTooltips();
+        });
+    } else {
+        icon.addEventListener("mouseenter", showTooltip);
+        icon.addEventListener("mouseleave", hideTooltip);
+    }
+
 }
 
 function createChangeHandler(optionElem) {
@@ -337,6 +362,10 @@ function populateVersion() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+    if (isMobile) {
+        document.body.classList.add("mobile");
+    }
+
     await loadInitialOptionValues();
 
     for (const option of document.querySelectorAll(".option")) {
