@@ -665,7 +665,7 @@ class Comment {
             () => this.postReply());
         cancelReplyButton.addEventListener("click", () => {
             replyBase.remove();
-            this.baseElem.focus(true);
+            this.baseElem.focus({preventScroll: true});
         });
 
         this.textEditContainer.replaceChildren(replyTemplate);
