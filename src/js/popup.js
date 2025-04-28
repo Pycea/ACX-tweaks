@@ -347,4 +347,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     createResetHandler();
     addDependencies();
     populateVersion();
+
+    document.querySelector("#known-issues-link").addEventListener("click", () => {
+        window.close();
+    });
 });

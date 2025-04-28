@@ -85,6 +85,10 @@ blockquote blockquote {
     display: none;
 }
 
+.app-banner {
+    display: none;
+}
+
 /* Comment ordering */
 
 .comment-toggle-container {
