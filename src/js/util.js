@@ -111,11 +111,12 @@ async function getPostData() {
     return data;
 }
 
-async function getPostComments() {
+async function getPostComments(order) {
     logFuncCall();
     const postData = await getPostData();
     const postId = postData.id;
-    const url = `https://www.astralcodexten.com/api/v1/post/${postId}/comments?block=false&sort=oldest_first&all_comments=true`;
+    const sort = order === SortOrder.NewFirst ? "most_recent_first" : "oldest_first";
+    const url = `https://www.astralcodexten.com/api/v1/post/${postId}/comments?block=false&sort=${sort}&all_comments=true`;
     const data = await apiCall(url);
     return data.comments;
 }
@@ -128,24 +129,11 @@ function getPostName() {
     return null;
 }
 
-function getCommentId(comment) {
-    if (comment instanceof jQuery) {
-        comment = comment[0];
+function reverseCommentOrder(commentList) {
+    commentList.reverse();
+    for (const comment of commentList) {
+        reverseCommentOrder(comment.children);
     }
-
-    return comment.firstElementChild.id;
-}
-
-function getCommentIdNumber(comment) {
-    const idString = getCommentId(comment);
-    const id = parseInt(idString.substring(8));
-
-    if (!id) {
-        console.error(`Bad comment id found: ${idString}`);
-        return;
-    }
-
-    return id;
 }
 
 const keyCodes = {

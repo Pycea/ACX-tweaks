@@ -38,7 +38,7 @@ function newTimeHandler() {
 }
 
 const CUSTOM_TRIGGERS = {
-    "newTime": newTimeHandler,
+    newTime: newTimeHandler,
 }
 
 function newTimeState(value) {
@@ -68,7 +68,7 @@ function newTimeState(value) {
 }
 
 const CUSTOM_SET_STATE = {
-    "newTime": newTimeState,
+    newTime: newTimeState,
 }
 
 
@@ -166,6 +166,8 @@ function createChangeHandler(optionElem) {
         });
     } else if (input.classList.contains("text")) {
         input.addEventListener("change", () => setOption(id, input.value));
+    } else if (input.classList.contains("select")) {
+        input.addEventListener("change", () => setOption(id, input.value));
     }
 }
 
@@ -186,6 +188,8 @@ function setInitialState(optionElem) {
         const displayValue = keyDictToString(setValue);
         input.value = displayValue;
     } else if (input.classList.contains("text")) {
+        input.value = setValue;
+    } else if (input.classList.contains("select")) {
         input.value = setValue;
     }
 }

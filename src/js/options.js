@@ -2,6 +2,12 @@
 
 const OPTION_KEY = "options";
 
+const SortOrder = Object.freeze({
+    "OldFirst": "OldFirst",
+    "NewFirst": "NewFirst",
+    "PostDefault": "PostDefault",
+});
+
 function cssId(key) {
     return `${key}-css`;
 }
@@ -225,7 +231,7 @@ const showFullDateOption = {
             const hour12 = hour === 0 ? 12 : (hour > 12 ? hour - 12 : hour);
 
             // <div>
-            //     ${month} ${day}, ${year} at 
+            //     ${month} ${day}, ${year} at
             //     <span class="hour12-time">${hour12}:${minute} ${amPm}</span>
             //     <span class="hour24-time">${hour}:${minute}</span>
             // </div>
@@ -359,6 +365,15 @@ const newTimeOption = {
     onValueChange: function(value) {
         OPTIONS.highlightNew.updateNewTime(value);
         optionManager.processAllComments(OPTIONS.highlightNew.key);
+    },
+}
+
+const defaultSortOption = {
+    key: "defaultSort",
+    default: SortOrder.OldFirst,
+    hovertext: "Default ordering for comments. Post default is the ordering specified by Substack, which is old first for most posts, and new first for open threads.",
+    onPreload: function(value) {
+        PageInfo.commentSort = value === SortOrder.PostDefault ? PageInfo.defaultSort : value;
     },
 }
 
@@ -682,6 +697,7 @@ const optionArray = [
     use24HourOption,
     highlightNewOption,
     newTimeOption,
+    defaultSortOption,
     applyCommentStylingOption,
     addParentLinksOption,
     autoCollapseDepthOption,

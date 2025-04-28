@@ -42,6 +42,7 @@ const KeyCommand = Object.freeze({
 });
 
 
+
 class OptionManager {
     constructor(localStorageKey, optionDict) {
         this.localStorageKey = localStorageKey;
@@ -82,6 +83,15 @@ class OptionManager {
             if (option.onStart) {
                 debug("funcs_" + key + ".onStart", key + ".onStart()");
                 option.onStart(this.optionShadow[key]);
+            }
+        }
+    }
+
+    runOnPreloadHandlers() {
+        for (const [key, option] of Object.entries(this.optionDict)) {
+            if (option.onPreload) {
+                debug("funcs_" + key + ".onPreload", key + ".onPreload()");
+                option.onPreload(this.optionShadow[key]);
             }
         }
     }
@@ -244,14 +254,6 @@ class LocalStorageManager {
 }
 
 class PageInfo {
-    static preloads;
-    static userId;
-    static avatarUrl;
-    static pageType;
-    static postId;
-    static postName;
-    static loadDate;
-
     static init(preloads, localStorageManager) {
         logFuncCall();
 
@@ -277,6 +279,12 @@ class PageInfo {
         PageInfo.loadDate = new Date();
         const dateString = localStorageManager.get("lastViewedDate");
         PageInfo.lastViewedDate = dateString ? new Date(dateString) : null;
+
+        PageInfo.commentSort = SortOrder.OldFirst;
+        PageInfo.defaultSort =
+            preloads.post?.default_comment_sort === "most_recent_first" ?
+            SortOrder.NewFirst :
+            SortOrder.OldFirst;
     }
 }
 
@@ -524,7 +532,7 @@ class Comment {
         img.src = CommentManager.getAvatarUrl(url, userId, 96, false);
     }
 
-    fillCommentElem() {    
+    fillCommentElem() {
         const picture = this.contentElem.querySelector(".profile-picture");
         const profileImage = picture.querySelector(".profile-image");
         const userProfileLink = this.contentElem.querySelector(".user-profile-link");
@@ -920,6 +928,12 @@ async function onStart() {
     });
 }
 
+// Call once the preloads have loaded
+
+function onPreload() {
+    optionManager.runOnPreloadHandlers();
+}
+
 
 // Setup once the DOM is loaded
 
@@ -995,7 +1009,11 @@ function addSortButton() {
     const sortOldButton = toggleTemplate.querySelector(".sort-old");
     const sortNewButton = toggleTemplate.querySelector(".sort-new");
 
-    sortOldButton.dataset.selected = true;
+    if (PageInfo.commentSort === SortOrder.NewFirst) {
+        sortNewButton.dataset.selected = true;
+    } else {
+        sortOldButton.dataset.selected = true;
+    }
     commentContainer.before(toggleTemplate);
 
     sortOldButton.addEventListener("click", () => {
@@ -1065,9 +1083,14 @@ async function doAllSetup() {
     const preloads = await getPreloads();
     PageInfo.init(preloads, localStorageManager);
 
+    onPreload();
+
     if (PageInfo.pageType === PageType.Post) {
-        CommentManager.init(await getPostComments());
+        CommentManager.init(await getPostComments(PageInfo.commentSort));
     } else if (PageInfo.pageType === PageType.Comments) {
+        if (PageInfo.commentSort !== PageInfo.defaultSort) {
+            reverseCommentOrder(preloads.initialComments);
+        }
         CommentManager.init(preloads.initialComments);
     }
 
