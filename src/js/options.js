@@ -147,13 +147,27 @@ const showHeartsOption = {
             commentHeart.disabled = true;
         }
 
-        commentHeart.addEventListener("click", () => {
+        commentHeart.addEventListener("click", async () => {
             debug("funcs_showHearts.onClick", "showHearts.onClick()");
             const commentInfo = CommentManager.get(commentId);
             const url = `https://www.astralcodexten.com/api/v1/comment/${commentId}/reaction`;
             const method = commentInfo.userReact ? "DELETE" : "POST";
             const data = {reaction: "❤"};
-            apiCall(url, method, data);
+
+            let response;
+            let error;
+            try {
+                response = await apiCall(url, method, data);
+                error = response.error;
+            } catch {
+                error = "Error liking post";
+            }
+
+            if (error) {
+                debug("commentActionLike", "like failed", error);
+                alert(error);
+                return;
+            }
 
             CommentManager.toggleReaction(commentId);
             likeButton.classList.toggle("liked");
