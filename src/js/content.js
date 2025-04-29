@@ -963,12 +963,14 @@ function createComments() {
         commentListItems.replaceChildren();
     }
 
+    commentListContainer.classList.add("processing");
+
     for (const commentId of CommentManager.topLevelComments) {
         const comment = new Comment(commentId);
         commentListItems.appendChild(comment.baseElem);
     }
 
-    commentListContainer.classList.add("visible");
+    commentListContainer.classList.remove("processing");
 }
 
 function fillCommentCounts() {

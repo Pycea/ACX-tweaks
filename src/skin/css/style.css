@@ -210,12 +210,8 @@ blockquote blockquote {
     }
 }
 
-.comment-list-container {
+.comment-list-container.processing {
     display: none;
-}
-
-.comment-list-container.visible {
-    display: block;
 }
 
 .comment-list-items {

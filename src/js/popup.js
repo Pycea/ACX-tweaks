@@ -80,6 +80,7 @@ function addHovertext(optionElem) {
     const icon = document.createElement("img");
     icon.src = iconSvg;
     icon.className = "help-icon";
+    icon.alt = OPTIONS[id].hovertext.replace(/<.*?>/g, "");
     const tooltip = document.createElement("span");
     tooltip.id = `${id}-tooltip`;
     tooltip.classList.add("tooltip", "hidden");
