@@ -111,7 +111,7 @@ const STYLES = {
             /* Global vars for responsive sizing */
 
             :root {
-                --web_bg_color: #ffffff;
+                --web_bg_color: #ffffff !important;
 
                 --entry-padding: 20px;
                 --entry-padding-top: 40px;

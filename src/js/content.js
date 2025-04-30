@@ -173,7 +173,7 @@ class OptionManager {
         debug("processCommentOption", "Processing options",
             commentHandlerObjects.map(o => o.key).join(", "));
 
-        const comments = document.querySelectorAll(".comment");
+        const comments = document.querySelectorAll("#top-comment-container .comment");
         for (const comment of comments) {
             debug("processComment", comment);
             for (const object of  commentHandlerObjects) {
@@ -256,6 +256,8 @@ class LocalStorageManager {
 class PageInfo {
     static init(preloads, localStorageManager) {
         logFuncCall();
+
+        PageInfo.isMobile = navigator.userAgent.includes("Android");
 
         PageInfo.preloads = preloads;
         PageInfo.userId = preloads.user?.id;
@@ -954,7 +956,6 @@ function createComments() {
         commentListContainer.appendChild(commentList);
         commentListItems = document.createElement("div");
         commentListItems.className = "comment-list-items";
-        commentListItems.id = "top-comment-container";
         commentList.appendChild(commentListItems);
         topLevelContainer.appendChild(commentListContainer);
     } else if (PageInfo.pageType === PageType.Comments) {
@@ -963,6 +964,7 @@ function createComments() {
         commentListItems.replaceChildren();
     }
 
+    commentListItems.id = "top-comment-container";
     commentListContainer.classList.add("processing");
 
     for (const commentId of CommentManager.topLevelComments) {
@@ -994,7 +996,7 @@ function fillCommentCounts() {
 }
 
 function reverseComments() {
-    const commentContainer = document.querySelector(".comment-list-items");
+    const commentContainer = document.querySelector("#top-comment-container");
     const children = commentContainer.querySelectorAll(".children:not(:empty)");
     children.forEach((elem) => {
         elem.append(...[...elem.childNodes].reverse());
@@ -1035,6 +1037,24 @@ function addSortButton() {
     });
 }
 
+function buildComments() {
+    createComments();
+    addSortButton();
+    optionManager.processAllComments();
+
+    if (PageInfo.pageType === PageType.Comments && PageInfo.isMobile) {
+        const observer = new MutationObserver(() => {
+            const commentListItems =
+                document.querySelector(".comment-list-container > * > .comment-list-items");
+            if (commentListItems?.id !== "top-comment-container") {
+                buildComments();
+            }
+        });
+        const commentsPage = document.querySelector(".comments-page");
+        observer.observe(commentsPage, {childList: true, subtree: true});
+    }
+}
+
 function handleScroll() {
     if (location.hash) {
         const elem = document.querySelector(location.hash);
@@ -1061,14 +1081,10 @@ async function onLoad() {
     if ([PageType.Post, PageType.Comments].includes(PageInfo.pageType)) {
         const template = await loadTemplate(chrome.runtime.getURL("data/templates.html"));
         document.head.appendChild(template.content);
-        createComments();
         optionManager.runOnLoadHandlers();
+        buildComments();
         fillCommentCounts();
-        addSortButton();
-        requestAnimationFrame(() => {
-            optionManager.processAllComments();
-            handleScroll();
-        });
+        handleScroll();
     }
 }
 
