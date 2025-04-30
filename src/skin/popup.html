@@ -3,18 +3,16 @@
 <head>
     <title>ACX Tweaks</title>
     <style type="text/css">
+        :root {
+            scrollbar-gutter: stable;
+        }
+
         body {
             font-family: sans-serif;
             font-size: .75em;
             user-select: none;
             width: 325px;
             overflow-x: hidden;
-            scrollbar-width: none;
-        }
-
-        body::-webkit-scrollbar {
-            width: 0;
-            height: 0;
         }
 
         #wrapper div {
@@ -41,6 +39,8 @@
         }
 
         input[type="checkbox"] {
+            width: 13px;
+            height: 13px;
             accent-color: #0275ff;
         }
 
@@ -88,7 +88,6 @@
 
         #resetDataButton {
             background-color: #dc3545;
-            border-color: #dc3545;
             color: #fff;
             border: 1px solid transparent;
             border-radius: 3px;
