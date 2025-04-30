@@ -10,7 +10,7 @@
 // keyPress*
 //     keyPressEvent: each key press
 //     keyPressSearch: key press search internals
-// pageEvent: related to page events (onStart and onLoad)
+// pageEvent: related to page events (onStart, onPreload, and onLoad)
 // commentAction*
 //     commentActionReply: replying to comments
 //     commentActionEdit: editing comments
@@ -933,6 +933,8 @@ async function onStart() {
 // Call once the preloads have loaded
 
 function onPreload() {
+    logFuncCall();
+    debug("pageEvent", "event: onPreload");
     optionManager.runOnPreloadHandlers();
 }
 
