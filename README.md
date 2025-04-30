@@ -13,7 +13,7 @@ Get it for [Firefox](https://addons.mozilla.org/en-US/firefox/addon/acx-tweaks/)
   <img src="/screenshots/v2/chrome_new_style_comments.png" width="400" /> 
 </p>
 
-<p align="center" style="width:500px"><sub>Clockwise from upper left: a post using the old SSC styling; the options menu; comments using the default Substack styling; comments using the old SSC styling</sub></p>
+<p align="center" style="width:500px"><sub>Clockwise from upper left: a post using the old SSC styling; the options menu; comments using the old SSC styling; comments using the default Substack styling</sub></p>
 
 ## Key Features
 
@@ -31,10 +31,10 @@ Get it for [Firefox](https://addons.mozilla.org/en-US/firefox/addon/acx-tweaks/)
 
 For a full list with explanations, see [here](https://github.com/Pycea/ACX-tweaks/wiki/Options).
 
-To change options, click the extension icon.
+To change options, click the extension icon. On Firefox, you have have to right click the icon and choose "Always allow on www.astralcodexten.com".
 
 ## How to get
-[Firefox extension](https://addons.mozilla.org/en-US/firefox/addon/acx-tweaks/).
+[Firefox extension](https://addons.mozilla.org/en-US/firefox/addon/acx-tweaks/). Also works on Firefox for Android.
 
 [Chrome extension](https://chrome.google.com/webstore/detail/acx-tweaks/jdpghojhfigbpoeiadalafcmohaekglf). Works for anything that can use extensions from the Chrome Web Store, including Opera and Brave.
 
