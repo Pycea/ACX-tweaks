@@ -969,11 +969,13 @@ function createComments() {
     commentListItems.id = "top-comment-container";
     commentListContainer.classList.add("processing");
 
+    const documentFragment = document.createDocumentFragment();
     for (const commentId of CommentManager.topLevelComments) {
         const comment = new Comment(commentId);
-        commentListItems.appendChild(comment.baseElem);
+        documentFragment.appendChild(comment.baseElem);
     }
 
+    commentListItems.appendChild(documentFragment);
     commentListContainer.classList.remove("processing");
 }
 
