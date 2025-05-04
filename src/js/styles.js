@@ -430,6 +430,16 @@ const STYLES = {
                 font-style: italic;
             }
 
+            article .available-content pre {
+                background-color: #e4e4e4;
+                margin: 24px 0;
+                padding: 10px 16px;
+            }
+
+            article .available-content pre code {
+                font: 13px/16px monospace;
+            }
+
             .typography .markup .tweet {
                 background-color: #fff;
             }
