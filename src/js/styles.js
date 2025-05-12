@@ -405,8 +405,21 @@ const STYLES = {
                 color: #333;
             }
 
-            figcaption {
+            figcaption,
+            .footnote-content {
                 font: 12px/20px Verdana, sans-serif;
+            }
+
+            .footnote-hovercard {
+                padding: 4px 8px;
+            }
+
+            article .footnote-anchor {
+                font-size: 12px;
+            }
+
+            article .footnote-number {
+                font-size: 13px;
             }
 
             article .available-content p a {
