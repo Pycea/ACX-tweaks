@@ -510,7 +510,7 @@ class Comment {
         body = htmlEscape(body);
         body = body.trim();
         body = body.replace(/\n+/g, "\n");
-        body = body.replace(/\b(https?:\/\/[A-Z0-9.-]+\.[A-Z]{2,}([A-Z0-9_.~:\/?#\[\]@!$&'()*+,;=-]*[A-Z0-9_~\/?#\[@$&'(*+,=])?)/gi,
+        body = body.replace(/\b(https?:\/\/[A-Z0-9.-]+\.[A-Z]{2,}([A-Z0-9_.~:\/?%#\[\]@!$&'()*+,;=-]*[A-Z0-9_~\/?%#\[@$&'(*+,=])?)/gi,
             "<a href='$1' target='_blank' rel='noreferrer'>$1</a>");
         body = body.replace(/\b([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})\b/gi,
             "<a href='mailto:$1'>$1</a>");
