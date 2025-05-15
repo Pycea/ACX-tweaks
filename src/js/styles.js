@@ -432,13 +432,13 @@ const STYLES = {
                 margin: 0 2em;
                 border-left: 4px solid #ddd;
                 padding: 0 1em;
-                font-size: 13px;
             }
 
             article .available-content blockquote p,
             .comment-list-container blockquote {
                 margin-left: 0;
                 line-height: 24px;
+                font-size: 13px;
                 font-family: Georgia, "Bitstream Charter", serif;
                 font-style: italic;
             }
