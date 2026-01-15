@@ -199,13 +199,7 @@ const STYLES = {
 
             /* Main page */
 
-            .home-page {
-                display: flex;
-            }
-
             .home-page > div:first-of-type > div {
-                margin: 0 20px;
-                width: 100%;
                 padding: 0;
             }
 
