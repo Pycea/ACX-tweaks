@@ -19,7 +19,6 @@
                 "https://www.astralcodexten.com/*"
             ],
             "js": ["js/options.js", "js/util.js", "js/styles.js", "js/content.js", "js/tests.js"],
-            "css": ["skin/css/style.css"],
             "run_at": "document_start"
         }
     ],
@@ -30,6 +29,7 @@
                 "data/empty_comments.json",
                 "data/templates.html",
                 "js/inject.js",
+                "skin/css/style.css",
                 "font/Raleway.ttf"
             ],
             "matches": [

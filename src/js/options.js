@@ -13,12 +13,25 @@ function cssId(key) {
 }
 
 function addStyle(key) {
+    const id = cssId(key);
     const value = STYLES[key];
     const css = value.css;
-    const style = document.createElement("style");
-    style.id = cssId(key);
+    const style = document.getElementById(id) || document.createElement("style");
+    style.id = id;
     style.textContent = css;
     document.documentElement.appendChild(style);
+}
+
+function removeStyle(key) {
+    document.getElementById(cssId(key))?.remove();
+}
+
+function setStyle(key, value) {
+    if (value) {
+        addStyle(key);
+    } else {
+        removeStyle(key);
+    }
 }
 
 
@@ -53,7 +66,6 @@ const useOldStylingOption = {
     default: false,
     hovertext: "Use styling similar to the old blog Slate Star Codex",
     onStart: function(value) {
-        addStyle(this.key);
         this.onValueChange(value);
     },
     onLoad: function(value) {
@@ -67,7 +79,7 @@ const useOldStylingOption = {
         }
     },
     onValueChange: function(value) {
-        document.getElementById(cssId(this.key)).disabled = !value;
+        setStyle(this.key, value);
     },
 };
 
@@ -76,11 +88,10 @@ const fixHeaderOption = {
     default: true,
     hovertext: "Keep the header fixed, so it doesn't keep appearing when scrolling up",
     onStart: function(value) {
-        addStyle(this.key);
         this.onValueChange(value);
     },
     onValueChange: function(value) {
-        document.getElementById(cssId(this.key)).disabled = !value;
+        setStyle(this.key, value);
     },
 };
 
@@ -89,11 +100,10 @@ const zenModeOption = {
     default: false,
     hovertext: "Remove all like, share, and other clutter (use separate option below to disable comments)",
     onStart: function(value) {
-        addStyle(this.key);
         this.onValueChange(value);
     },
     onValueChange: function(value) {
-        document.getElementById(cssId(this.key)).disabled = !value;
+        setStyle(this.key, value);
     },
 };
 
@@ -102,11 +112,10 @@ const smoothScrollOption = {
     default: !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
     hovertext: "Smoothly scroll when moving between comments (uncheck this to disable the animation and jump directly to the comment)",
     onStart: function(value) {
-        addStyle(this.key);
         this.onValueChange(value);
     },
     onValueChange: function(value) {
-        document.getElementById(cssId(this.key)).disabled = !value;
+        setStyle(this.key, value);
     },
 };
 
@@ -205,8 +214,7 @@ const applyCommentStylingOption = {
         return container;
     },
     onStart: function(value) {
-        addStyle(this.key);
-        document.getElementById(cssId(this.key)).disabled = !value;
+        setStyle(this.key, value);
     },
     processComment: function(comment) {
         const commentId = comment.dataset.id;
@@ -229,7 +237,7 @@ const applyCommentStylingOption = {
         }, this);
     },
     onValueChange: function(value) {
-        document.getElementById(cssId(this.key)).disabled = !value;
+        setStyle(this.key, value);
         if (value) {
             optionManager.processAllComments(this.key);
         }
@@ -241,8 +249,7 @@ const showFullDateOption = {
     default: true,
     hovertext: "Show the full date and time when a comment was posted and edited",
     onStart: function(value) {
-        addStyle(this.key);
-        document.getElementById(cssId(this.key)).disabled = !value;
+        setStyle(this.key, value);
     },
     processComment: function(comment) {
         const commentContent = comment.querySelector(":scope > .comment-content");
@@ -338,7 +345,7 @@ const showFullDateOption = {
         applyBetterEditDate();
     },
     onValueChange: function(value) {
-        document.getElementById(cssId(this.key)).disabled = !value;
+        setStyle(this.key, value);
         if (value) {
             optionManager.processAllComments(this.key);
         }
@@ -350,11 +357,10 @@ const use24HourOption = {
     default: false,
     hovertext: "Use 24 hour time for the full date",
     onStart: function(value) {
-        addStyle(this.key);
         this.onValueChange(value);
     },
     onValueChange: function(value) {
-        document.getElementById(cssId(this.key)).disabled = !value;
+        setStyle(this.key, value);
     },
 };
 
@@ -376,8 +382,7 @@ const showHeartsOption = {
         return heartContainer;
     },
     onStart: function(value) {
-        addStyle(this.key);
-        document.getElementById(cssId(this.key)).disabled = value;
+        setStyle(this.key, !value);
     },
     processComment: function(comment) {
         const commentId = comment.dataset.id;
@@ -436,7 +441,7 @@ const showHeartsOption = {
         footer.prepend(heartContainer);
     },
     onValueChange: function(value) {
-        document.getElementById(cssId(this.key)).disabled = value;
+        setStyle(this.key, !value);
         if (value) {
             optionManager.processAllComments(this.key);
         }
@@ -448,8 +453,7 @@ const addParentLinksOption = {
     default: true,
     hovertext: "Add links to scroll to the parent comment, or the top of the comments page for top level comments",
     onStart: function(value) {
-        addStyle(this.key);
-        document.getElementById(cssId(this.key)).disabled = value;
+        setStyle(this.key, !value);
     },
     processComment: function(comment) {
         const footer = comment.querySelector(":scope > .comment-content .comment-footer");
@@ -485,7 +489,7 @@ const addParentLinksOption = {
         });
     },
     onValueChange: function(value) {
-        document.getElementById(cssId(this.key)).disabled = value;
+        setStyle(this.key, !value);
         if (value) {
             optionManager.processAllComments(this.key);
         }
@@ -567,11 +571,10 @@ const removeCommentsOption = {
     default: false,
     hovertext: "Completely remove the comments section from posts",
     onStart: function(value) {
-        addStyle(this.key);
         this.onValueChange(value);
     },
     onValueChange: function(value) {
-        document.getElementById(cssId(this.key)).disabled = !value;
+        setStyle(this.key, value);
     },
 };
 

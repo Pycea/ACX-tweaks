@@ -803,6 +803,15 @@ let localStorageManager;
 
 // called when the page is first loaded
 
+async function loadBaseCss() {
+    logFuncCall();
+    const response = await fetch(chrome.runtime.getURL("skin/css/style.css"));
+    const css = await response.text();
+    const style = document.createElement("style");
+    style.textContent = css;
+    (document.head || document.documentElement).appendChild(style);
+}
+
 function addKeyListener() {
     logFuncCall();
 
@@ -918,6 +927,7 @@ function addKeyListener() {
 async function onStart() {
     logFuncCall();
     debug("pageEvent", "event: onStart");
+    loadBaseCss();
     optionManager.runOnStartHandlers();
     chrome.storage.onChanged.addListener((changes, namespace) => {
         optionManager.processOptionChange(changes, namespace)
@@ -942,6 +952,7 @@ function onPreload() {
 // Setup once the DOM is loaded
 
 function createComments() {
+    logFuncCall();
     let commentListContainer;
     let commentListItems;
     if (PageInfo.pageType === PageType.Post) {
@@ -979,27 +990,8 @@ function createComments() {
     commentListContainer.classList.remove("processing");
 }
 
-function fillCommentCounts() {
-    if (PageInfo.pageType !== PageType.Post) {
-        return;
-    }
-
-    const numComments = Object.keys(CommentManager.commentIdToInfo).length;
-    const commentCountHeader = document.createElement("div");
-    commentCountHeader.classList.add("label");
-    commentCountHeader.textContent = numComments;
-    const commentCountFooter = commentCountHeader.cloneNode(true);
-    const headerCount = document.querySelector(".post-header .post-ufi-comment-button");
-    const footerCount = document.querySelector(".post-footer .post-ufi-comment-button");
-    headerCount.classList.add("has-label");
-    headerCount.classList.remove("no-label");
-    footerCount.classList.add("has-label");
-    footerCount.classList.remove("no-label");
-    headerCount.appendChild(commentCountHeader);
-    footerCount.appendChild(commentCountFooter);
-}
-
 function reverseComments() {
+    logFuncCall();
     const commentContainer = document.querySelector("#top-comment-container");
     const children = commentContainer.querySelectorAll(".children:not(:empty)");
     children.forEach((elem) => {
@@ -1009,6 +1001,7 @@ function reverseComments() {
 }
 
 function addSortButton() {
+    logFuncCall();
     const selector = PageInfo.pageType === PageType.Post ?
         "#comments-for-scroll" : ".comment-list-container";
     const commentContainer = document.querySelector(selector);
@@ -1042,6 +1035,7 @@ function addSortButton() {
 }
 
 function buildComments() {
+    logFuncCall();
     createComments();
     addSortButton();
     optionManager.processAllComments();
@@ -1059,7 +1053,29 @@ function buildComments() {
     }
 }
 
+function fillCommentCounts() {
+    logFuncCall();
+    if (PageInfo.pageType !== PageType.Post) {
+        return;
+    }
+
+    const numComments = Object.keys(CommentManager.commentIdToInfo).length;
+    const commentCountHeader = document.createElement("div");
+    commentCountHeader.classList.add("label");
+    commentCountHeader.textContent = numComments;
+    const commentCountFooter = commentCountHeader.cloneNode(true);
+    const headerCount = document.querySelector(".post-header .post-ufi-comment-button");
+    const footerCount = document.querySelector(".post-footer .post-ufi-comment-button");
+    headerCount.classList.add("has-label");
+    headerCount.classList.remove("no-label");
+    footerCount.classList.add("has-label");
+    footerCount.classList.remove("no-label");
+    headerCount.appendChild(commentCountHeader);
+    footerCount.appendChild(commentCountFooter);
+}
+
 function handleScroll() {
+    logFuncCall();
     if (location.hash) {
         const elem = document.querySelector(location.hash);
         elem?.classList?.add("selected");
@@ -1091,6 +1107,7 @@ async function onLoad() {
         handleScroll();
     }
 }
+
 
 
 // actually do the things
