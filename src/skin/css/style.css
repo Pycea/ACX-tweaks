@@ -285,21 +285,23 @@ blockquote blockquote {
 }
 
 .comment-header .username {
-    color: var(--color-fg-primary);
+    font-size: 15px;
     font-weight: 500;
+    color: var(--color-fg-primary);
 }
 
 .deleted > .comment-content .comment-header .username {
-    font-weight: 400;
+    font-size: 13px;
+    font-weight: normal;
     color: #7b8086;
 }
 
-.comment-post-date-link {
+.comment-header .comment-post-date-link {
     cursor: pointer;
     text-decoration: none;
 }
 
-.comment-post-date-link:hover {
+.comment-header .comment-post-date-link:hover {
     text-decoration: underline;
 }
 

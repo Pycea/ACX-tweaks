@@ -390,10 +390,12 @@ const showHeartsOption = {
         const deleted = commentInfo.deleted;
         const footer = comment.querySelector(":scope > .comment-content .comment-footer");
 
+        if (deleted) {
+            footer.querySelector(".comment-heart")?.remove();
+            return;
+        }
+
         if (footer.querySelector(".comment-heart")) {
-            if (deleted) {
-                footer.querySelector(".comment-heart").remove();
-            }
             return;
         }
 

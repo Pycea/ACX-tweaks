@@ -569,7 +569,11 @@ class Comment {
         });
 
         const replyButton = this.footerElem.querySelector(".reply");
-        replyButton.addEventListener("click", () => this.replyButtonClick());
+        if (this.info.deleted) {
+            replyButton.remove();
+        } else {
+            replyButton.addEventListener("click", () => this.replyButtonClick());
+        }
 
         if (PageInfo.userId !== this.info.userId) {
             this.footerElem.querySelector(".edit").remove();

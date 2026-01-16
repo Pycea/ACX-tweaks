@@ -644,6 +644,10 @@ const STYLES = {
                 color: #888;
             }
 
+            .deleted > .comment-content .comment-header .username {
+                font-size: 12px;
+            }
+
 
 
             /* Comment content */
