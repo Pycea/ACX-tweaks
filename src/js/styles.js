@@ -393,6 +393,12 @@ const STYLES = {
                 border-bottom: none;
             }
 
+            article h2 {
+                font: bold 24px Verdana, sans-serif;
+                color: #333;
+                -webkit-font-smoothing: auto;
+            }
+
             article .available-content p,
             article .available-content li {
                 font: 12px/20px Verdana, sans-serif;
@@ -402,6 +408,11 @@ const STYLES = {
             figcaption,
             .footnote-content {
                 font: 12px/20px Verdana, sans-serif;
+                -webkit-font-smoothing: auto;
+            }
+
+            div:has(> .footnote-hovercard) {
+                border-color: #d5d5d5;
             }
 
             .footnote-hovercard {
@@ -409,11 +420,12 @@ const STYLES = {
             }
 
             article .footnote-anchor {
-                font-size: 12px;
+                margin-left: 2px;
+                font-size: 11px;
             }
 
             article .footnote-number {
-                font-size: 13px;
+                font: 13px Verdana, sans-serif;
             }
 
             article .available-content p a {
