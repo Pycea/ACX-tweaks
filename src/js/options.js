@@ -381,6 +381,12 @@ const showHeartsOption = {
         likeCount.textContent = hearts ? hearts : "";
         return heartContainer;
     },
+    setHeartAria: function(elem, numLikes, isLiked) {
+        const verb = isLiked ? "Unlike" : "Like";
+        const like = numLikes == 1 ? "like" : "likes";
+        elem.setAttribute("aria-pressed", isLiked);
+        elem.setAttribute("aria-label", `${verb} comment, ${numLikes} ${like}`);
+    },
     onStart: function(value) {
         setStyle(this.key, !value);
     },
@@ -411,6 +417,8 @@ const showHeartsOption = {
             commentHeart.disabled = true;
         }
 
+        this.setHeartAria(commentHeart, hearts, userReact);
+
         commentHeart.addEventListener("click", async () => {
             debug("funcs_showHearts.onClick", "showHearts.onClick()");
             const commentInfo = CommentManager.get(commentId);
@@ -424,7 +432,7 @@ const showHeartsOption = {
                 response = await apiCall(url, method, data);
                 error = response.error;
             } catch {
-                error = "Error liking post";
+                error = "Error liking comment";
             }
 
             if (error) {
@@ -437,7 +445,7 @@ const showHeartsOption = {
             likeButton.classList.toggle("liked");
             likeButton.querySelector(".like-count").textContent =
                 commentInfo.hearts ? commentInfo.hearts : "";
-
+            this.setHeartAria(commentHeart, commentInfo.hearts, commentInfo.userReact);
         });
 
         footer.prepend(heartContainer);

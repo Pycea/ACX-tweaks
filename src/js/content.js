@@ -310,7 +310,7 @@ class CommentManager {
             const editedDate = comment.edited_at;
             const deleted = comment.deleted;
             const hearts = comment.reactions?.["❤"] || 0;
-            const userReact = comment.reaction;
+            const userReact = !!comment.reaction;
             const body = comment.body;
             const children = [];
 
