@@ -438,6 +438,7 @@ class Comment {
 
         const commentTemplate = document.querySelector("#comment-template").content.cloneNode(true);
         this.baseElem = commentTemplate.querySelector(".comment");
+        this.anchorElem = this.baseElem.querySelector(".anchor");
         this.contentElem = this.baseElem.querySelector(":scope > .comment-content");
         this.headerElem = this.contentElem.querySelector(".comment-header");
         this.bodyElem = this.contentElem.querySelector(".comment-body");
@@ -534,6 +535,13 @@ class Comment {
         img.src = CommentManager.getAvatarUrl(url, userId, 96, false);
     }
 
+    setCollapseAria(collapsed) {
+        const verb = collapsed ? "Expand" : "Collapse";
+        this.anchorElem.setAttribute("aria-label", `${verb} comment by ${this.info.username}`);
+        this.anchorElem.setAttribute("aria-controls", this.baseElem.id);
+        this.anchorElem.setAttribute("aria-expanded", !collapsed);
+    }
+
     fillCommentElem() {
         const picture = this.contentElem.querySelector(".profile-picture");
         const profileImage = picture.querySelector(".profile-image");
@@ -561,8 +569,10 @@ class Comment {
             commentEdited.remove();
         }
         this.bodyElem.innerHTML = Comment.formatBody(this.info.body);
+        this.setCollapseAria(false);
         this.baseElem.querySelector(":scope > .collapser").addEventListener("click", () => {
             this.baseElem.classList.toggle("collapsed");
+            this.setCollapseAria(this.baseElem.classList.contains("collapsed"));
             if (this.baseElem.getBoundingClientRect().top < 0) {
                 this.baseElem.scrollIntoView();
             }

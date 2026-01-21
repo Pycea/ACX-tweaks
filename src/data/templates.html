@@ -1,5 +1,11 @@
 <template id="comment-template">
     <div class="comment" tabindex="-1">
+        <div class="collapser">
+            <button aria-expanded="true" aria-controls="" aria-label="" class="anchor"></button>
+            <div class="outline">
+                <div class="line"></div>
+            </div>
+        </div>
         <div class="comment-content">
             <div class="profile">
                 <div class="profile-icon">
@@ -33,9 +39,6 @@
             </div>
         </div>
         <div class="children"></div>
-        <div class="collapser">
-            <div class="line"></div>
-        </div>
     </div>
 </template>
 

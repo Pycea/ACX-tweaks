@@ -591,9 +591,14 @@ const STYLES = {
 
             .comment .collapser {
                 top: 41px;
-                padding-top: 8px;
+                margin-top: 8px;
                 width: 41px;
                 height: calc(100% - 41px - 12px - 8px);
+            }
+
+            .comment .collapser .outline {
+                width: 100%;
+                padding: 0;
             }
 
             .comment .collapser .line {

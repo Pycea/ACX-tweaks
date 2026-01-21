@@ -521,7 +521,9 @@ const autoCollapseDepthOption = {
                 collapseDepth === 0 ? collapseMod || depth === 0 :
                     (collapseMod && depth > 0 && depth % collapseDepth === 0 ||
                         collapseDepth === depth);
-        comment.classList.toggle("collapsed", collapse);
+        if (collapse) {
+            comment.querySelector(":scope > .collapser").click();
+        }
     }
 };
 

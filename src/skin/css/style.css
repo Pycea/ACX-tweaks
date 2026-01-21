@@ -143,6 +143,7 @@ blockquote blockquote {
 .comment-footer button:focus-visible,
 .comment-body a:focus-visible,
 .text-input-buttons button:focus-visible,
+.collapser .anchor:focus-visible + .outline,
 [data-test-id="comment-input"] button:focus-visible {
     box-shadow: none;
     outline: #0053b3 auto 1px;
@@ -388,6 +389,19 @@ blockquote blockquote {
     bottom: 0;
     width: 32px;
     cursor: pointer;
+}
+
+.collapser .anchor {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+    padding: 0;
+}
+
+.collapser .outline {
+    margin: 0 auto;
+    padding: 0 8px;
+    height: 100%;
 }
 
 .collapser .line {
