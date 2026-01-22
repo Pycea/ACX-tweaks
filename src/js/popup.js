@@ -91,19 +91,19 @@ function addHovertext(optionElem) {
     function showTooltip() {
         tooltip.classList.remove("hidden");
         const windowHeight = window.innerHeight;
-        const iconSpace = 15;
-        const tooltipHeight = tooltip.getBoundingClientRect().height + 2 * iconSpace;
+        const tooltipMargin = 15;
+        const tooltipHeight = tooltip.getBoundingClientRect().height;
         // icon height is 14, 7 is the middle
         const iconPosition = icon.getBoundingClientRect().top + 7;
         const topSpace = iconPosition - tooltipHeight;
         const bottomSpace = (windowHeight - tooltipHeight) - iconPosition;
 
-        if (topSpace > 8) {
-            tooltip.style.top = `${iconPosition - tooltipHeight}px`;
-        } else if (bottomSpace > 8) {
-            tooltip.style.top = `${iconPosition + 11}px`;
+        if (topSpace > 2 * tooltipMargin) {
+            tooltip.style.top = `${iconPosition - tooltipHeight - tooltipMargin}px`;
+        } else if (bottomSpace > 2 * tooltipMargin) {
+            tooltip.style.top = `${iconPosition + tooltipMargin}px`;
         } else {
-            tooltip.style.top = "8px";
+            tooltip.style.top = `${tooltipMargin}px`;
         }
     }
 
@@ -112,7 +112,7 @@ function addHovertext(optionElem) {
     }
 
     function hideAllTooltips() {
-        document.querySelectorAll(".tooltip").forEach(e => e.classList.add("hidden"));
+        document.querySelectorAll(".tooltip:not(.nohide)").forEach(e => e.classList.add("hidden"));
     }
 
     if (isMobile) {
@@ -158,12 +158,12 @@ function createChangeHandler(optionElem) {
     } else if (input.classList.contains("key")) {
         input.addEventListener("focus", async () => {
             input.blur();
-            document.getElementById("key-input-text").style.display = "inline";
+            document.getElementById("key-input-wrapper").style.display = "inline";
             const keyPress = await getKeyPress();
             setOption(id, keyPress);
             const displayValue = keyDictToString(keyPress);
             input.value = displayValue;
-            document.getElementById("key-input-text").style.display = "none";
+            document.getElementById("key-input-wrapper").style.display = "none";
         });
     } else if (input.classList.contains("text")) {
         input.addEventListener("change", () => setOption(id, input.value));
@@ -206,12 +206,18 @@ function processOption(optionElem) {
 }
 
 function addKeyModal() {
+    const modalWrapper = document.createElement("span");
+    const background = document.createElement("span");
     const modal = document.createElement("span");
+    modalWrapper.id = "key-input-wrapper";
+    modalWrapper.style.display = "none";
+    background.id = "key-input-background";
     modal.id = "key-input-text";
-    modal.classList.add("tooltip", "center");
+    modal.classList.add("tooltip", "center", "nohide");
     modal.textContent = "Press a key or key combo, or click anywhere to disable";
-    modal.style.display = "none";
-    document.getElementById("wrapper").appendChild(modal);
+    modalWrapper.appendChild(background);
+    modalWrapper.appendChild(modal);
+    document.getElementById("wrapper").appendChild(modalWrapper);
 }
 
 function createResetHandler() {

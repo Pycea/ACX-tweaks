@@ -213,7 +213,7 @@
         .tooltip {
             position: fixed;
             background-color: #555;
-            color: white;
+            color: #e8e8e8;
             font-size: 14px;
             left: 8px;
             right: 8px;
@@ -224,17 +224,38 @@
             z-index: 1;
         }
 
+        #key-input-wrapper {
+            position: fixed;
+            overflow: visible;
+        }
+
+        #key-input-background {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            opacity: .5;
+            background-color: black;
+        }
+
+        .tooltip#key-input-text {
+            border: 1px solid #d8d8d8;
+            width: 75vw;
+        }
+
         .tooltip.top {
-            top: 8px;
+            top: 15px;
         }
 
         .tooltip.center {
             top: 50%;
-            transform: translateY(-50%);
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
         .tooltip.bottom {
-            bottom: 8px;
+            bottom: 15px;
         }
 
         /* Dark mode */
@@ -245,7 +266,7 @@
         }
 
         .dark .heading {
-            color: #f4f4f4;
+            color: #e8e8e8;
         }
 
         .dark .help-icon {
@@ -261,13 +282,13 @@
         .dark input[type="number"],
         .dark textarea {
             background-color: #3b3b3b;
-            color: white;
+            color: #e8e8e8;
             border-color: #858585;
         }
 
         .dark select {
             background-color: #3b3b3b;
-            color: white;
+            color: #e8e8e8;
             border-radius: 2px;
             border-color: #767676;
         }
@@ -331,14 +352,6 @@
             margin-top: 20px;
         }
 
-        .mobile #keyboardShortcutSpacer,
-        .mobile #keyboardShortcutHeading,
-        .mobile #allowKeyboardShortcuts,
-        .mobile #shortcutToggle,
-        .mobile #shortcutHolder {
-            display: none;
-        }
-
         .mobile #use24Hour {
             margin-left: 41px;
         }
@@ -395,6 +408,11 @@
 
         .mobile .tooltip {
             font-size: 20px;
+        }
+
+        .mobile .tooltip#key-input-text {
+            border-width: 2px;
+            width: 50vw;
         }
     </style>
 
