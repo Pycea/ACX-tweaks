@@ -218,8 +218,15 @@ const STYLES = {
 
             #main > div > .comments-page > .container > a {
                 margin-top: 0;
+                margin-right: auto;
                 margin-left: 0;
                 font: 16px Georgia, "Bitstream Charter", serif;
+            }
+
+            #main > div > .comments-page > .container > a:focus-visible {
+                border-radius: 4px;
+                outline: 2px solid #0053b3;
+                outline-offset: 1px;
             }
 
 
@@ -486,24 +493,28 @@ const STYLES = {
                 margin-bottom: 12px;
             }
 
-            #entry .comments-page .comment-toggle-container {
+            .return-to-thread-link {
+                font-family: Verdana, sans-serif;
+            }
+
+            #entry #comment-toggle-container {
                 margin-bottom: 12px;
             }
 
-            .comment-toggle-container .comment-toggle {
+            #comment-toggle-container .comment-toggle {
                 font: 14px Verdana, sans-serif;
             }
 
-            .comment-toggle-container .segmented-control {
+            #comment-toggle-container .segmented-control {
                 border-color: #ddd;
                 background-color: #e8e8e8;
             }
 
-            .comment-toggle-container .segmented-control button[data-selected="true"] {
+            #comment-toggle-container .segmented-control button[data-selected="true"] {
                 background-color: #fff;
             }
 
-            .comment-toggle-container button {
+            #comment-toggle-container button {
                 font: 12px Verdana, sans-serif;
             }
 

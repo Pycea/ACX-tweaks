@@ -91,7 +91,7 @@ blockquote blockquote {
 
 /* Comment ordering */
 
-.comment-toggle-container {
+#comment-toggle-container {
     display: flex;
     flex-direction: row;
     gap: 0;

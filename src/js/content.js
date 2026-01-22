@@ -1016,11 +1016,16 @@ function reverseComments() {
 
 function addSortButton() {
     logFuncCall();
+
+    if (document.querySelector("#comment-toggle-container")) {
+        return;
+    }
+
     const selector = PageInfo.pageType === PageType.Post ?
         "#comments-for-scroll" : ".comment-list-container";
     const commentContainer = document.querySelector(selector);
 
-    const toggleTemplate = document.querySelector("#comment-toggle-templage").content.cloneNode(true);
+    const toggleTemplate = document.querySelector("#comment-toggle-template").content.cloneNode(true);
     const sortOldButton = toggleTemplate.querySelector(".sort-old");
     const sortNewButton = toggleTemplate.querySelector(".sort-new");
 
