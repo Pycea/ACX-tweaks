@@ -436,7 +436,7 @@ class Comment {
         this.depth = depth;
         this.info = CommentManager.get(this.id);
 
-        const commentTemplate = document.querySelector("#comment-template").content.cloneNode(true);
+        const commentTemplate = cloneTemplate("comment-template");
         this.baseElem = commentTemplate.querySelector(".comment");
         this.anchorElem = this.baseElem.querySelector(".anchor");
         this.contentElem = this.baseElem.querySelector(":scope > .comment-content");
@@ -663,7 +663,7 @@ class Comment {
     }
 
     replyButtonClick() {
-        const replyTemplate = document.querySelector("#reply-template").content.cloneNode(true);
+        const replyTemplate = cloneTemplate("reply-template");
         const replyBase = replyTemplate.querySelector(".reply-container");
         const picture = replyTemplate.querySelector(".profile-picture");
         const profileImage = picture.querySelector(".profile-image");
@@ -733,7 +733,7 @@ class Comment {
     }
 
     editButtonClick() {
-        const editTemplate = document.querySelector("#edit-template").content.cloneNode(true);
+        const editTemplate = cloneTemplate("edit-template");
         const editBase = editTemplate.querySelector(".edit-container");
         const editInput = editBase.querySelector(".text-input");
         const postEditButton = editBase.querySelector(".edit-post");
@@ -1006,7 +1006,7 @@ function addSortButton() {
         "#comments-for-scroll" : ".comment-list-container";
     const commentContainer = document.querySelector(selector);
 
-    const toggleTemplate = document.querySelector("#comment-toggle-template").content.cloneNode(true);
+    const toggleTemplate = cloneTemplate("comment-toggle-template");
     const sortOldButton = toggleTemplate.querySelector(".sort-old");
     const sortNewButton = toggleTemplate.querySelector(".sort-new");
 

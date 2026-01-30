@@ -369,7 +369,7 @@ const showHeartsOption = {
     default: false,
     hovertext: "Add hearts back to comments. Only people using an extension that adds back hearts will be able to like comments or see them, so they won't have the activity they did before.",
     heartHtml: function(hearts, userReact, ownComment) {
-        const heartContainer = document.querySelector("#heart-template").content.cloneNode(true);
+        const heartContainer = cloneTemplate("heart-template");
         const likeButton = heartContainer.querySelector(".like-button");
         const likeCount = heartContainer.querySelector(".like-count");
         if (userReact) {

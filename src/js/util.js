@@ -81,6 +81,10 @@ async function loadTemplate(url) {
     return template;
 }
 
+function cloneTemplate(id) {
+    return document.querySelector(`#${id}`).content.cloneNode(true);
+}
+
 function reverseCommentOrder(commentList) {
     commentList.reverse();
     for (const comment of commentList) {
