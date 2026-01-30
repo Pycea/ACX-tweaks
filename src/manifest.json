@@ -23,8 +23,7 @@
                 "js/options.js",
                 "js/util.js",
                 "js/styles.js",
-                "js/content.js",
-                "js/tests.js"
+                "js/content.js"
             ],
             "run_at": "document_start"
         }
