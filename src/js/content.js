@@ -609,15 +609,6 @@ class Comment {
         }
     }
 
-    postCommentApi(text) {
-        const url = `https://www.astralcodexten.com/api/v1/post/${PageInfo.postId}/comment`;
-        const data = {
-            body: text,
-            parent_id: this.id,
-        };
-        return apiCall(url, "POST", data);
-    }
-
     async postReply() {
         const replyInput = this.textEditContainer.querySelector(".reply-container .text-input");
         const postReplyButton =
@@ -633,7 +624,7 @@ class Comment {
         let data;
         let error;
         try {
-            data = await this.postCommentApi(body);
+            data = await API.postComment(PageInfo.postId, this.id, body);
             error = data.errors?.[0]?.msg;
         } catch {
             error = "Post reply failed";
@@ -696,11 +687,6 @@ class Comment {
         replyInput.focus();
     }
 
-    editCommentApi(text) {
-        const url = `https://www.astralcodexten.com/api/v1/comment/${this.id}`;
-        return apiCall(url, "PATCH", {body: text});
-    }
-
     async editComment() {
         const editInput = this.textEditContainer.querySelector(".edit-container .text-input");
         const postEditButton = this.textEditContainer.querySelector(".edit-container .edit-post");
@@ -714,7 +700,7 @@ class Comment {
 
         let data;
         try {
-            data = await this.editCommentApi(body);
+            data = await API.editComment(this.id, body);
         } catch (error) {
             debug("commentActionEdit", "edit failed", error);
             editInput.disabled = false;
@@ -773,11 +759,6 @@ class Comment {
         editInput.focus();
     }
 
-    deleteCommentApi() {
-        const url = `https://www.astralcodexten.com/api/v1/comment/${this.id}`;
-        return apiCall(url, "DELETE");
-    }
-
     async deleteComment() {
         const confirmDelete =
             confirm("Are you sure you want to delete this comment? This action cannot be reversed.");
@@ -789,7 +770,7 @@ class Comment {
         const profileImage = this.contentElem.querySelector(".profile-image");
 
         try {
-            await this.deleteCommentApi();
+            await API.deleteComment(this.id);
         } catch (error) {
             debug("commentActionDelete", "delete failed", error);
             alert("Post deletion failed");
@@ -1137,14 +1118,14 @@ async function doAllSetup() {
 
     onStart();
 
-    localStorageManager = new LocalStorageManager(LOCAL_DATA_KEY, getPostName());
     const preloads = await getPreloads();
+    localStorageManager = new LocalStorageManager(LOCAL_DATA_KEY, preloads.slug);
     PageInfo.init(preloads, localStorageManager);
 
     onPreload();
 
     if (PageInfo.pageType === PageType.Post) {
-        CommentManager.init(await getPostComments(PageInfo.commentSort));
+        CommentManager.init(await API.getPostComments(PageInfo.postId, PageInfo.commentSort));
     } else if (PageInfo.pageType === PageType.Comments) {
         if (PageInfo.commentSort !== PageInfo.defaultSort) {
             reverseCommentOrder(preloads.initialComments);

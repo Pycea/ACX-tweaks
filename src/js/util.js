@@ -72,29 +72,6 @@ function getPreloads() {
     });
 }
 
-function apiCall(url, method="GET", data={}, timeout=10) {
-    logFuncCall();
-    debug("fetchCall", url, data, method);
-    const options = {
-        method: method,
-        headers: {"Content-Type": "application/json"},
-        signal: AbortSignal.timeout(timeout * 1000),
-    };
-    if (method !== "GET" && method !== "HEAD") {
-        options.body = JSON.stringify(data);
-    }
-    return fetch(url, options)
-        .then(response => response.json())
-        .then((data) => {
-            debug("fetchResponse", data);
-            return data;
-        })
-        .catch((error) => {
-            debug("fetchError", error);
-            throw error;
-        });
-}
-
 async function loadTemplate(url) {
     logFuncCall();
     const res = await fetch(url);
@@ -102,31 +79,6 @@ async function loadTemplate(url) {
     const template = document.createElement("template");
     template.innerHTML = text.trim();
     return template;
-}
-
-async function getPostData() {
-    logFuncCall();
-    const url = `https://www.astralcodexten.com/api/v1/posts/${getPostName()}`;
-    const data = await apiCall(url);
-    return data;
-}
-
-async function getPostComments(order) {
-    logFuncCall();
-    const postData = await getPostData();
-    const postId = postData.id;
-    const sort = order === SortOrder.NewFirst ? "most_recent_first" : "oldest_first";
-    const url = `https://www.astralcodexten.com/api/v1/post/${postId}/comments?block=false&sort=${sort}&all_comments=true`;
-    const data = await apiCall(url);
-    return data.comments;
-}
-
-function getPostName() {
-    const match = window.location.pathname.match(/\/p\/([^/]+)/);
-    if (match) {
-        return match[1];
-    }
-    return null;
 }
 
 function reverseCommentOrder(commentList) {

@@ -422,14 +422,12 @@ const showHeartsOption = {
         commentHeart.addEventListener("click", async () => {
             debug("funcs_showHearts.onClick", "showHearts.onClick()");
             const commentInfo = CommentManager.get(commentId);
-            const url = `https://www.astralcodexten.com/api/v1/comment/${commentId}/reaction`;
-            const method = commentInfo.userReact ? "DELETE" : "POST";
-            const data = {reaction: "❤"};
+            const action = commentInfo.userReact ? API.unlikeComment : API.likeComment;
 
             let response;
             let error;
             try {
-                response = await apiCall(url, method, data);
+                response = await action(commentId);
                 error = response.error;
             } catch {
                 error = "Error liking comment";

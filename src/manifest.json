@@ -18,7 +18,14 @@
             "matches": [
                 "https://www.astralcodexten.com/*"
             ],
-            "js": ["js/options.js", "js/util.js", "js/styles.js", "js/content.js", "js/tests.js"],
+            "js": [
+                "js/api.js",
+                "js/options.js",
+                "js/util.js",
+                "js/styles.js",
+                "js/content.js",
+                "js/tests.js"
+            ],
             "run_at": "document_start"
         }
     ],
