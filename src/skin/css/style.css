@@ -782,6 +782,10 @@ blockquote blockquote {
     color: var(--color-button-secondary-fg-hover);
 }
 
+#report-confirm-modal .buttons .cancel:focus-visible {
+    box-shadow: var(--focus-ring);
+}
+
 #report-confirm-modal .buttons .submit {
     background-color: var(--color-button-destructive-bg);
     color: var(--color-button-destructive-fg);
@@ -790,4 +794,8 @@ blockquote blockquote {
 #report-confirm-modal .buttons .submit:hover {
     background-color: var(--color-button-destructive-bg-hover);
     color: var(--color-button-destructive-fg-hover);
+}
+
+#report-confirm-modal .buttons .submit:focus-visible {
+    box-shadow: var(--button-highlight), var(--error-ring);
 }
