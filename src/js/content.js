@@ -314,6 +314,7 @@ class CommentManager {
             const hearts = comment.reactions?.["❤"] || 0;
             const userReact = !!comment.reaction;
             const userReported = comment.reported_by_user;
+            const bannedForComment = comment.user_banned_for_comment;
             const body = comment.body;
             const permalink = `${PageInfo.url}/comment/${commentId}`;
             const children = [];
@@ -335,6 +336,7 @@ class CommentManager {
                 hearts,
                 userReact,
                 userReported,
+                bannedForComment,
                 body,
                 permalink,
                 children,
@@ -384,6 +386,7 @@ class CommentManager {
         hearts=0,
         userReact=false,
         userReported=false,
+        bannedForComment=false,
         body,
         permalink,
         children=[]
@@ -404,6 +407,7 @@ class CommentManager {
             hearts,
             userReact,
             userReported,
+            bannedForComment,
             body,
             permalink,
             children,
@@ -562,9 +566,10 @@ class Comment {
         }
     }
 
-    addReportedLine() {
-        const reportLine = cloneTemplate("reported-comment-template");
-        this.commentMainElem.insertBefore(reportLine, this.bodyElem);
+    addHiddenReasonLine(reason) {
+        const hiddenLine = cloneTemplate("hidden-comment-template");
+        this.commentMainElem.insertBefore(hiddenLine, this.bodyElem);
+        this.commentMainElem.querySelector(".reason").textContent = reason;
         this.bodyElem.classList.add("hidden");
 
         const toggleButton = this.commentMainElem.querySelector(".show-toggle");
@@ -573,6 +578,14 @@ class Comment {
             this.bodyElem.classList.toggle("hidden");
             toggleButton.textContent = this.bodyElem.classList.contains("hidden") ? "Show" : "Hide";
         });
+    }
+
+    addBannedLine() {
+        this.addHiddenReasonLine("User was banned for this comment.");
+    }
+
+    addReportedLine() {
+        this.addHiddenReasonLine("You reported this comment.");
     }
 
     setUpFooterMenu() {
@@ -603,7 +616,8 @@ class Comment {
             modal.show();
         });
 
-        if (this.info.userId === PageInfo.userId || this.info.userReported) {
+        if (this.info.userId === PageInfo.userId || this.info.userReported ||
+                this.info.bannedForComment) {
             const menuContent = this.footerMenu.querySelector(".footer-menu-content");
             const divider = menuContent.querySelector(".report-divider");
             menuContent.removeChild(reportButton);
@@ -644,7 +658,9 @@ class Comment {
             this.toggleCollapse();
         });
 
-        if (this.info.userReported) {
+        if (this.info.bannedForComment) {
+            this.addBannedLine();
+        } else if (this.info.userReported) {
             this.addReportedLine();
         }
 

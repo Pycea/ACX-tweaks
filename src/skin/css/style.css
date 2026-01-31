@@ -142,7 +142,7 @@ blockquote blockquote {
 .comment-header a:focus-visible,
 .comment-footer button:focus-visible,
 .comment-body a:focus-visible,
-.reported-line .show-toggle:focus-visible,
+.reason-line .show-toggle:focus-visible,
 .text-input-buttons button:focus-visible,
 .collapser .anchor:focus-visible + .outline,
 [data-test-id="comment-input"] button:focus-visible,
@@ -308,7 +308,7 @@ blockquote blockquote {
     text-decoration: underline;
 }
 
-.reported-line {
+.reason-line {
     margin-top: 4px;
     margin-bottom: -4px;
     font: 15px/20px var(--font-family-text);
@@ -504,7 +504,7 @@ blockquote blockquote {
 }
 
 .comment.collapsed > .children,
-.comment.collapsed .reported-line {
+.comment.collapsed .reason-line {
     display: none;
 }
 

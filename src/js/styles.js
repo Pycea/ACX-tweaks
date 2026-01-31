@@ -676,7 +676,7 @@ const STYLES = {
                 font-size: 12px;
             }
 
-            .reported-line {
+            .reason-line {
                 font: 12px/24px Verdana, sans-serif;
             }
 
