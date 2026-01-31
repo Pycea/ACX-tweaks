@@ -622,9 +622,7 @@ class Comment {
         }
 
         this.connectFooterMenu();
-        footerMeatball.addEventListener("click", () => {
-            this.footerMenu.show();
-        });
+        footerMeatball.addEventListener("click", () => this.footerMenu.show());
 
         if (this.info.deleted) {
             const profileContainer = this.headerElem.querySelector(".user-profile-link-container");
@@ -839,23 +837,14 @@ class ReportModal {
         this.categoryElem.addEventListener("change", () => this.validateInput());
         this.reasonElem.addEventListener("input", () => this.validateInput());
 
+
         this.submitElem.addEventListener("click", async () => {
-            const category = this.categoryElem.value || null;
-            const reason = this.reasonElem.value || null;
-            try {
-                await API.reportUser(PageInfo.pubId, commentId, reason, category);
-            } catch (e) {
-                const error = e.message || "Report submission failed";
-                debug("commentActionDelete", "report failed", error);
-                showUserError(error);
-                return;
-            }
+            const confirmModal = new ReportConfirmModal(this);
+            confirmModal.show();
         });
 
-        window.addEventListener("wheel", this.preventScroll, { passive: false });
-
-        this.closeButton.addEventListener("click", this.modal.close.bind(this.modal));
-        this.modal.addEventListener("close", this.close.bind(this));
+        this.closeButton.addEventListener("click", () => this.modal.close());
+        this.modal.addEventListener("close", () => this.onClose());
     }
 
     createModal() {
@@ -871,17 +860,70 @@ class ReportModal {
         this.submitElem.disabled = !enabled;
     }
 
+    async submitReport() {
+        const category = this.categoryElem.value || null;
+        const reason = this.reasonElem.value || null;
+        try {
+            await API.reportUser(PageInfo.pubId, this.commentId, reason, category);
+            this.modal.close();
+            await new Promise(r => setTimeout(r, 0));
+            alert("Your report was submitted");
+        } catch (e) {
+            const error = e.message || "Report submission failed";
+            debug("commentActionReport", "report failed", error);
+            showUserError(error);
+            return;
+        }
+    }
+
     preventScroll(e) {
         e.preventDefault();
+    }
+
+    show() {
+        window.addEventListener("wheel", this.preventScroll, { passive: false });
+        this.modal.showModal();
+    }
+
+    onClose() {
+        document.body.removeChild(this.modal);
+        window.removeEventListener("wheel", this.preventScroll);
+    }
+}
+
+class ReportConfirmModal {
+    constructor(reportModal) {
+        this.reportModal = reportModal;
+        this.modal = this.createModal();
+        this.cancelButton = this.modal.querySelector(".buttons .cancel");
+        this.submitButton = this.modal.querySelector(".buttons .submit");
+
+        this.cancelButton.addEventListener("click", () => this.modal.close());
+        this.submitButton.addEventListener("click", async () => {
+            this.modal.close();
+            await new Promise(r => setTimeout(r, 0));
+            this.reportModal.submitReport();
+        });
+        this.modal.addEventListener("close", this.onClose.bind(this));
+
+        if (this.reportModal.modal.classList.contains("substack")) {
+            this.modal.classList.remove("acx");
+            this.modal.classList.add("substack");
+        }
+    }
+
+    createModal() {
+        const template = cloneTemplate("report-confirm-modal-template");
+        document.body.appendChild(template);
+        return document.querySelector("#report-confirm-modal");
     }
 
     show() {
         this.modal.showModal();
     }
 
-    close() {
+    onClose() {
         document.body.removeChild(this.modal);
-        window.removeEventListener("wheel", this.preventScroll);
     }
 }
 

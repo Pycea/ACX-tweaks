@@ -544,6 +544,7 @@ blockquote blockquote {
     gap: 20px;
     position: relative;
     box-sizing: border-box;
+    box-shadow: var(--shadow-lg);
     border: 1px solid #0002;
     border-radius: 20px;
     width: 440px;
@@ -700,4 +701,71 @@ blockquote blockquote {
     background-color: var(--color-button-disabled-bg);
     pointer-events: none;
     color: var(--color-button-disabled-fg);
+}
+
+/* Report confirm modal */
+
+#report-confirm-modal.acx .report-substack,
+#report-confirm-modal.substack .report-acx {
+    display: none;
+}
+
+#report-confirm-modal {
+    box-sizing: border-box;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid #0002;
+    border-radius: 20px;
+    width: 440px;
+    padding: 20px;
+    font: 15px/20px var(--font-family-text);
+    color: var(--color-fg-secondary);
+}
+
+#report-confirm-modal::backdrop {
+    background-color: #0008;
+}
+
+#report-confirm-modal .report-confirm-header {
+    margin-bottom: 4px;
+    font: 17px/24px var(--font-family-text);
+    font-weight: 600;
+    color: var(--color-fg-primary);
+}
+
+#report-confirm-modal .buttons {
+    display: flex;
+    justify-content: right;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+#report-confirm-modal .buttons button {
+    transition: var(--animate-hover);
+    border: none;
+    border-radius: 8px;
+    height: 40px;
+    padding: 0 16px;
+    cursor: pointer;
+    font: 15px var(--font-family-text);
+    font-weight: 600;
+}
+
+#report-confirm-modal .buttons .cancel {
+    background-color: var(--color-button-secondary-bg);
+    color: var(--color-button-secondary-fg);
+}
+
+#report-confirm-modal .buttons .cancel:hover {
+    background-color: var(--color-button-secondary-bg-hover);
+    color: var(--color-button-secondary-fg-hover);
+}
+
+#report-confirm-modal .buttons .submit {
+    background-color: var(--color-button-destructive-bg);
+    color: var(--color-button-destructive-fg);
+}
+
+#report-confirm-modal .buttons .submit:hover {
+    background-color: var(--color-button-destructive-bg-hover);
+    color: var(--color-button-destructive-fg-hover);
 }
