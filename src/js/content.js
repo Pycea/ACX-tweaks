@@ -313,6 +313,7 @@ class CommentManager {
             const deleted = comment.deleted;
             const hearts = comment.reactions?.["❤"] || 0;
             const userReact = !!comment.reaction;
+            const userReported = comment.reported_by_user;
             const body = comment.body;
             const permalink = `${PageInfo.url}/comment/${commentId}`;
             const children = [];
@@ -333,6 +334,7 @@ class CommentManager {
                 deleted,
                 hearts,
                 userReact,
+                userReported,
                 body,
                 permalink,
                 children,
@@ -381,6 +383,7 @@ class CommentManager {
         deleted=false,
         hearts=0,
         userReact=false,
+        userReported=false,
         body,
         permalink,
         children=[]
@@ -400,6 +403,7 @@ class CommentManager {
             deleted: deleted || !userId,
             hearts,
             userReact,
+            userReported,
             body,
             permalink,
             children,
@@ -446,6 +450,7 @@ class Comment {
         this.baseElem = commentTemplate.querySelector(".comment");
         this.anchorElem = this.baseElem.querySelector(".anchor");
         this.contentElem = this.baseElem.querySelector(":scope > .comment-content");
+        this.commentMainElem = this.contentElem.querySelector(".comment-main");
         this.headerElem = this.contentElem.querySelector(".comment-header");
         this.bodyElem = this.contentElem.querySelector(".comment-body");
         this.footerElem = this.contentElem.querySelector(".comment-footer");
@@ -549,6 +554,19 @@ class Comment {
         this.anchorElem.setAttribute("aria-expanded", !collapsed);
     }
 
+    addReportedLine() {
+        const reportLine = cloneTemplate("reported-comment-template");
+        this.commentMainElem.insertBefore(reportLine, this.bodyElem);
+        this.bodyElem.classList.add("hidden");
+
+        const toggleButton = this.commentMainElem.querySelector(".show-toggle");
+        toggleButton.addEventListener("click", (e) => {
+            e.preventDefault();
+            this.bodyElem.classList.toggle("hidden");
+            toggleButton.textContent = this.bodyElem.classList.contains("hidden") ? "Show" : "Hide";
+        });
+    }
+
     connectFooterMenu() {
         const permalinkButton = this.footerMenu.querySelector(".permalink");
         const reportButton = this.footerMenu.querySelector(".report");
@@ -602,6 +620,10 @@ class Comment {
                 this.baseElem.scrollIntoView();
             }
         });
+
+        if (this.info.userReported) {
+            this.addReportedLine();
+        }
 
         const replyButton = this.footerElem.querySelector(".reply");
         if (this.info.deleted) {
