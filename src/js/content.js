@@ -823,6 +823,7 @@ class ReportModal {
     constructor(commentId) {
         this.commentId = commentId;
         this.modal = this.createModal();
+        this.closeButton = this.modal.querySelector(".report-button-close");
         this.substackReportElem = this.modal.querySelector(".report-to-substack");
         this.categoryElem = this.modal.querySelector(".reason-category");
         this.reasonElem = this.modal.querySelector(".reason");
@@ -853,6 +854,7 @@ class ReportModal {
 
         window.addEventListener("wheel", this.preventScroll, { passive: false });
 
+        this.closeButton.addEventListener("click", this.modal.close.bind(this.modal));
         this.modal.addEventListener("close", this.close.bind(this));
     }
 

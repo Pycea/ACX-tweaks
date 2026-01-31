@@ -542,12 +542,31 @@ blockquote blockquote {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    position: relative;
     box-sizing: border-box;
     border: 1px solid #0002;
     border-radius: 20px;
     width: 440px;
     padding: 20px;
     background-color: #fff;
+}
+
+.report-modal-wrapper .report-button-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.report-modal-wrapper .report-button-close svg {
+    transition: var(--animate-hover);
+    stroke: var(--color-button-quaternary-fg);
+}
+
+.report-modal-wrapper .report-button-close svg:hover {
+    stroke: var(--color-button-quaternary-fg-hover);
 }
 
 .report-modal-wrapper > div {

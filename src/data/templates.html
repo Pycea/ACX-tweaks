@@ -1,7 +1,7 @@
 <template id="comment-template">
     <div class="comment" tabindex="-1">
         <div class="collapser">
-            <button aria-expanded="true" aria-controls="" aria-label="" class="anchor"></button>
+            <button type="button" aria-expanded="true" aria-controls="" aria-label="" class="anchor"></button>
             <div class="outline">
                 <div class="line"></div>
             </div>
@@ -31,16 +31,16 @@
                 </div>
                 <div class="comment-body"></div>
                 <div class="comment-footer">
-                    <button class="reply">Reply</button>
-                    <button class="edit">Edit</button>
-                    <button class="delete">Delete</button>
-                    <button class="meatball" aria-label="Ellipsis">•••</button>
+                    <button type="button" class="reply">Reply</button>
+                    <button type="button" class="edit">Edit</button>
+                    <button type="button" class="delete">Delete</button>
+                    <button type="button" class="meatball" aria-label="Ellipsis">•••</button>
                     <div class="footer-menu-wrapper">
                         <dialog class="footer-menu" closedby="any">
                             <div class="footer-menu-content">
-                                <button class="permalink">Copy link</button>
+                                <button type="button" class="permalink">Copy link</button>
                                 <hr class="divider">
-                                <button class="report">Report</button>
+                                <button type="button" class="report">Report</button>
                             </div>
                         </dialog>
                     </div>
@@ -64,14 +64,14 @@
             <textarea class="text-input" rows="5" placeholder="Write a comment..."></textarea>
             <div class="comment-error"></div>
             <div class="text-input-buttons">
-                <button class="reply-post primary" disabled>
+                <button type="button" class="reply-post primary" disabled>
                     <div class="button-text">Reply</div>
                     <svg xmlns="http://www.w3.org/2000/svg" class="spinner-animate" width="20" height="20" viewBox="0 0 24 24" vector-effect="non-scaling-stroke">
                         <circle cx="12" cy="12" r="11" stroke-width="2.5" fill="none" stroke="#c3cdda" />
                         <path d="M12,1 a11,11 0 0,1 11,11" fill="none" stroke="#7b8086" stroke-width="2.5" />
                     </svg>
                 </button>
-                <button class="reply-cancel secondary">Cancel</button>
+                <button type="button" class="reply-cancel secondary">Cancel</button>
             </div>
         </div>
     </div>
@@ -83,21 +83,21 @@
             <textarea class="text-input"></textarea>
             <div class="comment-error"></div>
             <div class="text-input-buttons">
-                <button class="edit-post primary">
+                <button type="button" class="edit-post primary">
                     <div class="button-text">Save</div>
                     <svg xmlns="http://www.w3.org/2000/svg" class="spinner-animate" width="20" height="20" viewBox="0 0 24 24" vector-effect="non-scaling-stroke">
                         <circle cx="12" cy="12" r="11" stroke-width="2.5" fill="none" stroke="#c3cdda" />
                         <path d="M12,1 a11,11 0 0,1 11,11" fill="none" stroke="#7b8086" stroke-width="2.5" />
                     </svg>
                 </button>
-                <button class="edit-cancel secondary">Cancel</button>
+                <button type="button" class="edit-cancel secondary">Cancel</button>
             </div>
         </div>
     </div>
 </template>
 
 <template id="heart-template">
-    <button class="comment-heart" aria-pressed="false" aria-label="Like comment">
+    <button type="button" class="comment-heart" aria-pressed="false" aria-label="Like comment">
         <a class="like-button">
             <div class="reaction-container">
                 <svg aria-hidden="true" role="img" width="24" height="24" viewBox="0 0 24 24" fill="#000000" stroke-width="1" stroke="#000" xmlns="http://www.w3.org/2000/svg" class="animation">
@@ -126,8 +126,8 @@
     <div id="comment-toggle-container" class="container">
         <div class="comment-toggle">Sort:</div>
         <div class="segmented-control">
-            <button class="sort-old">Old first</button>
-            <button class="sort-new">New first</button>
+            <button type="button" class="sort-old">Old first</button>
+            <button type="button" class="sort-new">New first</button>
         </div>
     </div>
 </template>
@@ -135,6 +135,12 @@
 <template id="report-modal-template">
     <dialog id="report-modal" class="acx" closedby="any">
         <div class="report-modal-wrapper">
+            <button type="button" aria-label="close" title="Close" class="report-button-close">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x">
+                    <path d="M18 6 6 18"></path>
+                    <path d="m6 6 12 12"></path>
+                </svg>
+            </button>
             <div class="report-acx">
                 <div class="title">Report to the Astral Codex Ten admins</div>
                 <div class="text">Your report and profile will be shared with the admins of <strong>Astral Codex Ten</strong>, since at Substack we believe publication owners are best able to moderate their communities.</div>
@@ -176,7 +182,7 @@
                 </div>
                 <textarea class="reason" placeholder="Describe why you're reporting this..." row="4"></textarea>
             </div>
-            <button class="submit" disabled>Submit</button>
+            <button type="button" class="submit" disabled>Submit</button>
         </div>
     </dialog>
 </template>
