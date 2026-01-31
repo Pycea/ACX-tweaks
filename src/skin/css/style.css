@@ -417,8 +417,10 @@ blockquote blockquote {
     gap: 2px;
 }
 
-.footer-menu-content > button {
-    display: block;
+.footer-menu-content button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     transition: var(--animate-hover);
     border: none;
     border-radius: 4px;
@@ -427,10 +429,19 @@ blockquote blockquote {
     cursor: pointer;
     font: 500 13px/24px var(--font-family-text);
     text-align: left;
+    color: var(--color-fg-primary);
 }
 
-.footer-menu-content > button:hover {
+.footer-menu-content button:hover {
     background-color: var(--color-bg-elevated-secondary);
+}
+
+.footer-menu-content .report svg {
+    color: var(--color-semantic-error-bg-primary);
+}
+
+.footer-menu-content .report {
+    color: var(--color-semantic-error-fg-primary);
 }
 
 .footer-menu-content .expand {
@@ -442,7 +453,7 @@ blockquote blockquote {
 }
 
 .collapsed .footer-menu-content .expand {
-    display: block;
+    display: flex;
 }
 
 .footer-menu-content > .divider {
