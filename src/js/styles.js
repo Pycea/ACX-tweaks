@@ -676,6 +676,10 @@ const STYLES = {
                 font-size: 12px;
             }
 
+            .reported-line {
+                font: 12px/24px Verdana, sans-serif;
+            }
+
 
 
             /* Comment content */
@@ -773,6 +777,14 @@ const STYLES = {
             [data-test-id="comment-input"] button[type="button"]:hover,
             .text-input-container .text-input-buttons button.secondary:hover {
                 background-color: #ccc;
+            }
+
+            .footer-menu {
+                background-color: white;
+            }
+
+            .footer-menu-content button:hover {
+                background-color: #d8d8d8;
             }
 
 
