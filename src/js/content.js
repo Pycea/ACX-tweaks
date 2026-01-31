@@ -599,7 +599,7 @@ class Comment {
         reportButton.addEventListener("click", () => {
             this.footerMenu.close();
 
-            const modal = new ReportModal(this.id);
+            const modal = new ReportModal(this);
             modal.show();
         });
 
@@ -863,8 +863,9 @@ class Comment {
 }
 
 class ReportModal {
-    constructor(commentId) {
-        this.commentId = commentId;
+    constructor(comment) {
+        this.comment = comment;
+        this.commentId = this.comment.id;
         this.modal = this.createModal();
         this.closeButton = this.modal.querySelector(".report-button-close");
         this.substackReportElem = this.modal.querySelector(".report-to-substack");
@@ -910,6 +911,7 @@ class ReportModal {
         const reason = this.reasonElem.value || null;
         try {
             await API.reportUser(PageInfo.pubId, this.commentId, reason, category);
+            this.comment.addReportedLine();
             this.modal.close();
             await new Promise(r => setTimeout(r, 0));
             alert("Your report was submitted");
