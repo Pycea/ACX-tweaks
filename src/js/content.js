@@ -554,6 +554,14 @@ class Comment {
         this.anchorElem.setAttribute("aria-expanded", !collapsed);
     }
 
+    toggleCollapse() {
+        this.baseElem.classList.toggle("collapsed");
+        this.setCollapseAria(this.baseElem.classList.contains("collapsed"));
+        if (this.baseElem.getBoundingClientRect().top < 0) {
+            this.baseElem.scrollIntoView();
+        }
+    }
+
     addReportedLine() {
         const reportLine = cloneTemplate("reported-comment-template");
         this.commentMainElem.insertBefore(reportLine, this.bodyElem);
@@ -569,10 +577,22 @@ class Comment {
 
     connectFooterMenu() {
         const permalinkButton = this.footerMenu.querySelector(".permalink");
+        const collapseButton = this.footerMenu.querySelector(".collapse");
+        const expandButton = this.footerMenu.querySelector(".expand");
         const reportButton = this.footerMenu.querySelector(".report");
 
         permalinkButton.addEventListener("click", async () => {
             await navigator.clipboard.writeText(this.info.permalink);
+            this.footerMenu.close();
+        });
+
+        collapseButton.addEventListener("click", () => {
+            this.toggleCollapse();
+            this.footerMenu.close();
+        });
+
+        expandButton.addEventListener("click", () => {
+            this.toggleCollapse();
             this.footerMenu.close();
         });
 
@@ -614,11 +634,7 @@ class Comment {
         this.bodyElem.innerHTML = Comment.formatBody(this.info.body);
         this.setCollapseAria(false);
         this.baseElem.querySelector(":scope > .collapser").addEventListener("click", () => {
-            this.baseElem.classList.toggle("collapsed");
-            this.setCollapseAria(this.baseElem.classList.contains("collapsed"));
-            if (this.baseElem.getBoundingClientRect().top < 0) {
-                this.baseElem.scrollIntoView();
-            }
+            this.toggleCollapse();
         });
 
         if (this.info.userReported) {

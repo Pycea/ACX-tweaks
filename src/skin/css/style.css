@@ -389,7 +389,8 @@ blockquote blockquote {
 }
 
 .comment.collapsed > .comment-content .comment-footer {
-    transform: translateY(5px);
+    margin-top: 5px;
+    margin-bottom: -5px;
 }
 
 .footer-menu-wrapper {
@@ -430,6 +431,18 @@ blockquote blockquote {
 
 .footer-menu-content > button:hover {
     background-color: var(--color-bg-elevated-secondary);
+}
+
+.footer-menu-content .expand {
+    display: none;
+}
+
+.collapsed .footer-menu-content .collapse {
+    display: none;
+}
+
+.collapsed .footer-menu-content .expand {
+    display: block;
 }
 
 .footer-menu-content > .divider {
@@ -479,7 +492,8 @@ blockquote blockquote {
     background-color: var(--color-fg-tertiary);
 }
 
-.comment.collapsed > .children {
+.comment.collapsed > .children,
+.comment.collapsed .reported-line {
     display: none;
 }
 
