@@ -31,9 +31,19 @@
                 </div>
                 <div class="comment-body"></div>
                 <div class="comment-footer">
-                    <button class="comment-action reply">Reply</button>
-                    <button class="comment-action edit">Edit</button>
-                    <button class="comment-action delete">Delete</button>
+                    <button class="reply">Reply</button>
+                    <button class="edit">Edit</button>
+                    <button class="delete">Delete</button>
+                    <button class="meatball" aria-label="Ellipsis">•••</button>
+                    <div class="footer-menu-wrapper">
+                        <dialog class="footer-menu" closedby="any">
+                            <div class="footer-menu-content">
+                                <button class="permalink">Copy link</button>
+                                <hr class="divider">
+                                <button class="report">Report</button>
+                            </div>
+                        </dialog>
+                    </div>
                 </div>
                 <div class="text-edit-container"></div>
             </div>
@@ -120,4 +130,53 @@
             <button class="sort-new">New first</button>
         </div>
     </div>
+</template>
+
+<template id="report-modal-template">
+    <dialog id="report-modal" class="acx" closedby="any">
+        <div class="report-modal-wrapper">
+            <div class="report-acx">
+                <div class="title">Report to the Astral Codex Ten admins</div>
+                <div class="text">Your report and profile will be shared with the admins of <strong>Astral Codex Ten</strong>, since at Substack we believe publication owners are best able to moderate their communities.</div>
+                <div class="text">If you believe something violates Substack's <a href="https://substack.com/content" target="_blank" rel="noreferrer">Content Guidelines</a>, you can <a href="" class="report-to-substack">report it to Substack</a> instead.</div>
+            </div>
+            <div class="report-substack">
+                <div class="title">Report to Substack</div>
+                <div class="text">Report content that violates Substack's <a href="https://substack.com/content" target="_blank" rel="noreferrer">Content Guidelines</a> below. Your report is only viewed by our staff. Find additional reporting options and information in our <a href="https://support.substack.com/hc/en-us/articles/23248646000532" target="_blank" rel="noreferrer">Standards and Enforcement Help Center</a>.</div>
+            </div>
+            <div class="report-substack">
+                <div class="reason-header">Reason</div>
+                <div class="reason-category-wrapper">
+                    <select class="reason-category">
+                        <option disabled value="" selected>Select a reason</option>
+                        <option value="hate">Hate</option>
+                        <option value="private_information">Private information</option>
+                        <option value="plagiarism">Plagiarism</option>
+                        <option value="impersonation">Impersonation</option>
+                        <option value="illegal_activity">Illegal activity</option>
+                        <option value="spam">Spam</option>
+                        <option value="pornography">Pornography</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <div class="reason-dropdown-icon-wrapper">
+                        <svg class="reason-dropdown-icon" role="img" width="18" height="18" viewBox="0 0 20 20" stroke-width="1.8" stroke="none" xmlns="http://www.w3.org/2000/svg">
+                            <g>
+                                <title></title>
+                                <path d="M5.72845 8.252C5.25083 7.59067 5.72336 6.6665 6.53913 6.6665H13.461C14.2767 6.6665 14.7493 7.59067 14.2716 8.25199L10.8107 13.044C10.4116 13.5967 9.58852 13.5967 9.18936 13.044L5.72845 8.252Z" stroke="none"></path>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="reason-wrapper">
+                    <div class="reason-header report-acx">Reason</div>
+                    <div class="reason-header report-substack">Additional details</div>
+                    <div class="reason-optional report-substack">Optional</div>
+                </div>
+                <textarea class="reason" placeholder="Describe why you're reporting this..." row="4"></textarea>
+            </div>
+            <button class="submit" disabled>Submit</button>
+        </div>
+    </dialog>
 </template>

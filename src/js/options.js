@@ -483,13 +483,15 @@ const addParentLinksOption = {
         }
 
         // create parent link element
-        // <div class="parent-link">
+        // <button class="parent-link">
         //     ${displayText}
-        // </div>
+        // </button>
         const parentLink = document.createElement("button");
         parentLink.classList.add("parent-link");
         parentLink.textContent = displayText;
-        footer.appendChild(parentLink);
+
+        const menu = footer.querySelector(".meatball");
+        footer.insertBefore(parentLink, menu);
 
         parentLink.addEventListener("click", () => {
             scrollElement.scrollIntoView();

@@ -258,8 +258,10 @@ class PageInfo {
         logFuncCall();
 
         PageInfo.isMobile = navigator.userAgent.includes("Android");
+        PageInfo.url = window.location.origin + window.location.pathname;
 
         PageInfo.preloads = preloads;
+        PageInfo.pubId = preloads.pub.id;
         PageInfo.userId = preloads.user?.id;
         PageInfo.username = preloads.user?.name;
         PageInfo.avatarUrl = preloads.user?.photo_url;
@@ -312,6 +314,7 @@ class CommentManager {
             const hearts = comment.reactions?.["❤"] || 0;
             const userReact = !!comment.reaction;
             const body = comment.body;
+            const permalink = `${PageInfo.url}/comment/${commentId}`;
             const children = [];
 
             for (const childComment of comment.children) {
@@ -331,6 +334,7 @@ class CommentManager {
                 hearts,
                 userReact,
                 body,
+                permalink,
                 children,
             });
         }
@@ -378,6 +382,7 @@ class CommentManager {
         hearts=0,
         userReact=false,
         body,
+        permalink,
         children=[]
     }) {
         logFuncCall(true);
@@ -396,6 +401,7 @@ class CommentManager {
             hearts,
             userReact,
             body,
+            permalink,
             children,
         };
 
@@ -443,6 +449,7 @@ class Comment {
         this.headerElem = this.contentElem.querySelector(".comment-header");
         this.bodyElem = this.contentElem.querySelector(".comment-body");
         this.footerElem = this.contentElem.querySelector(".comment-footer");
+        this.footerMenu = this.footerElem.querySelector(".footer-menu");
         this.textEditContainer = this.contentElem.querySelector(".text-edit-container");
         this.childrenContainer = this.baseElem.querySelector(":scope > .children");
 
@@ -542,6 +549,23 @@ class Comment {
         this.anchorElem.setAttribute("aria-expanded", !collapsed);
     }
 
+    connectFooterMenu() {
+        const permalinkButton = this.footerMenu.querySelector(".permalink");
+        const reportButton = this.footerMenu.querySelector(".report");
+
+        permalinkButton.addEventListener("click", async () => {
+            await navigator.clipboard.writeText(this.info.permalink);
+            this.footerMenu.close();
+        });
+
+        reportButton.addEventListener("click", () => {
+            this.footerMenu.close();
+
+            const modal = new ReportModal(this.id);
+            modal.show();
+        });
+    }
+
     fillCommentElem() {
         const picture = this.contentElem.querySelector(".profile-picture");
         const profileImage = picture.querySelector(".profile-image");
@@ -550,6 +574,7 @@ class Comment {
         const commentPostDateLink = this.contentElem.querySelector(".comment-post-date-link");
         const commentPostDate = this.contentElem.querySelector(".comment-post-date");
         const commentEdited = this.contentElem.querySelector(".comment-edited");
+        const footerMeatball = this.contentElem.querySelector(".comment-footer .meatball");
 
         this.baseElem.dataset.id = this.id;
         this.baseElem.dataset.depth = this.depth;
@@ -559,7 +584,7 @@ class Comment {
         profileImage.alt = `${this.info.username}'s avatar`;
         userProfileLink.href = this.info.userProfileUrl;
         username.textContent = this.info.username || "Comment deleted";
-        commentPostDateLink.href = `/p/${PageInfo.postName}/comment/${this.id}`;
+        commentPostDateLink.href = this.info.permalink;
         commentPostDate.textContent = Comment.formatDateShort(this.info.date);
         commentPostDate.setAttribute("title", Comment.formatDateLong(this.info.date));
         if (this.info.editedDate) {
@@ -595,6 +620,11 @@ class Comment {
             const deleteButton = this.footerElem.querySelector(".delete");
             deleteButton.addEventListener("click", () => this.deleteComment());
         }
+
+        this.connectFooterMenu();
+        footerMeatball.addEventListener("click", () => {
+            this.footerMenu.show();
+        });
 
         if (this.info.deleted) {
             const profileContainer = this.headerElem.querySelector(".user-profile-link-container");
@@ -786,6 +816,67 @@ class Comment {
         profileImage.src = CommentManager.getAvatarUrl(null, null);
         this.footerElem.querySelector(".edit").remove();
         this.footerElem.querySelector(".delete").remove();
+    }
+}
+
+class ReportModal {
+    constructor(commentId) {
+        this.commentId = commentId;
+        this.modal = this.createModal();
+        this.substackReportElem = this.modal.querySelector(".report-to-substack");
+        this.categoryElem = this.modal.querySelector(".reason-category");
+        this.reasonElem = this.modal.querySelector(".reason");
+        this.submitElem = this.modal.querySelector(".submit");
+
+        this.substackReportElem.addEventListener("click", (e) => {
+            e.preventDefault();
+            this.modal.classList.remove("acx");
+            this.modal.classList.add("substack");
+            this.validateInput();
+        });
+
+        this.categoryElem.addEventListener("change", () => this.validateInput());
+        this.reasonElem.addEventListener("input", () => this.validateInput());
+
+        this.submitElem.addEventListener("click", async () => {
+            const category = this.categoryElem.value || null;
+            const reason = this.reasonElem.value || null;
+            try {
+                await API.reportUser(PageInfo.pubId, commentId, reason, category);
+            } catch (e) {
+                console.error(e)
+            }
+        });
+
+        window.addEventListener("wheel", this.preventScroll, { passive: false });
+
+        this.modal.addEventListener("close", this.close.bind(this));
+    }
+
+    createModal() {
+        const template = cloneTemplate("report-modal-template");
+        document.body.appendChild(template);
+        return document.querySelector("#report-modal");
+    }
+
+    validateInput() {
+        const category = this.categoryElem.value;
+        const reason = this.reasonElem.value;
+        const enabled = category != "" || this.modal.classList.contains("acx") && reason != "";
+        this.submitElem.disabled = !enabled;
+    }
+
+    preventScroll(e) {
+        e.preventDefault();
+    }
+
+    show() {
+        this.modal.showModal();
+    }
+
+    close() {
+        document.body.removeChild(this.modal);
+        window.removeEventListener("wheel", this.preventScroll);
     }
 }
 

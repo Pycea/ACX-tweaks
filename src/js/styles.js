@@ -723,6 +723,10 @@ const STYLES = {
                 color: #888 !important;
             }
 
+            .comment-main .comment-footer > button.meatball {
+                text-decoration: none;
+            }
+
             .comment.collapsed > .comment-content .comment-main .comment-footer {
                 transform: none;
             }
