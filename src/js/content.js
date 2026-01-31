@@ -575,7 +575,7 @@ class Comment {
         });
     }
 
-    connectFooterMenu() {
+    setUpFooterMenu() {
         const permalinkButton = this.footerMenu.querySelector(".permalink");
         const collapseButton = this.footerMenu.querySelector(".collapse");
         const expandButton = this.footerMenu.querySelector(".expand");
@@ -602,6 +602,13 @@ class Comment {
             const modal = new ReportModal(this.id);
             modal.show();
         });
+
+        if (this.info.userId === PageInfo.userId || this.info.userReported) {
+            const menuContent = this.footerMenu.querySelector(".footer-menu-content");
+            const divider = menuContent.querySelector(".report-divider");
+            menuContent.removeChild(reportButton);
+            menuContent.removeChild(divider);
+        }
     }
 
     fillCommentElem() {
@@ -659,7 +666,7 @@ class Comment {
             deleteButton.addEventListener("click", () => this.deleteComment());
         }
 
-        this.connectFooterMenu();
+        this.setUpFooterMenu();
         footerMeatball.addEventListener("click", () => this.footerMenu.show());
 
         if (this.info.deleted) {
