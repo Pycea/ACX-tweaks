@@ -655,9 +655,8 @@ class Comment {
         let error;
         try {
             data = await API.postComment(PageInfo.postId, this.id, body);
-            error = data.errors?.[0]?.msg;
-        } catch {
-            error = "Post reply failed";
+        } catch (e) {
+            error = e.message || "Post reply failed";
         }
 
         if (error) {
@@ -684,6 +683,7 @@ class Comment {
             ancestorPath: data.ancestor_path,
             date: postDate,
             body,
+            permalink: `${PageInfo.url}/comment/${newCommentId}`,
         });
 
         const newComment = new Comment(newCommentId);
@@ -803,7 +803,7 @@ class Comment {
             await API.deleteComment(this.id);
         } catch (error) {
             debug("commentActionDelete", "delete failed", error);
-            alert("Post deletion failed");
+            showUserError("Post deletion failed");
             return;
         }
 
@@ -844,7 +844,10 @@ class ReportModal {
             try {
                 await API.reportUser(PageInfo.pubId, commentId, reason, category);
             } catch (e) {
-                console.error(e)
+                const error = e.message || "Report submission failed";
+                debug("commentActionDelete", "report failed", error);
+                showUserError(error);
+                return;
             }
         });
 

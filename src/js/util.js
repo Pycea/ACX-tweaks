@@ -92,6 +92,10 @@ function reverseCommentOrder(commentList) {
     }
 }
 
+function showUserError(message) {
+    alert(message);
+}
+
 const keyCodes = {
     8: "backspace",
     9: "tab",

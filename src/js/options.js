@@ -428,14 +428,14 @@ const showHeartsOption = {
             let error;
             try {
                 response = await action(commentId);
-                error = response.error;
-            } catch {
-                error = "Error liking comment";
+            } catch (e) {
+                const verb = commentInfo.userReact ? "unliking" : "liking";
+                error = e.message || `Error ${verb} comment`;
             }
 
             if (error) {
                 debug("commentActionLike", "like failed", error);
-                alert(error);
+                showUserError(error);
                 return;
             }
 

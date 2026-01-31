@@ -21,7 +21,14 @@ class API {
             body: text,
             parent_id: parentId,
         };
-        return API.call(url, "POST", data);
+        return API.call(url, "POST", data)
+            .catch(error => { throw new Error(); })
+            .then(response => {
+                if (response.errors?.[0]?.msg) {
+                    throw new Error(response.errors[0].msg);
+                }
+                return response;
+            });
     }
 
     static editComment(commentId, text) {
@@ -29,19 +36,28 @@ class API {
         const data = {
             body: text,
         }
-        return API.call(url, "PATCH", data);
+        return API.call(url, "PATCH", data)
+            .catch(error => { throw new Error(); });
     }
 
     static deleteComment(commentId) {
         const url = `https://www.astralcodexten.com/api/v1/comment/${commentId}`;
-        return API.call(url, "DELETE");
+        return API.call(url, "DELETE")
+            .catch(error => { throw new Error(); });
     }
 
     static setReaction(commentId, method) {
         logFuncCall();
         const url = `https://www.astralcodexten.com/api/v1/comment/${commentId}/reaction`;
         const data = {reaction: "❤"};
-        return API.call(url, method, data);
+        return API.call(url, method, data)
+            .catch(error => { throw new Error(); })
+            .then(response => {
+                if (response.error) {
+                    throw new Error(response.error);
+                }
+                return response;
+            });
     }
 
     static likeComment(commentId) {
@@ -62,7 +78,14 @@ class API {
             "reportCategory": category,
             "reportedToSubstack": category != null,
         };
-        return API.call(url, "POST", data);
+        return API.call(url, "POST", data)
+            .catch(error => { throw new Error(); })
+            .then(response => {
+                if (response.errors?.[0]?.msg) {
+                    throw new Error(response.errors[0].msg);
+                }
+                return response;
+            });
     }
 
     static call(url, method="GET", data={}, timeout=10) {
@@ -78,11 +101,11 @@ class API {
         }
         return fetch(url, options)
             .then(response => response.json())
-            .then((data) => {
+            .then(data => {
                 debug("fetchResponse", data);
                 return data;
             })
-            .catch((error) => {
+            .catch(error => {
                 debug("fetchError", error);
                 throw error;
             });
