@@ -253,10 +253,10 @@ class LocalStorageManager {
 }
 
 class PageInfo {
-    static init(preloads, localStorageManager) {
+    static async init(preloads, localStorageManager) {
         logFuncCall();
 
-        PageInfo.isMobile = navigator.userAgent.includes("Android");
+        PageInfo.isMobile = await chrome.runtime.sendMessage("get-platform") === "android";
         PageInfo.url = window.location.origin + window.location.pathname;
 
         PageInfo.preloads = preloads;
@@ -857,6 +857,8 @@ class Comment {
             newEditedElem.textContent = "Edited";
             newEditedElem.setAttribute("title", Comment.formatDateLong(editDate));
             this.headerElem.querySelector(".comment-post-date-link").after(newEditedElem);
+        } else {
+
         }
 
         optionManager.processComment(this.baseElem);
@@ -1289,7 +1291,13 @@ function buildComments() {
     createComments();
     addSortButton();
     optionManager.processAllComments();
+}
 
+// Substack sometimes seems to clobber our generated comments on the comments page,
+// probably because it's loading from the preloads instead of using the API. It may
+// be a race condition, but I've only observed it on Firefox Android so we check for
+// that here.
+function addMobileObserver() {
     if (PageInfo.pageType === PageType.Comments && PageInfo.isMobile) {
         const observer = new MutationObserver(() => {
             const commentListItems =
@@ -1353,6 +1361,7 @@ async function onLoad() {
         document.head.appendChild(template.content);
         optionManager.runOnLoadHandlers();
         buildComments();
+        addMobileObserver();
         fillCommentCounts();
         handleScroll();
     }
@@ -1370,7 +1379,7 @@ async function doAllSetup() {
 
     const preloads = await getPreloads();
     localStorageManager = new LocalStorageManager(LOCAL_DATA_KEY, preloads.post.slug);
-    PageInfo.init(preloads, localStorageManager);
+    await PageInfo.init(preloads, localStorageManager);
 
     onPreload();
 
