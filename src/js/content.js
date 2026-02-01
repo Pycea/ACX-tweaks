@@ -617,7 +617,7 @@ class Comment {
         });
 
         if (this.info.userId === PageInfo.userId || this.info.userReported ||
-                this.info.bannedForComment) {
+                this.info.bannedForComment || this.info.deleted) {
             const menuContent = this.footerMenu.querySelector(".footer-menu-content");
             const divider = menuContent.querySelector(".report-divider");
             menuContent.removeChild(reportButton);
