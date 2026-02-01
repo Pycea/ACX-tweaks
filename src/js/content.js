@@ -253,11 +253,8 @@ class LocalStorageManager {
 }
 
 class PageInfo {
-    static async init(preloads, localStorageManager) {
+    static init(preloads, localStorageManager) {
         logFuncCall();
-
-        PageInfo.isMobile = await chrome.runtime.sendMessage("get-platform") === "android";
-        PageInfo.url = window.location.origin + window.location.pathname;
 
         PageInfo.preloads = preloads;
         PageInfo.pubId = preloads.pub.id;
@@ -1301,8 +1298,10 @@ function buildComments() {
 // probably because it's loading from the preloads instead of using the API. It may
 // be a race condition, but I've only observed it on Firefox Android so we check for
 // that here.
-function addMobileObserver() {
-    if (PageInfo.pageType === PageType.Comments && PageInfo.isMobile) {
+async function addMobileObserver() {
+    const isMobile = await chrome.runtime.sendMessage("get-platform") === "android";
+
+    if (PageInfo.pageType === PageType.Comments && isMobile) {
         const observer = new MutationObserver(() => {
             const commentListItems =
                 document.querySelector(".comment-list-container > * > .comment-list-items");
