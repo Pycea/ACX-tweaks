@@ -1278,7 +1278,7 @@ function fillCommentCounts() {
 function handleScroll() {
     logFuncCall();
     if (location.hash) {
-        const elem = document.querySelector(location.hash);
+        const elem = document.getElementById(location.hash.substring(1));
         elem?.classList?.add("selected");
         elem?.scrollIntoView({behavior: "instant"});
         return;
