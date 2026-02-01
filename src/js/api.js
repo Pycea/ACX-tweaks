@@ -98,15 +98,17 @@ class API {
         if (method !== "GET" && method !== "HEAD") {
             options.body = JSON.stringify(data);
         }
-        return fetch(url, options)
-            .then(response => response.json())
-            .then(data => {
-                debug("fetchResponse", data);
-                return data;
-            })
-            .catch(error => {
-                debug("fetchError", error);
-                throw error;
-            });
+        return new Promise((resolve, reject) => {
+            fetch(url, options)
+                .then(response => response.json())
+                .then(data => {
+                    debug("fetchResponse", data);
+                    resolve(data);
+                })
+                .catch(error => {
+                    debug("fetchError", error);
+                    reject(error);
+                })
+        });
     }
 }
