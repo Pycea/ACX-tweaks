@@ -401,9 +401,17 @@ const STYLES = {
             }
 
             article h2 {
-                font: bold 24px Verdana, sans-serif;
+                font: bold 18px Verdana, sans-serif;
                 color: #333;
                 -webkit-font-smoothing: auto;
+            }
+
+            article button[aria-label="Link"] {
+                background-color: #c8c8c8;
+            }
+
+            article button[aria-label="Link"]:hover {
+                background-color: #bbb;
             }
 
             article .available-content p,
