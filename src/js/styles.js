@@ -179,7 +179,6 @@ const STYLES = {
             }
 
             #main {
-                overflow: hidden;
                 width: 100%;
                 max-width: min(1242px, 100%);
                 min-height: 0;
