@@ -318,6 +318,7 @@ class CommentManager {
             const permalink = `${PageInfo.url}/comment/${commentId}`;
             const children = [];
 
+            CommentManager.sortComments(comment.children);
             for (const childComment of comment.children) {
                 children.push(childComment.id);
                 getInfoRecursive(childComment);
@@ -342,9 +343,20 @@ class CommentManager {
             });
         }
 
+        CommentManager.sortComments(nestedComments);
         for (const comment of nestedComments) {
             CommentManager.topLevelComments.push(comment.id);
             getInfoRecursive(comment);
+        }
+    }
+
+    static sortComments(comments) {
+        const sortAsc = (a, b) => new Date(a.date) - new Date(b.date);
+        const sortDesc = (a, b) => new Date(b.date) - new Date(a.date);
+        if (PageInfo.commentSort === SortOrder.OldFirst) {
+            comments.sort(sortAsc);
+        } else {
+            comments.sort(sortDesc);
         }
     }
 
@@ -774,7 +786,11 @@ class Comment {
         });
 
         const newComment = new Comment(newCommentId);
-        this.childrenContainer.appendChild(newComment.baseElem);
+        if (PageInfo.commentSort === SortOrder.OldFirst) {
+            this.childrenContainer.append(newComment.baseElem);
+        } else {
+            this.childrenContainer.prepend(newComment.baseElem);
+        }
         optionManager.processComment(newComment.baseElem);
         this.textEditContainer.replaceChildren();
     }
@@ -1250,19 +1266,21 @@ function addSortButton() {
     commentContainer.before(toggleTemplate);
 
     sortOldButton.addEventListener("click", () => {
-        if (sortOldButton.dataset.selected !== "true") {
+        if (PageInfo.commentSort === SortOrder.NewFirst) {
             reverseComments();
         }
         sortOldButton.dataset.selected = true;
         sortNewButton.dataset.selected = false;
+        PageInfo.commentSort = SortOrder.OldFirst;
     });
 
     sortNewButton.addEventListener("click", () => {
-        if (sortNewButton.dataset.selected !== "true") {
+        if (PageInfo.commentSort === SortOrder.OldFirst) {
             reverseComments();
         }
-        sortOldButton.dataset.selected = false;
         sortNewButton.dataset.selected = true;
+        sortOldButton.dataset.selected = false;
+        PageInfo.commentSort = SortOrder.NewFirst;
     });
 }
 
@@ -1357,11 +1375,8 @@ async function doAllSetup() {
     onPreload();
 
     if (PageInfo.pageType === PageType.Post) {
-        CommentManager.init(await API.getPostComments(PageInfo.postId, PageInfo.commentSort));
+        CommentManager.init(await API.getPostComments(PageInfo.postId));
     } else if (PageInfo.pageType === PageType.Comments) {
-        if (PageInfo.commentSort !== PageInfo.defaultSort) {
-            reverseCommentOrder(preloads.initialComments);
-        }
         CommentManager.init(preloads.initialComments);
     }
 

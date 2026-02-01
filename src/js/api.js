@@ -7,10 +7,9 @@ class API {
         return API.call(url);
     }
 
-    static async getPostComments(postId, order) {
+    static async getPostComments(postId) {
         logFuncCall();
-        const sort = order === SortOrder.NewFirst ? "most_recent_first" : "oldest_first";
-        const url = `https://www.astralcodexten.com/api/v1/post/${postId}/comments?block=false&sort=${sort}&all_comments=true`;
+        const url = `https://www.astralcodexten.com/api/v1/post/${postId}/comments?block=false&sort=oldest_first&all_comments=true`;
         const data = await API.call(url);
         return data.comments;
     }
