@@ -315,7 +315,7 @@ class CommentManager {
             const userReported = comment.reported_by_user;
             const bannedForComment = comment.user_banned_for_comment;
             const body = comment.body;
-            const permalink = `${PageInfo.url}/comment/${commentId}`;
+            const permalink = CommentManager.getPermalink(commentId);
             const children = [];
 
             CommentManager.sortComments(comment.children);
@@ -358,6 +358,10 @@ class CommentManager {
         } else {
             comments.sort(sortDesc);
         }
+    }
+
+    static getPermalink(commentId) {
+        return `${window.location.origin}/p/${PageInfo.postName}/comment/${commentId}`;
     }
 
     static getAvatarUrl(baseUrl, userId, size=32, webp=true) {
@@ -782,7 +786,7 @@ class Comment {
             ancestorPath: data.ancestor_path,
             date: postDate,
             body,
-            permalink: `${PageInfo.url}/comment/${newCommentId}`,
+            permalink: CommentManager.getPermalink(newCommentId),
         });
 
         const newComment = new Comment(newCommentId);
