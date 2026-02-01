@@ -591,12 +591,20 @@ blockquote blockquote {
 }
 
 .report-modal-wrapper .report-button-close {
+    display: flex;
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 8px;
+    right: 8px;;
     border: none;
+    padding: 4px;
     background: none;
     cursor: pointer;
+}
+
+.report-modal-wrapper .report-button-close:focus-visible {
+    margin: -2px;
+    border: 2px solid #333;
+    border-radius: 8px;
 }
 
 .report-modal-wrapper .report-button-close svg {
