@@ -426,6 +426,10 @@ class CommentManager {
         CommentManager.commentIdToInfo[commentId].editedDate = editedDate;
     }
 
+    static deleteComment(commentId) {
+        CommentManager.commentIdToInfo[commentId].deleted = true;
+    }
+
     static toggleReaction(commentId) {
         const info = CommentManager.commentIdToInfo[commentId];
         if (info.userReact) {
@@ -899,6 +903,9 @@ class Comment {
         profileImage.src = CommentManager.getAvatarUrl(null, null);
         this.footerElem.querySelector(".edit").remove();
         this.footerElem.querySelector(".delete").remove();
+
+        CommentManager.deleteComment(this.id);
+        optionManager.processComment(this.baseElem);
     }
 }
 
