@@ -411,6 +411,11 @@ blockquote blockquote {
     background: var(--color-bg-elevated-primary);
 }
 
+.footer-menu.up {
+    top: auto;
+    bottom: 4px;
+}
+
 .footer-menu-content {
     display: flex;
     flex-direction: column;

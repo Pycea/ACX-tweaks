@@ -686,7 +686,13 @@ class Comment {
         }
 
         this.setUpFooterMenu();
-        footerMeatball.addEventListener("click", () => this.footerMenu.show());
+        footerMeatball.addEventListener("click", () => {
+            this.footerMenu.show();
+            this.footerMenu.classList.remove("up");
+            if (this.footerMenu.getBoundingClientRect().bottom > window.innerHeight) {
+                this.footerMenu.classList.add("up");
+            }
+        });
 
         for (const childId of this.info.children) {
             const child = new Comment(childId, this.depth + 1);
