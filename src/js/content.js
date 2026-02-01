@@ -458,6 +458,7 @@ class Comment {
         this.headerElem = this.contentElem.querySelector(".comment-header");
         this.bodyElem = this.contentElem.querySelector(".comment-body");
         this.footerElem = this.contentElem.querySelector(".comment-footer");
+        this.footerMeatball = this.footerElem.querySelector(".meatball");
         this.footerMenu = this.footerElem.querySelector(".footer-menu");
         this.textEditContainer = this.contentElem.querySelector(".text-edit-container");
         this.childrenContainer = this.baseElem.querySelector(":scope > .children");
@@ -625,6 +626,35 @@ class Comment {
         }
     }
 
+    attachMeatball() {
+        const handleOutsideClick = (e) => {
+            if (!this.footerMenu.contains(e.target) && e.target !== this.footerMeatball) {
+                this.footerMenu.close();
+            }
+        };
+
+        this.footerMeatball.addEventListener("click", () => {
+            if (this.footerMenu.open) {
+                this.footerMenu.close();
+            } else {
+                this.footerMenu.show();
+                this.footerMenu.dispatchEvent(new CustomEvent("open"));
+                this.footerMenu.classList.remove("up");
+                if (this.footerMenu.getBoundingClientRect().bottom > window.innerHeight) {
+                    this.footerMenu.classList.add("up");
+                }
+            }
+        });
+
+        this.footerMenu.addEventListener("open", () => {
+            document.addEventListener("pointerdown", handleOutsideClick);
+        });
+
+        this.footerMenu.addEventListener("close", () => {
+            document.removeEventListener("pointerdown", handleOutsideClick);
+        });
+    }
+
     fillCommentElem() {
         const picture = this.contentElem.querySelector(".profile-picture");
         const profileImage = picture.querySelector(".profile-image");
@@ -633,7 +663,6 @@ class Comment {
         const commentPostDateLink = this.contentElem.querySelector(".comment-post-date-link");
         const commentPostDate = this.contentElem.querySelector(".comment-post-date");
         const commentEdited = this.contentElem.querySelector(".comment-edited");
-        const footerMeatball = this.contentElem.querySelector(".comment-footer .meatball");
 
         this.baseElem.dataset.id = this.id;
         this.baseElem.dataset.depth = this.depth;
@@ -686,13 +715,7 @@ class Comment {
         }
 
         this.setUpFooterMenu();
-        footerMeatball.addEventListener("click", () => {
-            this.footerMenu.show();
-            this.footerMenu.classList.remove("up");
-            if (this.footerMenu.getBoundingClientRect().bottom > window.innerHeight) {
-                this.footerMenu.classList.add("up");
-            }
-        });
+        this.attachMeatball();
 
         for (const childId of this.info.children) {
             const child = new Comment(childId, this.depth + 1);
