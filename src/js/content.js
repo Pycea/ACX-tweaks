@@ -845,7 +845,7 @@ class Comment {
         }
 
         debug("commentActionEdit", "edit successful", data);
-        const editDate = new Date(data.edited.date);
+        const editDate = new Date();
         CommentManager.editComment(this.id, body, editDate);
         this.bodyElem.innerHTML = Comment.formatBody(body);
 
