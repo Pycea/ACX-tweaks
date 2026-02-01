@@ -20,7 +20,6 @@
 //     funcs_<func_name>: other function calls
 
 // OPTIONS loaded from options.js
-// STYLES loaded from styles.js
 
 const LOCAL_DATA_KEY = "acx-local-data";
 

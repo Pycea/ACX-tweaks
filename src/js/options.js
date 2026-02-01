@@ -390,6 +390,16 @@ const showHeartsOption = {
     onStart: function(value) {
         setStyle(this.key, !value);
     },
+    toggleReaction: function(commentId, commentHeart) {
+        const likeButton = commentHeart.querySelector(".like-button");
+        const commentInfo = CommentManager.get(commentId);
+
+        CommentManager.toggleReaction(commentId);
+        likeButton.classList.toggle("liked");
+        likeButton.querySelector(".like-count").textContent =
+            commentInfo.hearts ? commentInfo.hearts : "";
+        this.setHeartAria(commentHeart, commentInfo.hearts, commentInfo.userReact);
+    },
     processComment: function(comment) {
         const commentId = comment.dataset.id;
         const commentInfo = CommentManager.get(commentId);
@@ -410,7 +420,6 @@ const showHeartsOption = {
         const ownComment = commentInfo.userId === PageInfo.userId;
         const heartContainer = this.heartHtml(hearts, userReact, ownComment);
         const commentHeart = heartContainer.querySelector(".comment-heart");
-        const likeButton = commentHeart.querySelector(".like-button");
 
         // disable your own comment like button
         if (PageInfo.userId === commentInfo.userId) {
@@ -424,26 +433,17 @@ const showHeartsOption = {
             const commentInfo = CommentManager.get(commentId);
             const action = commentInfo.userReact ? API.unlikeComment : API.likeComment;
 
-            let response;
-            let error;
             try {
-                response = await action(commentId);
+                this.toggleReaction(commentId, commentHeart);
+                await action(commentId);
             } catch (e) {
+                // failed to submit reaction, revert state
+                this.toggleReaction(commentId, commentHeart);
                 const verb = commentInfo.userReact ? "unliking" : "liking";
-                error = e.message || `Error ${verb} comment`;
-            }
-
-            if (error) {
+                const error = e.message || `Error ${verb} comment`;
                 debug("commentActionLike", "like failed", error);
                 showUserError(error);
-                return;
             }
-
-            CommentManager.toggleReaction(commentId);
-            likeButton.classList.toggle("liked");
-            likeButton.querySelector(".like-count").textContent =
-                commentInfo.hearts ? commentInfo.hearts : "";
-            this.setHeartAria(commentHeart, commentInfo.hearts, commentInfo.userReact);
         });
 
         footer.prepend(heartContainer);
