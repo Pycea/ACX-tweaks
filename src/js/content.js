@@ -658,18 +658,21 @@ class Comment {
             this.toggleCollapse();
         });
 
-        if (this.info.bannedForComment) {
-            this.addBannedLine();
-        } else if (this.info.userReported) {
-            this.addReportedLine();
+        if (this.info.deleted) {
+            const profileContainer = this.headerElem.querySelector(".user-profile-link-container");
+            profileContainer.insertBefore(username, userProfileLink);
+            userProfileLink.remove();
+            this.baseElem.classList.add("deleted");
+        } else {
+            if (this.info.bannedForComment) {
+                this.addBannedLine();
+            } else if (this.info.userReported) {
+                this.addReportedLine();
+            }
         }
 
         const replyButton = this.footerElem.querySelector(".reply");
-        if (this.info.deleted) {
-            replyButton.remove();
-        } else {
-            replyButton.addEventListener("click", () => this.replyButtonClick());
-        }
+        replyButton.addEventListener("click", () => this.replyButtonClick());
 
         if (PageInfo.userId !== this.info.userId) {
             this.footerElem.querySelector(".edit").remove();
@@ -684,13 +687,6 @@ class Comment {
 
         this.setUpFooterMenu();
         footerMeatball.addEventListener("click", () => this.footerMenu.show());
-
-        if (this.info.deleted) {
-            const profileContainer = this.headerElem.querySelector(".user-profile-link-container");
-            profileContainer.insertBefore(username, userProfileLink);
-            userProfileLink.remove();
-            this.baseElem.classList.add("deleted");
-        }
 
         for (const childId of this.info.children) {
             const child = new Comment(childId, this.depth + 1);
