@@ -1316,7 +1316,7 @@ async function doAllSetup() {
     onStart();
 
     const preloads = await getPreloads();
-    localStorageManager = new LocalStorageManager(LOCAL_DATA_KEY, preloads.slug);
+    localStorageManager = new LocalStorageManager(LOCAL_DATA_KEY, preloads.post.slug);
     PageInfo.init(preloads, localStorageManager);
 
     onPreload();
