@@ -3,8 +3,6 @@
 // cache of the current options
 let optionShadow;
 
-const isMobile = navigator.userAgent.includes("Android");
-
 async function loadInitialOptionValues() {
     const result = await chrome.storage.local.get([OPTION_KEY]);
     if (result[OPTION_KEY]) {
@@ -115,25 +113,22 @@ function addHovertext(optionElem) {
         document.querySelectorAll(".tooltip:not(.nohide)").forEach(e => e.classList.add("hidden"));
     }
 
-    if (isMobile) {
-        icon.addEventListener("touchend", (event) => {
-            if (tooltip.classList.contains("hidden")) {
-                hideAllTooltips();
-                showTooltip();
-            } else {
-                hideTooltip();
-            }
-            event.stopPropagation();
-        });
+    icon.addEventListener("mouseenter", showTooltip);
+    icon.addEventListener("mouseleave", hideTooltip);
 
-        document.addEventListener("touchend", () => {
+    icon.addEventListener("touchstart", (event) => {
+        if (tooltip.classList.contains("hidden")) {
             hideAllTooltips();
-        });
-    } else {
-        icon.addEventListener("mouseenter", showTooltip);
-        icon.addEventListener("mouseleave", hideTooltip);
-    }
+            showTooltip();
+        } else {
+            hideTooltip();
+        }
+        event.stopPropagation();
+    });
 
+    document.addEventListener("touchstart", () => {
+        hideAllTooltips();
+    });
 }
 
 function createChangeHandler(optionElem) {
@@ -373,9 +368,12 @@ function populateVersion() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-    if (isMobile) {
-        document.body.classList.add("mobile");
-    }
+    chrome.runtime.getPlatformInfo()
+        .then((platform) => {
+            if (platform.os === "android") {
+                document.body.classList.add("mobile");
+            }
+        });
 
     await loadInitialOptionValues();
 

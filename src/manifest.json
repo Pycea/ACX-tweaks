@@ -13,10 +13,6 @@
     "icons": {
         "128": "icons/acx-128.png"
     },
-    "background": {
-        "scripts": ["js/background.js"],
-        "service_worker": "js/background.js"
-    },
     "content_scripts": [
         {
             "matches": [

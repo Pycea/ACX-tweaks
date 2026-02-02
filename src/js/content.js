@@ -1296,12 +1296,9 @@ function buildComments() {
 
 // Substack sometimes seems to clobber our generated comments on the comments page,
 // probably because it's loading from the preloads instead of using the API. It may
-// be a race condition, but I've only observed it on Firefox Android so we check for
-// that here.
-async function addMobileObserver() {
-    const isMobile = await chrome.runtime.sendMessage("get-platform") === "android";
-
-    if (PageInfo.pageType === PageType.Comments && isMobile) {
+// be a race condition, though I've only observed it on Firefox Android.
+async function addCommentReloadObserver() {
+    if (PageInfo.pageType === PageType.Comments) {
         const observer = new MutationObserver(() => {
             const commentListItems =
                 document.querySelector(".comment-list-container > * > .comment-list-items");
@@ -1364,7 +1361,7 @@ async function onLoad() {
         document.head.appendChild(template.content);
         optionManager.runOnLoadHandlers();
         buildComments();
-        addMobileObserver();
+        addCommentReloadObserver();
         fillCommentCounts();
         handleScroll();
     }
