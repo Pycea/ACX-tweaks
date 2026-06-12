@@ -469,9 +469,9 @@ const STYLES = {
 
             article .available-content blockquote,
             .comment-list-container .comment blockquote {
-                margin: 0 2em;
+                margin: 0 26px;
                 border-left: 4px solid #ddd;
-                padding: 0 1em;
+                padding: 0 13px;
             }
 
 
