@@ -399,8 +399,28 @@ const STYLES = {
                 border-bottom: none;
             }
 
+            article h1 {
+                margin-top: 20px;
+                margin-bottom: 12px;
+                font: bold 24px Verdana, sans-serif;
+                color: #333;
+                -webkit-font-smoothing: auto;
+            }
+
             article h2 {
                 font: bold 18px Verdana, sans-serif;
+                color: #333;
+                -webkit-font-smoothing: auto;
+            }
+
+            article h2 {
+                font: bold 18px Verdana, sans-serif;
+                color: #333;
+                -webkit-font-smoothing: auto;
+            }
+
+            article h3 {
+                font: bold 16px Verdana, sans-serif;
                 color: #333;
                 -webkit-font-smoothing: auto;
             }
@@ -454,9 +474,17 @@ const STYLES = {
                 padding: 0 1em;
             }
 
+
+            article .available-content blockquote h1,
+            article .available-content blockquote h2,
+            article .available-content blockquote h3,
             article .available-content blockquote p,
             .comment-list-container blockquote {
                 margin-left: 0;
+            }
+
+            article .available-content blockquote p,
+            .comment-list-container blockquote {
                 line-height: 24px;
                 font-size: 13px;
                 font-family: Georgia, "Bitstream Charter", serif;
