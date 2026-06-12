@@ -22,11 +22,10 @@ const STYLES = {
         css: `
             [data-testid="noncontributor-cta-button"],
             .post-header .post-ufi,
-            .post-footer .post-ufi,
             .mobile-footer-ufi,
-            .available-content ~ *:not([data-testid="paywall"]),
             .single-post-section,
             .subscribe-footer,
+            div:has(> .available-content) ~ *:not([data-testid="paywall"]),
             .publication-footer {
                 display: none;
             }
