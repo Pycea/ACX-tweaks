@@ -778,6 +778,10 @@ const STYLES = {
                 color: #333;
             }
 
+            [data-test-id="comment-input"] * {
+                overflow: visible;
+            }
+
             [data-test-id="comment-input"] button,
             .text-input-container .text-input-buttons button {
                 border-radius: 4px;
@@ -785,6 +789,19 @@ const STYLES = {
                 padding: 7px 20px;
                 font: unset;
                 font-size: 14px;
+            }
+
+            [data-test-id="comment-input"] button[role="checkbox"] {
+                border-color: #ddd;
+                width: 24px;
+                height: 24px;
+                padding: 0;
+                background-color: white;
+            }
+
+            [data-test-id="comment-input"] button[role="checkbox"][data-state=checked] {
+                outline-color: #0675c4;
+                background-color: #0675c4;
             }
 
             [data-test-id="comment-input"] button[type="submit"],
@@ -803,12 +820,12 @@ const STYLES = {
                 color: #a7aaad;
             }
 
-            [data-test-id="comment-input"] button[type="button"],
+            [data-test-id="comment-input"] button[type="button"]:not([role="checkbox"]),
             .text-input-container .text-input-buttons button.secondary {
                 background-color: #ddd;
             }
 
-            [data-test-id="comment-input"] button[type="button"]:hover,
+            [data-test-id="comment-input"] button[type="button"]:not([role="checkbox"]):hover,
             .text-input-container .text-input-buttons button.secondary:hover {
                 background-color: #ccc;
             }
