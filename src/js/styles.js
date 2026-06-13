@@ -466,6 +466,10 @@ const STYLES = {
                 color: #0066cc;
             }
 
+            article .available-content hr {
+                background-color: #ccc;
+            }
+
             article .available-content blockquote,
             .comment-list-container .comment blockquote {
                 margin: 0 26px;
@@ -827,7 +831,12 @@ const STYLES = {
             }
 
             .footer-menu {
+                border-color: #ccc;
                 background-color: white;
+            }
+
+            .footer-menu hr {
+                background-color: #ccc;
             }
 
             .footer-menu-content button:hover {
