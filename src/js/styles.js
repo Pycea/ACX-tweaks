@@ -344,12 +344,28 @@ const STYLES = {
                 font: 12px/20px Verdana, sans-serif;
             }
 
-            .subtitle + div > :first-child > div > div > div > div {
-                display: inline;
-                margin-right: 16px;
+            [aria-label="Post UFI"] > :first-child {
+                padding-top: 8px;
+            }
+
+            .byline-wrapper {
                 border: 1px solid #eee;
                 padding: 5px 7px;
                 background: #f9f9f9;
+            }
+
+            .byline-wrapper > :first-child {
+                display: none;
+            }
+
+            .byline-wrapper > :nth-child(2) {
+                flex-direction: row-reverse;
+                gap: 4.5px;
+            }
+
+            .byline-wrapper > :nth-child(2) > :first-child,
+            .byline-wrapper > :nth-child(2) > :nth-child(2) > :first-child
+             {
                 font: 10px Verdana, sans-serif;
                 text-transform: uppercase;
                 letter-spacing: 1px;
@@ -357,16 +373,12 @@ const STYLES = {
                 color: #888;
             }
 
-            .post-header > div > :first-child > div > div > div > div:before {
+            .byline-wrapper > :nth-child(2) > :first-child::before {
+                content: "by ";
+            }
+
+            .byline-wrapper > :nth-child(2) > :nth-child(2) > :first-child::before {
                 content: "Posted on ";
-            }
-
-            .post-header > div > :first-child > div > div > div > div:after {
-                content: " by Scott Alexander";
-            }
-
-            .post-header > div > :first-child > div > div > div > :nth-child(2) {
-                display: none;
             }
 
 
