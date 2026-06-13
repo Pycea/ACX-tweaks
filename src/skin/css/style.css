@@ -1,3 +1,8 @@
+/* Fix substack visual bug */
+[data-test-id="comment-input"] * {
+    overflow: visible;
+}
+
 /* Hide duplicate timestamp if not using full time option */
 
 .better-date {

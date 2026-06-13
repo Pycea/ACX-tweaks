@@ -778,10 +778,6 @@ const STYLES = {
                 color: #333;
             }
 
-            [data-test-id="comment-input"] * {
-                overflow: visible;
-            }
-
             [data-test-id="comment-input"] button,
             .text-input-container .text-input-buttons button {
                 border-radius: 4px;
