@@ -1402,6 +1402,7 @@ const runPaths = [
     /^\/about$/,
     /^\/archive$/,
     /^\/recommendations$/,
+    /^\/sitemap/,
 ];
 
 for (const path of runPaths) {

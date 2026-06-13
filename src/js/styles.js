@@ -178,6 +178,7 @@ const STYLES = {
             }
 
             #main {
+                overflow: hidden;
                 width: 100%;
                 max-width: min(1242px, 100%);
                 min-height: 0;
@@ -880,11 +881,17 @@ const STYLES = {
 
             .publication-footer {
                 position: relative;
+                height: unset;
             }
 
             .publication-footer .footer {
+                position: relative;
                 border: none;
                 background: #e4e4e4;
+            }
+
+            #main > .sitemap-page.sitemap-page.sitemap-page {
+                display: inline-block;
             }`,
     },
 }
