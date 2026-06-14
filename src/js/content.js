@@ -308,6 +308,7 @@ class CommentManager {
             const editedDate = comment.edited_at;
             const deleted = comment.deleted;
             const hearts = comment.reactions?.["❤"] || 0;
+            const isAuthor = !!comment.metadata?.is_author;
             const userReact = !!comment.reaction;
             const userReported = comment.reported_by_user;
             const bannedForComment = comment.user_banned_for_comment;
@@ -331,6 +332,7 @@ class CommentManager {
                 editedDate,
                 deleted,
                 hearts,
+                isAuthor,
                 userReact,
                 userReported,
                 bannedForComment,
@@ -396,6 +398,7 @@ class CommentManager {
         editedDate=null,
         deleted=false,
         hearts=0,
+        isAuthor=false,
         userReact=false,
         userReported=false,
         bannedForComment=false,
@@ -417,6 +420,7 @@ class CommentManager {
             editedDate: editedDate ? new Date(editedDate) : editedDate,
             deleted: deleted || !userId,
             hearts,
+            isAuthor,
             userReact,
             userReported,
             bannedForComment,
@@ -629,7 +633,7 @@ class Comment {
         reportButton.addEventListener("click", () => {
             this.footerMenu.close();
 
-            const modal = new ReportModal(this);
+            const modal = new ReportModal(this, this.info.isAuthor);
             modal.show();
         });
 
@@ -929,7 +933,7 @@ class Comment {
 }
 
 class ReportModal {
-    constructor(comment) {
+    constructor(comment, reportToSubstack=false) {
         this.comment = comment;
         this.commentId = this.comment.id;
         this.modal = this.createModal();
@@ -939,11 +943,13 @@ class ReportModal {
         this.reasonElem = this.modal.querySelector(".reason");
         this.submitElem = this.modal.querySelector(".submit");
 
+        if (reportToSubstack) {
+            this.switchToSubstackReport();
+        }
+
         this.substackReportElem.addEventListener("click", (e) => {
             e.preventDefault();
-            this.modal.classList.remove("acx");
-            this.modal.classList.add("substack");
-            this.validateInput();
+            this.switchToSubstackReport();
         });
 
         this.categoryElem.addEventListener("change", () => this.validateInput());
@@ -970,6 +976,12 @@ class ReportModal {
         const reason = this.reasonElem.value;
         const enabled = category != "" || this.modal.classList.contains("acx") && reason != "";
         this.submitElem.disabled = !enabled;
+    }
+
+    switchToSubstackReport() {
+        this.modal.classList.remove("acx");
+        this.modal.classList.add("substack");
+        this.validateInput();
     }
 
     async submitReport() {
