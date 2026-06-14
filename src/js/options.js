@@ -13,13 +13,14 @@ function cssId(key) {
 }
 
 function addStyle(key) {
+    const doc = window.wrappedJSObject?.document || document;
     const id = cssId(key);
     const value = STYLES[key];
     const css = value.css;
-    const style = document.getElementById(id) || document.createElement("style");
+    const style = doc.getElementById(id) || doc.createElement("style");
     style.id = id;
     style.textContent = css;
-    document.documentElement.appendChild(style);
+    doc.documentElement.appendChild(style);
 }
 
 function removeStyle(key) {
