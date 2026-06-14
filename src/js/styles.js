@@ -22,10 +22,11 @@ const STYLES = {
         css: `
             [data-testid="noncontributor-cta-button"],
             .post-header .post-ufi,
+            .single-post > :first-child > :not(article),
             .mobile-footer-ufi,
-            .single-post-section,
             .subscribe-footer,
             div:has(> .available-content) ~ *:not([data-testid="paywall"]),
+            .single-post-section,
             .single-post-section + .visibility-check + div,
             .publication-footer {
                 display: none;
@@ -131,7 +132,13 @@ const STYLES = {
                 }
             }
 
-            @media screen and (max-width: 800px) {
+            @media screen and (max-width: 880px) {
+                :root {
+                    --title-font-size: 48px;
+                }
+            }
+
+            @media screen and (max-width: 727px) {
                 :root {
                     --entry-padding: 0;
                     --entry-padding-top: 0;
