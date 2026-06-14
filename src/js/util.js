@@ -1,10 +1,27 @@
 "use strict";
 
 // DEBUG handles
+// option*
+//     optionInitial: initial option values
+//     optionGet: receive option change
+//     optionSet: setting option value
+// processCommentOption: each comment option run
+// processComment: each comment processed
+// keyPress*
+//     keyPressEvent: each key press
+//     keyPressSearch: key press search internals
+// pageEvent: related to page events (onStart, onPreload, and onLoad)
+// commentAction*
+//     commentActionReply: replying to comments
+//     commentActionEdit: editing comments
+//     commentActionDelete: deleting comments
 // fetch*
 //     fetchCall: the request params
 //     fetchResponse: the response given
 //     fetchError: any errors encountered
+// func*
+//     func_<func_name>: function calls that are called a lot and probably not too useful
+//     funcs_<func_name>: other function calls
 
 function debug(category, ...debugStrings) {
     if (!optionManager.get(OptionKey.showDebug)) {

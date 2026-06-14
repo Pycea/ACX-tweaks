@@ -26,6 +26,7 @@ const STYLES = {
             .single-post-section,
             .subscribe-footer,
             div:has(> .available-content) ~ *:not([data-testid="paywall"]),
+            .single-post-section + .visibility-check + div,
             .publication-footer {
                 display: none;
             }
@@ -160,6 +161,7 @@ const STYLES = {
             }
 
             html body {
+                background-color: unset;
                 cursor: auto;
             }
 
@@ -362,6 +364,10 @@ const STYLES = {
             .byline-wrapper > :nth-child(2) {
                 flex-direction: row-reverse;
                 gap: 4.5px;
+            }
+
+            .byline-wrapper > :nth-child(2) > :nth-child(2) > :not(:first-child) {
+                display: none;
             }
 
             .byline-wrapper > :nth-child(2) > :first-child,

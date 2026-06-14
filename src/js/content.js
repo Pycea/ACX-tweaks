@@ -228,7 +228,7 @@ class LocalStorageManager {
             window.localStorage.setItem(this.localStorageKey,
                 JSON.stringify(this.localStorageData));
         } catch {
-            console.error("Ran out of local storage space");
+            console.error("ACX Tweaks: Ran out of local storage space");
         }
     }
 
@@ -1360,9 +1360,15 @@ async function onLoad() {
         const template = await loadTemplate(chrome.runtime.getURL("data/templates.html"));
         document.head.appendChild(template.content);
         optionManager.runOnLoadHandlers();
-        buildComments();
-        addCommentReloadObserver();
-        fillCommentCounts();
+
+        try {
+            buildComments();
+            addCommentReloadObserver();
+            fillCommentCounts();
+        } catch (error) {
+            console.warn("ACX Tweaks: Could not build comments");
+        }
+
         handleScroll();
     }
 }

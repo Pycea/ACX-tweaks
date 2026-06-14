@@ -1,5 +1,11 @@
 "use strict";
 
+// DEBUG handles
+// fetch*
+//     fetchCall: the request params
+//     fetchResponse: the response given
+//     fetchError: any errors encountered
+
 class API {
     static getPostData(postName) {
         logFuncCall();
