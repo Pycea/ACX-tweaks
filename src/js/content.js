@@ -554,11 +554,12 @@ class Comment {
             const urlMatch = urls[i];
             const {start, end} = urlMatch;
             const url = body.slice(start, end);
-            body = body.slice(0, start) + `<a href='${url}' target='_blank' rel='noreferrer'>${url}</a>` + body.slice(end);
+            body = body.slice(0, start) + `<a href="${url}" target="_blank" rel="noreferrer">${url}</a>` + body.slice(end);
         }
 
-        body = body.replace(/\b([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})\b/gi,
-            "<a href='mailto:$1'>$1</a>");
+        body = body.replace(
+            /\b([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})\b/gi,
+            `<a href="mailto:$1">$1</a>`);
 
         const paragraphs = body.split(/\n/);
         return paragraphs.map(p => `<p><span>${p}</span></p>`).join("");
@@ -1113,7 +1114,7 @@ function addKeyListener() {
 
     document.addEventListener("keydown", function(event) {
         // don't trigger when writing
-        if (event.target.matches("input, textarea, div[contenteditable='true'], .ProseMirror")) {
+        if (event.target.matches(`input, textarea, div[contenteditable="true"], .ProseMirror`)) {
             return;
         }
         debug("funcs_onKeydown", "onKeydown(", event, ")");

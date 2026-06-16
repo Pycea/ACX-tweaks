@@ -110,7 +110,7 @@ const zenModeOption = {
 
 const smoothScrollOption = {
     key: "smoothScroll",
-    default: !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    default: !window.matchMedia("(prefers-reduced-motion: reduce)").matches,
     hovertext: "Smoothly scroll when moving between comments (uncheck this to disable the animation and jump directly to the comment)",
     onStart: function(value) {
         this.onValueChange(value);
@@ -244,24 +244,24 @@ const applyCommentStylingOption = {
 
         for (let index = 0; index < underscoreMatches.length; index++) {
             const match = underscoreMatches[index];
-            text = text.replace(`\x00ITALICU${index}\x00`, `<em>${match}</em>`);
+            text = text.replace(`\x00ITALICU${index}\x00`, () => `<em>${match}</em>`);
         }
 
         for (let index = 0; index < asteriskMatches.length; index++) {
             const match = asteriskMatches[index];
-            text = text.replace(`\x00ITALICA${index}\x00`, `<em>${match}</em>`);
+            text = text.replace(`\x00ITALICA${index}\x00`, () => `<em>${match}</em>`);
         }
 
         for (let index = 0; index < emailMatches.length; index++) {
             const match = emailMatches[index];
-            text = text.replace(`\x00EMAIL${index}\x00`, `<a href='mailto:${match}'>${match}</a>`);
+            text = text.replace(`\x00EMAIL${index}\x00`, () => `<a href="mailto:${match}">${match}</a>`);
         }
 
         for (let index = 0; index < linkMatches.length; index++) {
             const match = linkMatches[index];
             text = text.replace(
                 `\x00LINK${index}\x00`,
-                `<a href='${match}' target='_blank' rel='noreferrer'>${match}</a>`);
+                () => `<a href="${match}" target="_blank" rel="noreferrer">${match}</a>`);
         }
 
         text = "<blockquote>".repeat(bqLevel) + text + "</blockquote>".repeat(bqLevel);

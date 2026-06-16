@@ -72,7 +72,7 @@ function htmlEscape(string) {
 }
 
 function extractUrls(string) {
-    const urlRegex = /\bhttps?:\/\/[A-Z0-9.-]+\.[A-Z]{2,}(?:[A-Z0-9_.~:\/?%#\[\]@!$&'()*+,;=-]*[A-Z0-9_~\/?%#\[@$&'()*+,=])?/gi;
+    const urlRegex = /\bhttps?:\/\/[A-Z0-9.-]+\.[A-Z]{2,}(?:[A-Z0-9_.~:\/?%#\[\]@!$&'()*+,;=-]*[A-Z0-9_~\/?%#\[@$&'()+,=])?/gi;
     const matches = [];
 
     let array;
@@ -82,6 +82,7 @@ function extractUrls(string) {
         let closeParens = url.match(/\)/g)?.length || 0;
         let urlLength = url.length;
         while (closeParens > openParens && url[urlLength - 1] === ")") {
+            closeParens--;
             urlLength--;
         }
         matches.push({start: array.index, end: array.index + urlLength});
