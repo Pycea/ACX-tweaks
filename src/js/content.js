@@ -548,8 +548,15 @@ class Comment {
         body = htmlEscape(body);
         body = body.trim();
         body = body.replace(/\n+/g, "\n");
-        body = body.replace(/\b(https?:\/\/[A-Z0-9.-]+\.[A-Z]{2,}([A-Z0-9_.~:\/?%#\[\]@!$&'()*+,;=-]*[A-Z0-9_~\/?%#\[@$&'(*+,=])?)/gi,
-            "<a href='$1' target='_blank' rel='noreferrer'>$1</a>");
+
+        const urls = extractUrls(body);
+        for (let i = urls.length - 1; i >= 0; i--) {
+            const urlMatch = urls[i];
+            const {start, end} = urlMatch;
+            const url = body.slice(start, end);
+            body = body.slice(0, start) + `<a href='${url}' target='_blank' rel='noreferrer'>${url}</a>` + body.slice(end);
+        }
+
         body = body.replace(/\b([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})\b/gi,
             "<a href='mailto:$1'>$1</a>");
 
@@ -1373,13 +1380,9 @@ async function onLoad() {
         document.head.appendChild(template.content);
         optionManager.runOnLoadHandlers();
 
-        try {
-            buildComments();
-            addCommentReloadObserver();
-            fillCommentCounts();
-        } catch (error) {
-            console.warn("ACX Tweaks: Could not build comments");
-        }
+        buildComments();
+        addCommentReloadObserver();
+        fillCommentCounts();
 
         handleScroll();
     }

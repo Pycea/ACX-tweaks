@@ -68,10 +68,26 @@ function mod(a, b) {
 function htmlEscape(string) {
     return string
       .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&apos;");
+      .replaceAll("<", "&lt;");
+}
+
+function extractUrls(string) {
+    const urlRegex = /\bhttps?:\/\/[A-Z0-9.-]+\.[A-Z]{2,}(?:[A-Z0-9_.~:\/?%#\[\]@!$&'()*+,;=-]*[A-Z0-9_~\/?%#\[@$&'()*+,=])?/gi;
+    const matches = [];
+
+    let array;
+    while ((array = urlRegex.exec(string)) !== null) {
+        const url = array[0];
+        const openParens = url.match(/\(/g)?.length || 0;
+        let closeParens = url.match(/\)/g)?.length || 0;
+        let urlLength = url.length;
+        while (closeParens > openParens && url[urlLength - 1] === ")") {
+            urlLength--;
+        }
+        matches.push({start: array.index, end: array.index + urlLength});
+    }
+
+    return matches;
 }
 
 function getPreloads() {

@@ -179,62 +179,135 @@ const applyCommentStylingOption = {
     key: "applyCommentStyling",
     default: true,
     hovertext: "Apply basic styling to comments (italics, block quotes, and Markdown style text links)",
-    processCommentParagraph: function(innerHtml) {
-        // skip paragraphs with no formatting
-        if (!/[\[*_]|^&gt;/.test(innerHtml)) {
-            return null;
+    processed: 0,
+    replaceLinks: function(text) {
+        const matches = [];
+        const urls = extractUrls(text);
+        for (let index = urls.length - 1; index >= 0; index--) {
+            const urlMatch = urls[index];
+            const {start, end} = urlMatch;
+            const url = text.slice(start, end);
+            text = text.slice(0, start) + `\x00LINK${index}\x00` + text.slice(end);
+            matches.unshift(url);
         }
-
-        const container = document.createElement("span");
-        container.classList.add("new-style");
-
-        const italicPattern = /(?<![a-z0-9])([_*])((?:[a-z0-9])[^*_]*?(?<=[a-z0-9]))\1(?![a-z0-9])/gi;
-        const formattedLinkPattern = /\[([^\]]+)\]\(<a\s+href=["']([^"']+)["'][^>]*>.*?<\/a>\)/g;
-        const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
-        const blockquotePattern = /^((&gt;\s*)+)/;
-
-        innerHtml = innerHtml.replace(italicPattern, "<em>$2</em>");
-        innerHtml = innerHtml.replace(formattedLinkPattern, (_, text, href) => {
-            return `<a href='${href}' target='_blank' rel='noreferrer'>${text}</a>`;
+        return {processedText: text, matches};
+    },
+    replaceEmails: function(text) {
+        const emailRegex = /\b([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})\b/gi;
+        const matches = [];
+        let index = 0;
+        const processedText = text.replace(emailRegex, function(match) {
+            matches.push(match);
+            return `\x00EMAIL${index++}\x00`;
         });
-        innerHtml = innerHtml.replace(linkPattern, (_, text, href) => {
-            if (!/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(href)) {
-                href = `https://${href}`;
-            }
-            return `<a href='${href}' target='_blank' rel='noreferrer'>${text}</a>`;
+        return {processedText, matches};
+    },
+    replaceAsterisks: function(text) {
+        const italicRegex = /(?<![a-z0-9])\*((?=\S)(?:(?!\*\S).)+?(?<=\S))\*(?![a-z0-9])/gi;
+        const matches = [];
+        let index = 0;
+        const processedText = text.replace(italicRegex, function(match, p1) {
+            matches.push(p1);
+            return `\x00ITALICA${index++}\x00`;
         });
-
-        const match = innerHtml.match(blockquotePattern);
+        return {processedText, matches};
+    },
+    replaceUnderscores: function(text) {
+        const italicRegex = /(?<![a-z0-9])_((?=\S)(?:(?!_\S).)+?(?<=\S))_(?![a-z0-9])/gi;
+        const matches = [];
+        let index = 0;
+        const processedText = text.replace(italicRegex, function(match, p1) {
+            matches.push(p1);
+            return `\x00ITALICU${index++}\x00`;
+        });
+        return {processedText, matches};
+    },
+    replaceBlockquotes: function(text) {
+        const blockquoteRegex = /^\s*(?:>\s*)+/;
+        const match = text.match(blockquoteRegex);
         if (match) {
-            const depth = match[0].match(/&gt;\s*/g).length;
-            const content = `${innerHtml.slice(match[0].length)}`;
-            innerHtml = "<blockquote>".repeat(depth) + content + "</blockquote>".repeat(depth);
+            const prefix = match[0];
+            const processedText = text.slice(prefix.length);
+            const level = prefix.match(/>/g).length;
+            return {processedText, level};
         }
 
-        container.innerHTML = innerHtml;
-        return container;
+        return {processedText: text, level: 0};
+    },
+    processCommentParagraph: function(text) {
+        let linkMatches, emailMatches, asteriskMatches, underscoreMatches, bqLevel;
+        ({processedText: text, matches: linkMatches} = this.replaceLinks(text));
+        ({processedText: text, matches: emailMatches} = this.replaceEmails(text));
+        ({processedText: text, matches: asteriskMatches} = this.replaceAsterisks(text));
+        ({processedText: text, matches: underscoreMatches} = this.replaceUnderscores(text));
+        ({processedText: text, level: bqLevel} = this.replaceBlockquotes(text));
+
+        for (let index = 0; index < underscoreMatches.length; index++) {
+            const match = underscoreMatches[index];
+            text = text.replace(`\x00ITALICU${index}\x00`, `<em>${match}</em>`);
+        }
+
+        for (let index = 0; index < asteriskMatches.length; index++) {
+            const match = asteriskMatches[index];
+            text = text.replace(`\x00ITALICA${index}\x00`, `<em>${match}</em>`);
+        }
+
+        for (let index = 0; index < emailMatches.length; index++) {
+            const match = emailMatches[index];
+            text = text.replace(`\x00EMAIL${index}\x00`, `<a href='mailto:${match}'>${match}</a>`);
+        }
+
+        for (let index = 0; index < linkMatches.length; index++) {
+            const match = linkMatches[index];
+            text = text.replace(
+                `\x00LINK${index}\x00`,
+                `<a href='${match}' target='_blank' rel='noreferrer'>${match}</a>`);
+        }
+
+        text = "<blockquote>".repeat(bqLevel) + text + "</blockquote>".repeat(bqLevel);
+
+        return text;
     },
     onStart: function(value) {
         setStyle(this.key, value);
     },
     processComment: function(comment) {
         const commentId = comment.dataset.id;
-        const body = CommentManager.get(commentId).body;
-        // quick first pass to rule out cases where formatting isn't needed
-        if (!/[\[*_>]/.test(body)) {
+        let body = CommentManager.get(commentId).body;
+
+        if (!body) {
             return;
         }
 
         const commentBody = comment.querySelector(":scope > .comment-content .comment-body");
-        commentBody.querySelectorAll("p span").forEach((span) => {
-            // only process the text once
-            if (span.parentElement.children.length === 1) {
-                const newSpan = this.processCommentParagraph(span.innerHTML);
-                if (newSpan) {
-                    span.classList.add("old-style");
-                    span.parentElement.appendChild(newSpan);
-                }
+        const commentParagraphs = commentBody.querySelectorAll("p");
+
+        const paragraphs = htmlEscape(body).trim().split(/\n+/);
+        if (paragraphs.length != commentParagraphs.length) {
+            return;
+        }
+
+        commentParagraphs.forEach((p, index) => {
+            // quick first pass to rule out cases where formatting isn't needed
+            if (!/[*_>]/.test(paragraphs[index])) {
+                return;
             }
+
+            // only process the text once
+            if (p.querySelector(".new-style")) {
+                return;
+            }
+
+            const text = paragraphs[index].trim();
+            const body = this.processCommentParagraph(text);
+
+            const oldSpan = p.querySelector("span");
+            oldSpan.classList.add("old-style");
+
+            const newSpan = document.createElement("span");
+            newSpan.classList.add("new-style");
+            newSpan.innerHTML = body;
+            p.appendChild(newSpan);
         }, this);
     },
     onValueChange: function(value) {
