@@ -549,7 +549,7 @@ class Comment {
         body = body.trim();
         body = body.replace(/\n+/g, "\n");
 
-        const urls = extractUrls(body);
+        const urls = extractUrlPositions(body);
         for (let i = urls.length - 1; i >= 0; i--) {
             const urlMatch = urls[i];
             const {start, end} = urlMatch;

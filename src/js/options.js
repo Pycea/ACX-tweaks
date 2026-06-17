@@ -182,7 +182,7 @@ const applyCommentStylingOption = {
     processed: 0,
     replaceLinks: function(text) {
         const matches = [];
-        const urls = extractUrls(text);
+        const urls = extractUrlPositions(text);
         for (let index = urls.length - 1; index >= 0; index--) {
             const urlMatch = urls[index];
             const {start, end} = urlMatch;
