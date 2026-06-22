@@ -275,6 +275,7 @@ class PageInfo {
         PageInfo.postId = preloads.post?.id;
         PageInfo.postName = preloads.post?.slug;
         PageInfo.postTitle = preloads.post?.title;
+        PageInfo.postDate = preloads.post?.post_date;
 
         PageInfo.loadDate = new Date();
         const dateString = localStorageManager.get("lastViewedDate");
@@ -1352,6 +1353,21 @@ function fillCommentCounts() {
     footerCount.appendChild(commentCountFooter);
 }
 
+function setPostDateHover() {
+    const date = new Date(PageInfo.postDate);
+    const dateString = date.toLocaleString("en-US", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+        hour12: !optionManager.get(OptionKey.use24Hour),
+    });
+    document.querySelector(".byline-wrapper > :nth-child(2) > :nth-child(2) > :first-child").title = dateString;
+}
+
 function handleScroll() {
     logFuncCall();
     if (location.hash) {
@@ -1384,6 +1400,8 @@ async function onLoad() {
         buildComments();
         addCommentReloadObserver();
         fillCommentCounts();
+
+        setPostDateHover();
 
         handleScroll();
     }

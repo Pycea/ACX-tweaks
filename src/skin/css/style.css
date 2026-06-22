@@ -3,6 +3,10 @@
     overflow: visible;
 }
 
+.byline-wrapper > :nth-child(2) > :nth-child(2) > :first-child {
+    cursor: auto;
+}
+
 /* Hide duplicate timestamp if not using full time option */
 
 .better-date {
