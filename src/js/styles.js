@@ -100,6 +100,25 @@ const STYLES = {
                 display: none;
             }`,
     },
+    automodBehaviorRemove: {
+        css: `
+            .comment.automod-hidden {
+                display: none;
+            }`,
+    },
+    automodBehaviorFlag: {
+        css: `
+            .comment.automod-hidden > .comment-content .automod-warning {
+                display: block;
+                align-self: flex-start;
+                margin-top: 4px;
+                border: 1px solid #d62d3bb3;
+                border-radius: 4px;
+                padding: 2px;
+                font-size: 12px;
+                color: #d62d3bb3;
+            }`,
+    },
     smoothScroll: {
         css: `
             html {

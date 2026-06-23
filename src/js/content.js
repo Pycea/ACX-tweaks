@@ -293,7 +293,7 @@ class CommentManager {
     static commentIdToInfo;
     static topLevelComments;
 
-    static init(nestedComments) {
+    static init(nestedComments, automodHiddenComments) {
         logFuncCall();
 
         CommentManager.commentIdToInfo = {};
@@ -305,6 +305,7 @@ class CommentManager {
             const username = comment.name;
             const userPhoto = comment.photo_url;
             const ancestorPath = comment.ancestor_path;
+            const status = comment.status;
             const date = comment.date;
             const editedDate = comment.edited_at;
             const deleted = comment.deleted;
@@ -329,6 +330,7 @@ class CommentManager {
                 username,
                 userPhoto,
                 ancestorPath,
+                status,
                 date,
                 editedDate,
                 deleted,
@@ -343,10 +345,36 @@ class CommentManager {
             });
         }
 
+        CommentManager.combineComments(nestedComments, automodHiddenComments);
         CommentManager.sortComments(nestedComments);
         for (const comment of nestedComments) {
             CommentManager.topLevelComments.push(comment.id);
             getInfoRecursive(comment);
+        }
+    }
+
+    static combineComments(comments, automodHiddenComments) {
+        function getCommentById(commentList, id) {
+            for (const comment of commentList) {
+                if (comment.id === id) {
+                    return comment.children;
+                }
+            }
+
+            // If we don't find a match, we're on the comments page in a subtree that
+            // doesn't contain the root comment. Return the top level container until
+            // we progress far enough down the chain to find our parent (and if never
+            // found, we are a top level comment on this page).
+            return commentList;
+        }
+
+        for (const comment of automodHiddenComments) {
+            let commentList = comments;
+            const path = comment.ancestor_path.split(".").filter(x => x).map(x => Number(x));
+            for (const id of path) {
+                commentList = getCommentById(commentList, id);
+            }
+            commentList.push(comment);
         }
     }
 
@@ -395,6 +423,7 @@ class CommentManager {
         username,
         userPhoto,
         ancestorPath,
+        status,
         date,
         editedDate=null,
         deleted=false,
@@ -416,6 +445,7 @@ class CommentManager {
             userPhoto,
             userProfileUrl: CommentManager.getProfileUrl(userId, username),
             ancestorPath,
+            status,
             parent: parseInt(ancestorPath.split(".").at(-1)) || null,
             date: date ? new Date(date) : date,
             editedDate: editedDate ? new Date(editedDate) : editedDate,
@@ -588,7 +618,7 @@ class Comment {
         this.anchorElem.setAttribute("aria-expanded", !collapsed);
     }
 
-    toggleCollapse() {
+    toggleCollapse(doScroll) {
         this.baseElem.classList.toggle("collapsed");
         this.setCollapseAria(this.baseElem.classList.contains("collapsed"));
         if (this.baseElem.getBoundingClientRect().top < 0) {
@@ -629,13 +659,13 @@ class Comment {
             this.footerMenu.close();
         });
 
-        collapseButton.addEventListener("click", () => {
-            this.toggleCollapse();
+        collapseButton.addEventListener("click", (e) => {
+            this.toggleCollapse(e.isTrusted);
             this.footerMenu.close();
         });
 
-        expandButton.addEventListener("click", () => {
-            this.toggleCollapse();
+        expandButton.addEventListener("click", (e) => {
+            this.toggleCollapse(e.isTrusted);
             this.footerMenu.close();
         });
 
@@ -712,8 +742,8 @@ class Comment {
         }
         this.bodyElem.innerHTML = Comment.formatBody(this.info.body);
         this.setCollapseAria(false);
-        this.baseElem.querySelector(":scope > .collapser").addEventListener("click", () => {
-            this.toggleCollapse();
+        this.baseElem.querySelector(":scope > .collapser").addEventListener("click", (e) => {
+            this.toggleCollapse(e.isTrusted);
         });
 
         if (this.info.deleted) {
@@ -727,6 +757,14 @@ class Comment {
             } else if (this.info.userReported) {
                 this.addReportedLine();
             }
+        }
+
+        if (this.info.status === "automod_hidden") {
+            this.baseElem.classList.add("automod-hidden");
+            const automodWarningElem = document.createElement("div");
+            automodWarningElem.classList.add("automod-warning");
+            automodWarningElem.textContent = "This comment was hidden by automod";
+            this.headerElem.after(automodWarningElem);
         }
 
         const replyButton = this.footerElem.querySelector(".reply");
@@ -794,6 +832,7 @@ class Comment {
             username,
             userPhoto,
             ancestorPath: data.ancestor_path,
+            status: "published",
             date: postDate,
             body,
             permalink: CommentManager.getPermalink(newCommentId),
@@ -1424,9 +1463,9 @@ async function doAllSetup() {
     onPreload();
 
     if (PageInfo.pageType === PageType.Post) {
-        CommentManager.init(await API.getPostComments(PageInfo.postId));
+        CommentManager.init(...await API.getPostComments(PageInfo.postId));
     } else if (PageInfo.pageType === PageType.Comments) {
-        CommentManager.init(preloads.initialComments);
+        CommentManager.init(preloads.initialComments, preloads.initialAutomodHiddenComments);
     }
 
     if (document.readyState === "loading") {

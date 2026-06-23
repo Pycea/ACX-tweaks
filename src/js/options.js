@@ -8,6 +8,13 @@ const SortOrder = Object.freeze({
     "PostDefault": "PostDefault",
 });
 
+const AutomodBehavior = Object.freeze({
+    "Remove": "Remove",
+    "Collapse": "Collapse",
+    "Flag": "Flag",
+    "None": "None",
+});
+
 function cssId(key) {
     return `${key}-css`;
 }
@@ -606,13 +613,45 @@ const autoCollapseDepthOption = {
         if (collapse) {
             comment.querySelector(":scope > .collapser").click();
         }
-    }
+    },
 };
 
 const collapseModOption = {
     key: "collapseMod",
     default: true,
     hovertext: "If true and auto collapse isn't negative, collapses children of every nth level nested comment. If auto collapse is 5, then collapses children of levels 5, 10, etc. If false, only children of level 5 are collapsed.",
+};
+
+const automodBehaviorOption = {
+    key: "automodBehavior",
+    default: AutomodBehavior.Remove,
+    hovertext: "Control the behavior of comments flagged by the Substack automod.<ul style='margin-top: 6px; margin-bottom: 0; padding-left: 30px;'><li>Remove: remove the comment entirely</li><li>Collapse: collapse the comment by default</li><li>Flag: add a tag to automodded comments</li><li>None: render the comment as normal</li></ul>",
+    onStart: function(value) {
+        this.applyStyling(value);
+    },
+    processComment: function(comment) {
+        if (optionManager.get(this.key) === AutomodBehavior.Collapse) {
+            if (comment.classList.contains("automod-hidden") && !comment.classList.contains("collapsed")) {
+                comment.querySelector(":scope > .collapser").click();
+            }
+        }
+    },
+    applyStyling: function(value) {
+        setStyle(`${this.key}Remove`, false);
+        setStyle(`${this.key}Flag`, false);
+
+        if (value === AutomodBehavior.Remove) {
+            setStyle(`${this.key}Remove`, true);
+        } else if (value === AutomodBehavior.Collapse || value === AutomodBehavior.Flag) {
+            setStyle(`${this.key}Flag`, true);
+        }
+    },
+    onValueChange: function(value) {
+        this.applyStyling(value);
+        if (value === AutomodBehavior.Collapse) {
+            optionManager.processAllComments(this.key);
+        }
+    },
 };
 
 const hideUsersOption = {
@@ -801,6 +840,7 @@ const optionArray = [
     defaultSortOption,
     autoCollapseDepthOption,
     collapseModOption,
+    automodBehaviorOption,
     hideUsersOption,
     removeCommentsOption,
 

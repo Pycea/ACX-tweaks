@@ -17,7 +17,7 @@ class API {
         logFuncCall();
         const url = `https://www.astralcodexten.com/api/v1/post/${postId}/comments?block=false&sort=oldest_first&all_comments=true`;
         const data = await API.call(url);
-        return data.comments;
+        return [data.comments, data.automod_hidden_comments];
     }
 
     static postComment(postId, parentId, text) {

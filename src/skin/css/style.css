@@ -7,6 +7,12 @@
     cursor: auto;
 }
 
+/* Automod warning */
+
+.automod-warning {
+    display: none;
+}
+
 /* Hide duplicate timestamp if not using full time option */
 
 .better-date {
