@@ -1394,7 +1394,7 @@ function fillCommentCounts() {
 
 function setPostDateHover() {
     const date = new Date(PageInfo.postDate);
-    const dateString = date.toLocaleString("en-US", {
+    const dateString = date.toLocaleString(undefined, {
         weekday: "long",
         day: "numeric",
         month: "long",
