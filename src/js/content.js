@@ -1429,6 +1429,7 @@ async function onLoad() {
 
     if (PageInfo.pageType === PageType.Post) {
         localStorageManager.set("lastViewedDate", new Date().toISOString());
+        setPostDateHover();
     }
 
     if ([PageType.Post, PageType.Comments].includes(PageInfo.pageType)) {
@@ -1439,8 +1440,6 @@ async function onLoad() {
         buildComments();
         addCommentReloadObserver();
         fillCommentCounts();
-
-        setPostDateHover();
 
         handleScroll();
     }
