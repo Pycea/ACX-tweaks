@@ -7,6 +7,23 @@
     cursor: auto;
 }
 
+/* Fix header */
+
+.main-menu > * {
+    position: relative !important;
+    top: 0 !important;
+}
+
+.main-menu > :nth-child(2) {
+    display: none;
+}
+
+.mobile-footer-ufi {
+    position: relative !important;
+    transform: none !important;
+    border-bottom: var(--border-default-themed);
+}
+
 /* Automod warning */
 
 .automod-warning {

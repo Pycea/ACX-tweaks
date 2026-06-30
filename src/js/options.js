@@ -91,18 +91,6 @@ const useOldStylingOption = {
     },
 };
 
-const fixHeaderOption = {
-    key: "fixHeader",
-    default: true,
-    hovertext: "Keep the header fixed, so it doesn't keep appearing when scrolling up",
-    onStart: function(value) {
-        this.onValueChange(value);
-    },
-    onValueChange: function(value) {
-        setStyle(this.key, value);
-    },
-};
-
 const zenModeOption = {
     key: "zenMode",
     default: false,
@@ -830,7 +818,6 @@ const resetDataOption = {
 const optionArray = [
     darkModeOption,
     useOldStylingOption,
-    fixHeaderOption,
     zenModeOption,
     smoothScrollOption,
 

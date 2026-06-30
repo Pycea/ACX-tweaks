@@ -1,23 +1,6 @@
 "use strict";
 
 const STYLES = {
-    fixHeader: {
-        css: `
-            .main-menu > * {
-                position: relative !important;
-                top: 0 !important;
-            }
-
-            .main-menu > :nth-child(2) {
-                display: none;
-            }
-
-            .mobile-footer-ufi {
-                position: relative !important;
-                transform: none !important;
-                border-bottom: var(--border-default-themed);
-            }`,
-    },
     zenMode: {
         css: `
             [data-testid="noncontributor-cta-button"],
