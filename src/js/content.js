@@ -1404,7 +1404,13 @@ function setPostDateHover() {
         second: "numeric",
         hour12: !optionManager.get(OptionKey.use24Hour),
     });
-    document.querySelector(".byline-wrapper > :nth-child(2) > :nth-child(2) > :first-child").title = dateString;
+    const byline = document.querySelector(".byline-wrapper > :nth-child(2) > :nth-child(2) > :first-child");
+    const bylineNoAuthor = document.querySelector(".byline-wrapper > :first-child > :first-child > :first-child")
+    if (byline) {
+        byline.title = dateString;
+    } else if (bylineNoAuthor) {
+        bylineNoAuthor.title = dateString;
+    }
 }
 
 function handleScroll() {

@@ -377,13 +377,39 @@ const STYLES = {
                 padding-top: 8px;
             }
 
+            /* For the byline, if there's an author, then the structure is:
+             * <div class="byline-wrapper">
+             *     <div>avatar</div>
+             *     <div>
+             *         <div>
+             *             <span>
+             *                 <a>author</a>
+             *             </span>
+             *         </div>
+             *         <div>
+             *             <div>date</div>
+             *         </div>
+             *     </div>
+             * </div>
+             *
+             * Without an author, it's:
+             * <div class="byline-wrapper">
+             *     <div>
+             *         <div>
+             *             <div>date</div>
+             *         </div>
+             *     </div>
+             * </div>
+             */
+
             .byline-wrapper {
                 border: 1px solid #eee;
                 padding: 5px 7px;
                 background: #f9f9f9;
             }
 
-            .byline-wrapper > :first-child {
+            /* hide the avatar if there's another element after */
+            .byline-wrapper > :first-child:has(+ *) {
                 display: none;
             }
 
@@ -397,8 +423,8 @@ const STYLES = {
             }
 
             .byline-wrapper > :nth-child(2) > :first-child,
-            .byline-wrapper > :nth-child(2) > :nth-child(2) > :first-child
-             {
+            .byline-wrapper > :nth-child(2) > :nth-child(2) > :first-child,
+            .byline-wrapper > :first-child:not(:has(+ *)) > :first-child > :first-child {
                 font: 10px Verdana, sans-serif;
                 text-transform: uppercase;
                 letter-spacing: 1px;
@@ -410,7 +436,8 @@ const STYLES = {
                 content: "by ";
             }
 
-            .byline-wrapper > :nth-child(2) > :nth-child(2) > :first-child::before {
+            .byline-wrapper > :nth-child(2) > :nth-child(2) > :first-child::before,
+            .byline-wrapper > :first-child:not(:has(+ *)) > :first-child > :first-child::before {
                 content: "Posted on ";
             }
 
