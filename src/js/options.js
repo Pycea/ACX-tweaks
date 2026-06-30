@@ -587,7 +587,6 @@ const addParentLinksOption = {
     },
 };
 
-
 const defaultSortOption = {
     key: "defaultSort",
     default: SortOrder.OldFirst,
@@ -595,6 +594,12 @@ const defaultSortOption = {
     onPreload: function(value) {
         PageInfo.commentSort = value === SortOrder.PostDefault ? PageInfo.defaultSort : value;
     },
+};
+
+const autoFlattenDepthOption = {
+    key: "autoFlattenDepth",
+    default: "",
+    hovertext: "Cap comment nesting depth to the given value. Set to 0 to make all comments top level, or a negative number to keep full nesting.",
 };
 
 const autoCollapseDepthOption = {
@@ -838,6 +843,7 @@ const optionArray = [
     addParentLinksOption,
 
     defaultSortOption,
+    autoFlattenDepthOption,
     autoCollapseDepthOption,
     collapseModOption,
     automodBehaviorOption,

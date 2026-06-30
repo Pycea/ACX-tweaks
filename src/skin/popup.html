@@ -130,6 +130,7 @@
         #defaultSort,
         #automodBehavior,
         #hideUsers,
+        #autoFlattenDepth,
         #autoCollapseDepth,
         #showDebug,
         #customCss {
@@ -144,11 +145,13 @@
             width: 3em;
         }
 
+        #autoFlattenDepth,
         #autoCollapseDepth,
         #hideUsers {
             margin-top: 2px;
         }
 
+        #autoFlattenDepthNumber,
         #autoCollapseDepthNumber {
             width: 2.5em;
         }
@@ -350,6 +353,7 @@
             margin-top: 20px;
         }
 
+        .mobile #autoFlattenDepth,
         .mobile #autoCollapseDepth {
             margin-top: 20px;
         }
@@ -496,6 +500,10 @@
                 <option value="PostDefault">Post default</option>
             </select>
             <label for="defaultSortSelect">Default comment sorting</label>
+        </div>
+        <div id="autoFlattenDepth" class="option">
+            <input type="number" id="autoFlattenDepthNumber" class="trigger text">
+            <label for="autoFlattenDepthNumber">Auto flatten depth</label>
         </div>
         <div id="autoCollapseDepth" class="option">
             <input type="number" id="autoCollapseDepthNumber" class="trigger text">

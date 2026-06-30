@@ -347,6 +347,8 @@ class CommentManager {
 
         CommentManager.combineComments(nestedComments, automodHiddenComments);
         CommentManager.sortComments(nestedComments);
+        const maxDepth = optionManager.get(OptionKey.autoFlattenDepth);
+        nestedComments = CommentManager.flattenComments(nestedComments, maxDepth);
         for (const comment of nestedComments) {
             CommentManager.topLevelComments.push(comment.id);
             getInfoRecursive(comment);
@@ -376,6 +378,26 @@ class CommentManager {
             }
             commentList.push(comment);
         }
+    }
+
+    static flattenComments(comments, level) {
+        level = parseInt(level);
+        if (!Number.isInteger(level) || level < 0) {
+            return comments;
+        }
+
+        const newComments = [];
+        for (const comment of comments) {
+            newComments.push(comment);
+            if (level === 0) {
+                const flatChildren = CommentManager.flattenComments(comment.children, 0);
+                comment.children = [];
+                newComments.push(...flatChildren);
+            } else {
+                comment.children = CommentManager.flattenComments(comment.children, level - 1);
+            }
+        }
+        return newComments;
     }
 
     static sortComments(comments) {
