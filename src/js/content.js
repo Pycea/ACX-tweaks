@@ -1506,7 +1506,9 @@ async function doAllSetup() {
     if (PageInfo.pageType === PageType.Post) {
         CommentManager.init(...await API.getPostComments(PageInfo.postId));
     } else if (PageInfo.pageType === PageType.Comments) {
-        CommentManager.init(preloads.initialComments, preloads.initialAutomodHiddenComments);
+        const comments = structuredClone(preloads.initialComments);
+        const automodHiddenComments = structuredClone(preloads.initialAutomodHiddenComments);
+        CommentManager.init(comments, automodHiddenComments);
     }
 
     if (document.readyState === "loading") {

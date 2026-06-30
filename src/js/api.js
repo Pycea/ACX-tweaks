@@ -7,12 +7,6 @@
 //     fetchError: any errors encountered
 
 class API {
-    static getPostData(postName) {
-        logFuncCall();
-        const url = `https://www.astralcodexten.com/api/v1/posts/${getPostName()}`;
-        return API.call(url);
-    }
-
     static async getPostComments(postId) {
         logFuncCall();
         const url = `https://www.astralcodexten.com/api/v1/post/${postId}/comments?block=false&sort=oldest_first&all_comments=true`;
@@ -104,17 +98,15 @@ class API {
         if (method !== "GET" && method !== "HEAD") {
             options.body = JSON.stringify(data);
         }
-        return new Promise((resolve, reject) => {
-            fetch(url, options)
-                .then(response => response.json())
-                .then(data => {
-                    debug("fetchResponse", data);
-                    resolve(data);
-                })
-                .catch(error => {
-                    debug("fetchError", error);
-                    reject(error);
-                })
-        });
+        return fetch(url, options)
+            .then(response => response.json())
+            .then(data => {
+                debug("fetchResponse", data);
+                return structuredClone(data);
+            })
+            .catch(error => {
+                debug("fetchError", error);
+                throw error;
+            });
     }
 }
