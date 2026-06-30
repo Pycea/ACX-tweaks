@@ -525,56 +525,6 @@ const showHeartsOption = {
     },
 };
 
-const addParentLinksOption = {
-    key: "addParentLinks",
-    default: true,
-    hovertext: "Add links to scroll to the parent comment, or the top of the comments page for top level comments",
-    onStart: function(value) {
-        setStyle(this.key, !value);
-    },
-    processComment: function(comment) {
-        const footer = comment.querySelector(":scope > .comment-content .comment-footer");
-
-        // don't add link if it already exists
-        if (footer.querySelector(".parent-link")) {
-            return;
-        }
-
-        const parentComment = comment.parentElement.parentElement;
-        let scrollElement, displayText;
-        if (!parentComment.classList.contains("comment")) {
-            // already at top level comment
-            scrollElement = document.querySelector("#discussion");
-            displayText = "Top";
-        } else {
-            scrollElement = parentComment;
-            displayText = "Parent";
-        }
-
-        // create parent link element
-        // <button class="parent-link">
-        //     ${displayText}
-        // </button>
-        const parentLink = document.createElement("button");
-        parentLink.classList.add("parent-link");
-        parentLink.textContent = displayText;
-
-        const menu = footer.querySelector(".meatball");
-        footer.insertBefore(parentLink, menu);
-
-        parentLink.addEventListener("click", () => {
-            scrollElement.scrollIntoView();
-            scrollElement.focus({preventScroll: true});
-        });
-    },
-    onValueChange: function(value) {
-        setStyle(this.key, !value);
-        if (value) {
-            optionManager.processAllComments(this.key);
-        }
-    },
-};
-
 const defaultSortOption = {
     key: "defaultSort",
     default: SortOrder.OldFirst,
@@ -827,7 +777,6 @@ const optionArray = [
     showFullDateOption,
     use24HourOption,
     showHeartsOption,
-    addParentLinksOption,
 
     defaultSortOption,
     autoFlattenDepthOption,

@@ -67,12 +67,6 @@ const STYLES = {
                 display: none;
             }`,
     },
-    addParentLinks: {
-        css: `
-            .parent-link {
-                display: none;
-            }`,
-    },
     applyCommentStyling: {
         css: `
             .comment-body span.new-style {

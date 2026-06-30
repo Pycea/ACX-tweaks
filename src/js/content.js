@@ -803,6 +803,12 @@ class Comment {
             deleteButton.addEventListener("click", () => this.deleteComment());
         }
 
+        const isTopLevel = !this.info.ancestorPath?.trim();
+        const parentText = isTopLevel ? "Top" : "Parent";
+        const parentButton = this.footerElem.querySelector(".parent-link");
+        parentButton.textContent = parentText;
+        parentButton.addEventListener("click", () => this.parentButtonClick(isTopLevel));
+
         this.setUpFooterMenu();
         this.attachMeatball();
 
@@ -999,6 +1005,14 @@ class Comment {
 
         CommentManager.deleteComment(this.id);
         optionManager.processComment(this.baseElem);
+    }
+
+    parentButtonClick(isTopLevel) {
+        const scrollElement = isTopLevel ?
+            document.querySelector("#discussion") :
+            this.baseElem.parentElement.parentElement;
+        scrollElement.scrollIntoView();
+        scrollElement.focus({preventScroll: true});
     }
 }
 
